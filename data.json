@@ -1,6 +1,17 @@
 {
-  "projects": [],
+  "projects": [
+    {
+      "name": "英语",
+      "priority": "P0",
+      "start": "2026-07-26T12:00",
+      "end": "2030-07-26T12:00",
+      "location": "多选",
+      "status": "规划中",
+      "standard": "专业精通",
+      "id": 1
+    }
+  ],
   "tasks": [],
-  "nextProjectId": 1,
+  "nextProjectId": 2,
   "nextTaskId": 1
 }
