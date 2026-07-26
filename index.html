@@ -11,12 +11,17 @@
         html{scroll-behavior:smooth}
         body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh}
         .container{max-width:1100px;margin:0 auto}
-        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.85)}
+        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px)}
         [data-theme="dark"] nav{background:rgba(30,31,43,0.88)}
         .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .nav-actions{display:flex;gap:8px;flex-wrap:wrap}
         .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s}
         .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .sync-status{font-size:.75rem;padding:4px 14px;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+        [data-theme="dark"] .sync-status{background:#1a3d2a;color:#81c784;border-color:#2e7d32}
+        .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+        .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
+        .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
         .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:24px;box-shadow:var(--shadow)}
         .stats-bar .stat{text-align:center}
         .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
@@ -26,7 +31,7 @@
         .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
         .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(45,75,140,0.2)}
-        .btn:hover{transform:scale(1.02)}
+        .btn:hover{transform:scale(1.02);box-shadow:0 6px 20px rgba(45,75,140,0.3)}
         .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
         .btn-outline:hover{background:var(--primary-light)}
         .btn-sm{padding:4px 14px;font-size:.75rem}
@@ -107,12 +112,11 @@
     <nav>
         <div class="nav-brand">📋 全周期项目事务管理</div>
         <div class="nav-actions">
-            <span id="saveStatus" style="font-size:.75rem;color:var(--text-muted);padding:4px 12px;">💾 数据存于网页</span>
-            <button onclick="downloadData()" class="btn btn-sm btn-outline">📥 导出备份</button>
-            <button onclick="document.getElementById('fileInput').click()" class="btn btn-sm btn-outline">📤 导入备份</button>
-            <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importData(event)">
+            <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
+            <button onclick="syncToGitHub()" class="btn btn-sm btn-github" style="background:#24292e;color:#fff;border:none;padding:4px 14px;border-radius:30px;cursor:pointer;">☁️ 同步到GitHub</button>
             <button onclick="switchTheme()">🌓 主题</button>
             <button onclick="window.print()">🖨️ 打印</button>
+            <button onclick="openTokenModal()">⚙️ 配置</button>
         </div>
     </nav>
     <div class="stats-bar" id="statsBar"></div>
@@ -126,7 +130,7 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
                 <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
-                    <option value="all">📊 全部任务</option>
+                    <option value="all">📊 全部</option>
                     <option value="p0">🔴 P0</option>
                     <option value="p1">🟠 P1</option>
                     <option value="p2">🟡 P2</option>
@@ -186,56 +190,231 @@
             </form>
         </div>
     </div>
+    <!-- 配置弹窗 -->
+    <div class="modal-overlay" id="tokenModal">
+        <div class="modal">
+            <div class="modal-header"><h3>⚙️ 配置 GitHub 同步</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
+            <div class="save-hint">📌 数据存储在 GitHub Issues 中，完全不依赖外部网站。<br>需要 <strong>repo</strong> 权限。</div>
+            <form onsubmit="saveConfig(event)">
+                <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
+                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;"></div>
+                <div class="form-actions" style="margin-top:16px;"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
 </div>
 <script>
 // ============================================================
-//  ✅ 数据直接写在网页里，永不乱码
-//  所有状态已改为英文，且为必填
+//  GitHub Issues 存储引擎
+//  数据存储在 Issue #1 的 body 中
 // ============================================================
+const STORAGE_ISSUE_NUMBER = 1;
+let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
+let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], nextProjectId: 1, nextTaskId: 1 };
+let dataLoaded = false;
 
-function loadFromStorage() {
-    try { const saved = localStorage.getItem('pms_data'); if (saved) { const parsed = JSON.parse(saved); if (parsed.projects !== undefined && parsed.tasks !== undefined) { data = parsed; data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; }); return true; } } } catch (e) {}
-    return false;
+function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
+
+function saveConfig(e) {
+    e.preventDefault();
+    GITHUB_TOKEN = document.getElementById('tokenInput').value.trim();
+    GITHUB_REPO = document.getElementById('repoInput').value.trim();
+    localStorage.setItem('pms_github_token', GITHUB_TOKEN);
+    localStorage.setItem('pms_github_repo', GITHUB_REPO);
+    closeModal('tokenModal');
+    setStatus('✅ 配置已保存', '');
+    loadFromGitHub();
 }
-function saveToStorage() { localStorage.setItem('pms_data', JSON.stringify(data)); }
-if (!loadFromStorage()) { data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; }); saveToStorage(); }
 
-function getProjects() { return data.projects; }
-function getProject(id) { return data.projects.find(p => p.id === id); }
-function getTask(id) { return data.tasks.find(t => t.id === id); }
-function getChildren(taskId) { return data.tasks.filter(t => t.parentId === taskId && !t.archived); }
-function getProjectName(id) { const p = getProject(id); return p ? p.name : '[已删除]'; }
-
-function downloadData() {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `pms_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+function openTokenModal() {
+    document.getElementById('tokenInput').value = GITHUB_TOKEN;
+    document.getElementById('repoInput').value = GITHUB_REPO;
+    document.getElementById('tokenModal').classList.add('active');
 }
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const imported = JSON.parse(e.target.result);
-            if (imported.projects === undefined || imported.tasks === undefined) { alert('无效的数据文件'); return; }
-            if (!confirm('导入将覆盖当前所有数据，确定继续吗？')) return;
-            data = imported;
-            data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
-            saveToStorage();
+
+function setStatus(text, type) {
+    const el = document.getElementById('syncStatus');
+    el.textContent = text;
+    el.className = 'sync-status';
+    if (type === 'saving') el.classList.add('saving');
+    if (type === 'error') el.classList.add('error');
+    if (type === 'loading') el.classList.add('loading');
+}
+
+// ============================================================
+//  数据操作
+// ============================================================
+function defaultData() { return { projects: [], tasks: [], nextProjectId: 1, nextTaskId: 1 }; }
+
+function getProjects() { return data ? data.projects : []; }
+function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
+function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
+function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
+
+function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
+function loadLocalCache() {
+    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; }); return d; } } catch (e) {}
+    return null;
+}
+
+// ============================================================
+//  🔥 核心：通过 GitHub Issues 读写数据
+// ============================================================
+async function loadFromGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) {
+        setStatus('⚠️ 请点击「配置」设置仓库', 'error');
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        renderAll();
+        updateStats();
+        return;
+    }
+
+    try {
+        setStatus('📥 从 GitHub 加载...', 'loading');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        if (token) headers['Authorization'] = `token ${token}`;
+
+        const response = await fetch(url, { headers });
+
+        if (response.status === 404) {
+            // Issue 不存在，创建
+            await createIssue();
+            data = defaultData();
+            dataLoaded = true;
+            saveLocalCache();
+            setStatus('📄 新数据已初始化', '');
             renderAll();
             updateStats();
-            alert('✅ 导入成功！');
-        } catch (err) { alert('导入失败：' + err.message); }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
+            return;
+        }
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const issue = await response.json();
+        const body = issue.body || '{}';
+        // 尝试解析 JSON
+        try {
+            const parsed = JSON.parse(body);
+            if (parsed.projects !== undefined && parsed.tasks !== undefined) {
+                data = parsed;
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+                dataLoaded = true;
+                saveLocalCache();
+                setStatus(`✅ 已同步 (${data.projects.length}个项目, ${data.tasks.length}个任务)`, '');
+                renderAll();
+                updateStats();
+                return;
+            }
+        } catch (e) {}
+
+        // 如果解析失败，用默认数据
+        data = defaultData();
+        dataLoaded = true;
+        saveLocalCache();
+        setStatus('⚠️ 数据格式错误，已重置', 'error');
+        renderAll();
+        updateStats();
+    } catch (err) {
+        console.error('加载失败:', err);
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        setStatus('⚠️ 离线模式', 'error');
+        renderAll();
+        updateStats();
+    }
 }
 
+async function createIssue() {
+    const { token, repo } = getConfig();
+    if (!token || !repo) return;
+    try {
+        const url = `https://api.github.com/repos/${repo}/issues`;
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: '📋 项目管理系统数据存储 (请勿删除)',
+                body: JSON.stringify(defaultData(), null, 2),
+                labels: ['pms-data']
+            })
+        });
+    } catch (e) { console.error('创建 Issue 失败:', e); }
+}
+
+async function syncToGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) { alert('请先配置仓库'); openTokenModal(); return; }
+    if (!token) { alert('请先配置 Token'); openTokenModal(); return; }
+    if (!data) { alert('暂无数据'); return; }
+
+    const jsonContent = JSON.stringify(data, null, 2);
+
+    try {
+        setStatus('⏳ 同步中...', 'saving');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+
+        // 获取当前 Issue 的 etag
+        let etag = '';
+        try {
+            const headRes = await fetch(url, {
+                method: 'HEAD',
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            etag = headRes.headers.get('etag') || '';
+        } catch (e) {}
+
+        const putRes = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'If-Match': etag
+            },
+            body: JSON.stringify({ body: jsonContent })
+        });
+
+        if (!putRes.ok) {
+            // 如果更新失败，尝试创建
+            if (putRes.status === 404) {
+                await createIssue();
+                // 重试更新
+                const retryRes = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ body: jsonContent })
+                });
+                if (!retryRes.ok) throw new Error(`创建后更新失败: ${retryRes.status}`);
+            } else {
+                throw new Error(`HTTP ${putRes.status}`);
+            }
+        }
+
+        saveLocalCache();
+        setStatus(`✅ 已同步到 GitHub (${new Date().toLocaleTimeString()})`, '');
+        alert('✅ 数据已同步到 GitHub Issues！');
+    } catch (err) {
+        console.error('同步失败:', err);
+        setStatus('❌ 同步失败: ' + err.message, 'error');
+        alert('❌ 同步失败：' + err.message);
+    }
+}
+
+// ============================================================
+//  项目 CRUD
+// ============================================================
 function saveProject(e) {
     e.preventDefault();
     const id = document.getElementById('projectEditId').value;
@@ -250,15 +429,18 @@ function saveProject(e) {
         status: status,
         standard: document.getElementById('pStandard').value.trim()
     };
-    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段（带 *）'); return; }
-    if (id) { const p = getProject(Number(id)); if (p) Object.assign(p, obj); } else { obj.id = data.nextProjectId++; data.projects.push(obj); }
-    saveToStorage();
+    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段'); return; }
+    if (id) { const p = getProject(Number(id)); if (p) Object.assign(p, obj); }
+    else { obj.id = data.nextProjectId++; data.projects.push(obj); }
+    saveLocalCache();
     closeModal('projectModal');
     document.getElementById('projectForm').reset();
     document.getElementById('projectEditId').value = '';
     renderAll();
     updateStats();
+    setStatus('💡 数据已修改，点击「同步到GitHub」保存', 'saving');
 }
+
 function openProjectModal(projectId) {
     const modal = document.getElementById('projectModal');
     document.getElementById('projectForm').reset();
@@ -267,242 +449,4 @@ function openProjectModal(projectId) {
     if (projectId) {
         const p = getProject(projectId);
         if (!p) return;
-        document.getElementById('projectEditId').value = p.id;
-        document.getElementById('projectModalTitle').textContent = '编辑项目';
-        document.getElementById('pName').value = p.name;
-        document.getElementById('pPriority').value = p.priority;
-        document.getElementById('pStart').value = p.start;
-        document.getElementById('pEnd').value = p.end;
-        document.getElementById('pLocation').value = p.location;
-        document.getElementById('pStatus').value = p.status;
-        document.getElementById('pStandard').value = p.standard;
-    }
-    modal.classList.add('active');
-}
-function deleteProject(id) {
-    if (!confirm('确定删除此项目吗？')) return;
-    data.projects = data.projects.filter(p => p.id !== id);
-    saveToStorage();
-    renderAll();
-    updateStats();
-}
-
-function saveTask(e) {
-    e.preventDefault();
-    const id = document.getElementById('taskEditId').value;
-    const status = document.getElementById('tStatus').value;
-    if (!status) { alert('请选择任务状态'); return; }
-    const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
-    const obj = {
-        name: document.getElementById('tName').value.trim(),
-        projectIds: projectIds,
-        parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
-        prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
-        priority: document.getElementById('tPriority').value,
-        start: document.getElementById('tStart').value,
-        end: document.getElementById('tEnd').value,
-        location: document.getElementById('tLocation').value.trim(),
-        status: status,
-        accept: document.getElementById('tAccept').value.trim(),
-        note: document.getElementById('tNote').value.trim(),
-        archived: false
-    };
-    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段（带 *）'); return; }
-    if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
-    if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++; data.tasks.push(obj); }
-    saveToStorage();
-    closeModal('taskModal');
-    document.getElementById('taskForm').reset();
-    document.getElementById('taskEditId').value = '';
-    renderAll();
-    updateStats();
-}
-function openTaskModal(taskId) {
-    const modal = document.getElementById('taskModal');
-    document.getElementById('taskForm').reset();
-    document.getElementById('taskEditId').value = '';
-    document.getElementById('taskModalTitle').textContent = '新建任务';
-    populateTaskSelects();
-    if (taskId) {
-        const t = getTask(taskId);
-        if (!t) return;
-        document.getElementById('taskEditId').value = t.id;
-        document.getElementById('taskModalTitle').textContent = '编辑任务';
-        document.getElementById('tName').value = t.name;
-        Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds && t.projectIds.includes(Number(opt.value)); });
-        if (t.parentId) document.getElementById('tParent').value = t.parentId;
-        if (t.prevId) document.getElementById('tPrev').value = t.prevId;
-        document.getElementById('tPriority').value = t.priority;
-        document.getElementById('tStart').value = t.start;
-        document.getElementById('tEnd').value = t.end;
-        document.getElementById('tLocation').value = t.location;
-        document.getElementById('tStatus').value = t.status;
-        document.getElementById('tAccept').value = t.accept;
-        document.getElementById('tNote').value = t.note || '';
-    }
-    modal.classList.add('active');
-}
-function populateTaskSelects() {
-    const projSelect = document.getElementById('tProjects');
-    projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    const editId = document.getElementById('taskEditId').value;
-    const parentSelect = document.getElementById('tParent');
-    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
-    const prevSelect = document.getElementById('tPrev');
-    prevSelect.innerHTML = '<option value="">无</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
-}
-function deleteTask(id) {
-    if (!confirm('确定删除此任务吗？')) return;
-    data.tasks = data.tasks.filter(t => t.id !== id);
-    saveToStorage();
-    renderAll();
-    updateStats();
-}
-function toggleArchive(taskId) {
-    const t = getTask(taskId);
-    if (!t) return;
-    if (t.status === 'done') { t.archived = !t.archived; saveToStorage(); renderAll(); updateStats(); } else { alert('只有「Done」状态的任务才能归档'); }
-}
-function markDone(taskId) {
-    const t = getTask(taskId);
-    if (!t) return;
-    if (t.status === 'done') { alert('该任务已验收通过'); return; }
-    if (t.prevId) { const prev = getTask(t.prevId); if (prev && prev.status !== 'done') { alert('前置任务尚未验收通过'); return; } }
-    if (!t.accept || t.accept.trim() === '') { alert('请填写验收指标后再标记完成'); return; }
-    t.status = 'review';
-    saveToStorage();
-    renderAll();
-    updateStats();
-}
-function approveTask(taskId) {
-    const t = getTask(taskId);
-    if (!t) return;
-    if (t.status !== 'review') { alert('只有「Review」状态的任务才能验收通过'); return; }
-    t.status = 'done';
-    saveToStorage();
-    renderAll();
-    updateStats();
-}
-
-function renderAll() { renderProjects(); renderTasks(); }
-function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function renderProjects() {
-    const container = document.getElementById('projectList');
-    if (data.projects.length === 0) { container.innerHTML = '<div class="empty-state">暂无项目，点击「新建项目」开始</div>'; return; }
-    container.innerHTML = data.projects.map(p => `
-        <div class="task-item">
-            <div class="task-row">
-                <span class="task-name">${escHtml(p.name)}</span>
-                <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
-                <span class="status-tag status-${p.status}">${p.status}</span>
-                <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
-                <span class="task-meta">📍 ${escHtml(p.location)}</span>
-                <div class="task-actions">
-                    <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
-                </div>
-            </div>
-            <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;">✅ ${escHtml(p.standard)}</div>
-        </div>
-    `).join('');
-}
-
-function renderTasks() {
-    const container = document.getElementById('taskList');
-    const filter = document.getElementById('viewFilter').value;
-    let tasks = data.tasks.filter(t => !t.archived);
-    if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
-    else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
-    else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
-    else if (filter === 'p3') tasks = tasks.filter(t => t.priority === 'P3');
-    else if (filter === 'backlog') tasks = tasks.filter(t => t.status === 'backlog');
-    else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
-    else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
-    else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
-    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
-    else if (filter === 'archived') {
-        tasks = data.tasks.filter(t => t.archived);
-        if (tasks.length === 0) { container.innerHTML = '<div class="empty-state">📦 暂无已归档任务</div>'; return; }
-        container.innerHTML = tasks.map(t => renderTaskItem(t, true)).join('');
-        return;
-    }
-    const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
-    if (topTasks.length === 0 && tasks.length > 0) { container.innerHTML = tasks.map(t => renderTaskItem(t, false)).join(''); return; }
-    container.innerHTML = topTasks.map(t => renderTaskItem(t, false)).join('');
-}
-
-function renderTaskItem(task, isArchived) {
-    const children = getChildren(task.id);
-    const hasChildren = children.length > 0;
-    let isBlocked = false;
-    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
-    const displayStatus = isBlocked ? 'blocked' : task.status;
-    const projectTags = (task.projectIds || []).map(id => {
-        const p = getProject(id);
-        return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
-    }).join('');
-    return `
-        <div class="task-item">
-            <div class="task-row">
-                <span class="task-name">${escHtml(task.name)}</span>
-                <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
-                <span class="status-tag status-${displayStatus}">${displayStatus}</span>
-                ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
-                <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
-                <span class="task-meta">📍 ${escHtml(task.location)}</span>
-                ${task.prevId ? `<span class="task-meta">⬅️ 依赖 #${task.prevId}</span>` : ''}
-                <div class="task-actions">
-                    ${!isArchived ? `
-                        <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
-                        <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
-                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
-                        <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">📦</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
-                    ` : `
-                        <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">↩️ 取消归档</button>
-                    `}
-                    ${hasChildren ? `<button class="task-sub-toggle" onclick="toggleChildren(this)">▼ ${children.length}个子任务</button>` : ''}
-                </div>
-            </div>
-            <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
-            ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
-            ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItem(c, isArchived)).join('')}</div>` : ''}
-        </div>
-    `;
-}
-function toggleChildren(btn) {
-    const parent = btn.closest('.task-item');
-    const children = parent.querySelector('.task-children');
-    if (children) { children.classList.toggle('active'); btn.textContent = children.classList.contains('active') ? `▼ ${children.querySelectorAll('.task-item').length}个子任务` : `▶ ${children.querySelectorAll('.task-item').length}个子任务`; }
-}
-function updateStats() {
-    if (!data) return;
-    const total = data.tasks.filter(t => !t.archived).length;
-    const done = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
-    const p0 = data.tasks.filter(t => t.priority === 'P0' && !t.archived).length;
-    const archived = data.tasks.filter(t => t.archived).length;
-    document.getElementById('statsBar').innerHTML = `
-        <div class="stat"><div class="num">${data.projects.length}</div><div class="label">📁 项目</div></div>
-        <div class="stat"><div class="num">${total}</div><div class="label">📌 进行中</div></div>
-        <div class="stat"><div class="num">${done}</div><div class="label">✅ 已完成</div></div>
-        <div class="stat"><div class="num">${p0}</div><div class="label">🔴 P0</div></div>
-        <div class="stat"><div class="num">${archived}</div><div class="label">📦 已归档</div></div>
-    `;
-}
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
-function switchTheme() {
-    const html = document.documentElement;
-    const current = html.getAttribute('data-theme');
-    html.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
-    localStorage.setItem('pms_theme', html.getAttribute('data-theme') || '');
-}
-(function() { const theme = localStorage.getItem('pms_theme'); if (theme) document.documentElement.setAttribute('data-theme', theme); })();
-renderAll();
-updateStats();
-</script>
-</body>
-</html>
+        document.getElementById('projectEditId').value
