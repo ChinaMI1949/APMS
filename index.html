@@ -5,28 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人全周期项目管理系统</title>
     <style>
+        /* --- 样式保持不变，为了显示英文状态，我们调整状态标签的样式映射 --- */
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
         [data-theme="dark"]{--bg:#14151c;--surface:#1e1f2b;--surface-hover:#2a2b3b;--text:#edf0f7;--text-secondary:#bcc0d0;--text-muted:#7a7f96;--border:#323446;--primary:#6d8fd1;--primary-light:#262d44;--shadow:0 6px 24px rgba(0,0,0,0.4)}
         html{scroll-behavior:smooth}
         body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh}
         .container{max-width:1100px;margin:0 auto}
-        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.85)}
+        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px)}
         [data-theme="dark"] nav{background:rgba(30,31,43,0.88)}
         .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .nav-actions{display:flex;gap:8px;flex-wrap:wrap}
         .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s}
         .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
-        .sync-status{font-size:.75rem;padding:4px 14px;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
-        [data-theme="dark"] .sync-status{background:#1a3d2a;color:#81c784;border-color:#2e7d32}
-        .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
-        .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
-        .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
         .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:24px;box-shadow:var(--shadow)}
         .stats-bar .stat{text-align:center}
         .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
         .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;transition:background .2s,border .2s}
+        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px}
         .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
         .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
         .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -39,8 +35,6 @@
         .btn-danger:hover{background:#c0392b}
         .btn-success{background:#27ae60;box-shadow:0 4px 12px rgba(39,174,96,0.2)}
         .btn-success:hover{background:#1e8449}
-        .btn-github{background:#24292e;box-shadow:0 4px 12px rgba(36,41,46,0.2)}
-        .btn-github:hover{background:#1a1e22}
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
         .form-group{display:flex;flex-direction:column;gap:4px}
         .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
@@ -57,14 +51,25 @@
         [data-theme="dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
         [data-theme="dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
         [data-theme="dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
+        /* --- 更新状态标签样式映射 --- */
         .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
+        .status-planning{background:#eef2f5;color:#5d6d7e}
+        .status-active{background:#eaf2f8;color:#2e86c1}
+        .status-paused{background:#fef9e7;color:#b7950b}
+        .status-completed{background:#e9f7ef;color:#1e8449}
+        .status-backlog{background:#eef2f5;color:#5d6d7e}
         .status-todo{background:#eef2f5;color:#5d6d7e}
-        .status-progress{background:#eaf2f8;color:#2e86c1}
+        .status-doing{background:#eaf2f8;color:#2e86c1}
         .status-review{background:#fef9e7;color:#b7950b}
         .status-done{background:#e9f7ef;color:#1e8449}
         .status-blocked{background:#fde8e8;color:#c0392b}
+        [data-theme="dark"] .status-planning{background:#2a2b33;color:#99a3b0}
+        [data-theme="dark"] .status-active{background:#1a2a3d;color:#5dade2}
+        [data-theme="dark"] .status-paused{background:#3d3a1a;color:#f4d03f}
+        [data-theme="dark"] .status-completed{background:#1a3d2a;color:#58d68d}
+        [data-theme="dark"] .status-backlog{background:#2a2b33;color:#99a3b0}
         [data-theme="dark"] .status-todo{background:#2a2b33;color:#99a3b0}
-        [data-theme="dark"] .status-progress{background:#1a2a3d;color:#5dade2}
+        [data-theme="dark"] .status-doing{background:#1a2a3d;color:#5dade2}
         [data-theme="dark"] .status-review{background:#3d3a1a;color:#f4d03f}
         [data-theme="dark"] .status-done{background:#1a3d2a;color:#58d68d}
         [data-theme="dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
@@ -86,10 +91,10 @@
         .modal-header h3{font-size:1.2rem}
         .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)}
         .modal-close:hover{color:var(--text)}
-        .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
-        [data-theme="dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
+        .save-hint{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:#1565c0}
+        [data-theme="dark"] .save-hint{background:#1a2a3d;border-color:#2e7d32;color:#81c784}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}}
-        @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.nav-actions,.btn,.task-actions,.modal-overlay{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
+        @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}}
         ::-webkit-scrollbar{width:6px;height:6px}
         ::-webkit-scrollbar-track{background:var(--bg)}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
@@ -103,18 +108,22 @@
     <nav>
         <div class="nav-brand">📋 全周期项目事务管理</div>
         <div class="nav-actions">
-            <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
-            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到云端</button>
+            <span id="saveStatus" style="font-size:.75rem;color:var(--text-muted);padding:4px 12px;">💾 数据存于网页</span>
+            <button onclick="downloadData()" class="btn btn-sm btn-outline">📥 导出备份</button>
+            <button onclick="document.getElementById('fileInput').click()" class="btn btn-sm btn-outline">📤 导入备份</button>
+            <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importData(event)">
             <button onclick="switchTheme()">🌓 主题</button>
             <button onclick="window.print()">🖨️ 打印</button>
-            <button onclick="openTokenModal()">⚙️ 配置</button>
         </div>
     </nav>
+
     <div class="stats-bar" id="statsBar"></div>
+
     <div class="card">
         <div class="card-header"><h2><span>📁 项目总库</span></h2><button class="btn" onclick="openProjectModal()">+ 新建项目</button></div>
         <div id="projectList"></div>
     </div>
+
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span></h2>
@@ -126,8 +135,9 @@
                     <option value="p1">🟠 P1 重要</option>
                     <option value="p2">🟡 P2 常规</option>
                     <option value="p3">🔵 P3 次要</option>
-                    <option value="todo">⏳ 待规划</option>
-                    <option value="progress">🔄 执行中</option>
+                    <option value="backlog">⏳ 待规划</option>
+                    <option value="todo">📋 待启动</option>
+                    <option value="doing">🔄 执行中</option>
                     <option value="review">🔍 待复核</option>
                     <option value="done">✅ 已完成</option>
                     <option value="archived">📦 已归档</option>
@@ -136,10 +146,12 @@
         </div>
         <div id="taskList"></div>
     </div>
+
     <!-- 项目弹窗 -->
     <div class="modal-overlay" id="projectModal">
         <div class="modal">
             <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
+            <div class="save-hint">💡 修改后点击「保存」即可，数据会自动存到你的浏览器。换设备时用「导出/导入」迁移。</div>
             <form id="projectForm" onsubmit="saveProject(event)">
                 <input type="hidden" id="projectEditId">
                 <div class="form-grid">
@@ -148,17 +160,26 @@
                     <div class="form-group"><label>开始时间 *</label><input id="pStart" type="datetime-local" required></div>
                     <div class="form-group"><label>截止时间 *</label><input id="pEnd" type="datetime-local" required></div>
                     <div class="form-group"><label>执行场地 *</label><input id="pLocation" required placeholder="如：学校实验室"></div>
-                    <div class="form-group"><label>状态</label><select id="pStatus"><option value="规划中">规划中</option><option value="进行迭代" selected>进行迭代</option><option value="暂停">暂停</option><option value="收尾完成">收尾完成</option></select></div>
+                    <div class="form-group"><label>状态</label>
+                        <select id="pStatus">
+                            <option value="planning">规划中</option>
+                            <option value="active" selected>进行迭代</option>
+                            <option value="paused">暂停</option>
+                            <option value="completed">收尾完成</option>
+                        </select>
+                    </div>
                     <div class="form-group" style="grid-column:1/-1;"><label>整体验收标准 *</label><textarea id="pStandard" required placeholder="如：论文查重率<15%+答辩通过"></textarea></div>
                 </div>
                 <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('projectModal')">取消</button></div>
             </form>
         </div>
     </div>
+
     <!-- 任务弹窗 -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
+            <div class="save-hint">💡 修改后点击「保存」即可，数据会自动存到你的浏览器。换设备时用「导出/导入」迁移。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -170,7 +191,15 @@
                     <div class="form-group"><label>开始时间 *</label><input id="tStart" type="datetime-local" required></div>
                     <div class="form-group"><label>截止时间 *</label><input id="tEnd" type="datetime-local" required></div>
                     <div class="form-group"><label>执行场地 *</label><input id="tLocation" required placeholder="如：图书馆、线上"></div>
-                    <div class="form-group"><label>流转状态</label><select id="tStatus"><option value="待规划">待规划</option><option value="待启动">待启动</option><option value="执行中" selected>执行中</option><option value="待复核">待复核</option><option value="验收通过">验收通过</option></select></div>
+                    <div class="form-group"><label>流转状态</label>
+                        <select id="tStatus">
+                            <option value="backlog">待规划</option>
+                            <option value="todo">待启动</option>
+                            <option value="doing" selected>执行中</option>
+                            <option value="review">待复核</option>
+                            <option value="done">验收通过</option>
+                        </select>
+                    </div>
                     <div class="form-group" style="grid-column:1/-1;"><label>验收指标 *</label><textarea id="tAccept" required placeholder="硬性验收标准"></textarea></div>
                     <div class="form-group" style="grid-column:1/-1;"><label>备注</label><textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea></div>
                 </div>
@@ -178,255 +207,104 @@
             </form>
         </div>
     </div>
-    <!-- 配置弹窗 -->
-    <div class="modal-overlay" id="tokenModal">
-        <div class="modal">
-            <div class="modal-header"><h3>⚙️ 云端同步配置</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
-            <div class="token-warning"><strong>🔐 跨设备同步原理：</strong> 所有数据存储在 GitHub 的 <code>data.json</code> 中。配置一次 Token 和仓库地址，任何设备打开网站都读取同一份数据。<br><br>⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token</div>
-            <form onsubmit="saveConfig(event)">
-                <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
-                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;"></div>
-                <div class="form-actions" style="margin-top:16px;"><button type="submit" class="btn">保存配置</button><button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button></div>
-            </form>
-        </div>
-    </div>
 </div>
+
 <script>
 // ============================================================
-//  GitHub 配置
+//  ✅ 数据直接写在网页里（永久解决中文乱码）
+//  修改数据 → 提交到 GitHub → 所有人都看到新数据
+//  换浏览器 → 用「导出/导入」迁移数据
 // ============================================================
-let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
-let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
-const GITHUB_PATH = 'data.json';
-let data = null;
-let dataLoaded = false;
 
-function getConfig() {
-    return { token: GITHUB_TOKEN, repo: GITHUB_REPO };
-}
-
-function saveConfig(e) {
-    e.preventDefault();
-    GITHUB_TOKEN = document.getElementById('tokenInput').value.trim();
-    GITHUB_REPO = document.getElementById('repoInput').value.trim();
-    localStorage.setItem('pms_github_token', GITHUB_TOKEN);
-    localStorage.setItem('pms_github_repo', GITHUB_REPO);
-    closeModal('tokenModal');
-    setStatus('✅ 配置已保存', '');
-    loadFromGitHub();
-}
-
-function openTokenModal() {
-    document.getElementById('tokenInput').value = GITHUB_TOKEN;
-    document.getElementById('repoInput').value = GITHUB_REPO;
-    document.getElementById('tokenModal').classList.add('active');
-}
-
-function setStatus(text, type) {
-    const el = document.getElementById('syncStatus');
-    el.textContent = text;
-    el.className = 'sync-status';
-    if (type === 'saving') el.classList.add('saving');
-    if (type === 'error') el.classList.add('error');
-    if (type === 'loading') el.classList.add('loading');
-}
+// ★★★ 在这里直接修改你的数据 ★★★
+let data = {
+    projects: [
+        // 示例项目（可以删除或修改）
+        // { id: 1, name: '毕业设计', priority: 'P0', start: '2026-09-01T08:00', end: '2027-06-01T18:00', location: '学校实验室', status: 'active', standard: '论文查重率<15%+答辩通过' }
+    ],
+    tasks: [
+        // 示例任务（可以删除或修改）
+        // { id: 1, name: '开题报告撰写', projectIds: [1], parentId: null, prevId: null, priority: 'P0', start: '2026-09-10T09:00', end: '2026-09-30T17:00', location: '图书馆', status: 'doing', accept: '导师审核通过', note: '', archived: false }
+    ],
+    nextProjectId: 1,
+    nextTaskId: 1
+};
+// ★★★ 数据修改到这里结束 ★★★
 
 // ============================================================
-//  数据操作
+//  初始化：从 localStorage 加载修改（如果有）
 // ============================================================
-function defaultData() {
-    return { projects: [], tasks: [], nextProjectId: 1, nextTaskId: 1 };
-}
-
-function getProjects() { return data ? data.projects : []; }
-function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
-function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
-function getChildren(taskId) {
-    return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : [];
-}
-function getProjectName(id) {
-    const p = getProject(id);
-    return p ? p.name : '[已删除]';
-}
-
-// ============================================================
-//  🔥 核心修复：中文编码安全读写
-// ============================================================
-function safeEncodeToBase64(str) {
-    // 先对中文进行 URI 编码，再转 Base64，保证中文安全
-    const encoded = encodeURIComponent(str);
-    return btoa(encoded);
-}
-
-function safeDecodeFromBase64(base64) {
+function loadFromStorage() {
     try {
-        // 先解码 Base64，再对 URI 解码还原中文
-        const decoded = atob(base64);
-        return decodeURIComponent(decoded);
-    } catch (e) {
-        // 如果解码失败，尝试直接解析（兼容旧数据）
-        try {
-            return atob(base64);
-        } catch (e2) {
-            return base64;
-        }
-    }
-}
-
-// ============================================================
-//  GitHub 读写
-// ============================================================
-async function loadFromGitHub() {
-    const { token, repo } = getConfig();
-    if (!repo) {
-        setStatus('⚠️ 请点击「配置」设置仓库', 'error');
-        data = defaultData();
-        dataLoaded = true;
-        renderAll();
-        updateStats();
-        return;
-    }
-
-    try {
-        setStatus('🔄 正在从云端加载...', 'loading');
-        const url = `https://api.github.com/repos/${repo}/contents/${GITHUB_PATH}`;
-        const headers = { 'Accept': 'application/vnd.github.v3+json' };
-        if (token) headers['Authorization'] = `token ${token}`;
-
-        const response = await fetch(url, { headers });
-
-        if (response.status === 404) {
-            data = defaultData();
-            dataLoaded = true;
-            setStatus('📄 新数据，点击「同步到云端」上传', '');
-            renderAll();
-            updateStats();
-            return;
-        }
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const result = await response.json();
-        // 🔥 使用安全解码函数
-        const jsonStr = safeDecodeFromBase64(result.content);
-        const jsonData = JSON.parse(jsonStr);
-        jsonData.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
-        data = jsonData;
-        dataLoaded = true;
-        setStatus(`✅ 已同步 (${data.projects.length}个项目, ${data.tasks.length}个任务)`, '');
-        renderAll();
-        updateStats();
-        checkDeadlines();
-    } catch (err) {
-        console.error('加载失败:', err);
-        const cached = loadLocalCache();
-        if (cached) {
-            data = cached;
-            setStatus('⚠️ 离线模式 (使用本地缓存)', 'error');
-        } else {
-            data = defaultData();
-            setStatus('⚠️ 加载失败，使用空数据', 'error');
-        }
-        dataLoaded = true;
-        renderAll();
-        updateStats();
-    }
-}
-
-async function syncToGitHub() {
-    const { token, repo } = getConfig();
-    if (!repo) {
-        alert('请先点击「配置」按钮，填写 GitHub 仓库地址');
-        openTokenModal();
-        return;
-    }
-    if (!token) {
-        alert('请先配置 GitHub Token');
-        openTokenModal();
-        return;
-    }
-    if (!data) {
-        alert('暂无数据可同步');
-        return;
-    }
-
-    // 🔥 使用安全编码
-    const jsonContent = JSON.stringify(data, null, 2);
-    const encoded = safeEncodeToBase64(jsonContent);
-
-    try {
-        setStatus('⏳ 正在同步到云端...', 'saving');
-        const url = `https://api.github.com/repos/${repo}/contents/${GITHUB_PATH}`;
-
-        let sha = null;
-        try {
-            const getRes = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            if (getRes.ok) {
-                const result = await getRes.json();
-                sha = result.sha;
+        const saved = localStorage.getItem('pms_data');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.projects && parsed.tasks) {
+                data = parsed;
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+                return true;
             }
-        } catch (e) {}
-
-        const body = {
-            message: `数据同步 ${new Date().toLocaleString()}`,
-            content: encoded,
-            branch: 'main'
-        };
-        if (sha) body.sha = sha;
-
-        const putRes = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-
-        if (!putRes.ok) {
-            const err = await putRes.json();
-            throw new Error(err.message || `HTTP ${putRes.status}`);
-        }
-
-        setStatus(`✅ 已同步到云端 (${new Date().toLocaleTimeString()})`, '');
-        saveLocalCache();
-        alert('✅ 数据已成功同步到 GitHub！\n其他设备打开此网站将看到最新数据。');
-    } catch (err) {
-        console.error('同步失败:', err);
-        setStatus('❌ 同步失败: ' + err.message, 'error');
-        alert('❌ 同步失败：' + err.message + '\n\n请检查 Token 权限和仓库地址是否正确。');
-    }
-}
-
-// ============================================================
-//  本地缓存
-// ============================================================
-function saveLocalCache() {
-    if (data) {
-        localStorage.setItem('pms_data_cache', JSON.stringify(data));
-    }
-}
-
-function loadLocalCache() {
-    try {
-        const raw = localStorage.getItem('pms_data_cache');
-        if (raw) {
-            const d = JSON.parse(raw);
-            d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
-            return d;
         }
     } catch (e) {}
-    return null;
+    return false;
 }
 
-function saveLocalData() {
-    saveLocalCache();
+function saveToStorage() {
+    localStorage.setItem('pms_data', JSON.stringify(data));
+}
+
+// 尝试从 localStorage 加载，如果没有则用默认数据
+if (!loadFromStorage()) {
+    // 用代码里写死的默认数据
+    data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+    saveToStorage();
+}
+
+// ============================================================
+//  数据操作函数
+// ============================================================
+function getProjects() { return data.projects; }
+function getProject(id) { return data.projects.find(p => p.id === id); }
+function getTask(id) { return data.tasks.find(t => t.id === id); }
+function getChildren(taskId) { return data.tasks.filter(t => t.parentId === taskId && !t.archived); }
+function getProjectName(id) { const p = getProject(id); return p ? p.name : '[已删除]'; }
+
+// ============================================================
+//  🔥 导出/导入（换浏览器迁移数据）
+// ============================================================
+function downloadData() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pms_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (!imported.projects || !imported.tasks) {
+                alert('无效的数据文件');
+                return;
+            }
+            if (!confirm('导入将覆盖当前所有数据，确定继续吗？')) return;
+            data = imported;
+            data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+            saveToStorage();
+            renderAll();
+            updateStats();
+            alert('✅ 导入成功！');
+        } catch (err) {
+            alert('导入失败：' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
 }
 
 // ============================================================
@@ -455,13 +333,12 @@ function saveProject(e) {
         obj.id = data.nextProjectId++;
         data.projects.push(obj);
     }
-    saveLocalData();
+    saveToStorage();
     closeModal('projectModal');
     document.getElementById('projectForm').reset();
     document.getElementById('projectEditId').value = '';
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 function openProjectModal(projectId) {
@@ -488,10 +365,9 @@ function openProjectModal(projectId) {
 function deleteProject(id) {
     if (!confirm('确定删除此项目吗？')) return;
     data.projects = data.projects.filter(p => p.id !== id);
-    saveLocalData();
+    saveToStorage();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 // ============================================================
@@ -523,12 +399,6 @@ function saveTask(e) {
         alert('开始时间不能晚于截止时间');
         return;
     }
-    if (obj.prevId) {
-        const prev = getTask(obj.prevId);
-        if (prev && prev.status !== '验收通过' && prev.status !== '待复核') {
-            if (!confirm('前置任务尚未完成，确定继续吗？')) return;
-        }
-    }
     if (id) {
         const t = getTask(Number(id));
         if (t) Object.assign(t, obj);
@@ -536,13 +406,12 @@ function saveTask(e) {
         obj.id = data.nextTaskId++;
         data.tasks.push(obj);
     }
-    saveLocalData();
+    saveToStorage();
     closeModal('taskModal');
     document.getElementById('taskForm').reset();
     document.getElementById('taskEditId').value = '';
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 function openTaskModal(taskId) {
@@ -576,61 +445,55 @@ function openTaskModal(taskId) {
 
 function populateTaskSelects() {
     const projSelect = document.getElementById('tProjects');
-    projSelect.innerHTML = data ? data.projects.map(p =>
+    projSelect.innerHTML = data.projects.map(p =>
         `<option value="${p.id}">${p.name}</option>`
-    ).join('') : '';
+    ).join('');
 
     const editId = document.getElementById('taskEditId').value;
     const parentSelect = document.getElementById('tParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    if (data) {
-        data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
-            parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-        });
-    }
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
+        parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
 
     const prevSelect = document.getElementById('tPrev');
     prevSelect.innerHTML = '<option value="">无</option>';
-    if (data) {
-        data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
-            prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-        });
-    }
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
+        prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
 }
 
 function deleteTask(id) {
     if (!confirm('确定删除此任务吗？')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
-    saveLocalData();
+    saveToStorage();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 function toggleArchive(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status === '验收通过') {
+    if (t.status === 'done') {
         t.archived = !t.archived;
-        saveLocalData();
+        saveToStorage();
         renderAll();
         updateStats();
-        setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
     } else {
-        alert('只有「验收通过」的任务才能归档');
+        alert('只有「验收通过 (done)」的任务才能归档');
     }
 }
 
 function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status === '验收通过') {
+    if (t.status === 'done') {
         alert('该任务已验收通过');
         return;
     }
     if (t.prevId) {
         const prev = getTask(t.prevId);
-        if (prev && prev.status !== '验收通过') {
+        if (prev && prev.status !== 'done') {
             alert('前置任务尚未验收通过，请先完成前置任务');
             return;
         }
@@ -639,34 +502,36 @@ function markDone(taskId) {
         alert('请填写验收指标后再标记完成');
         return;
     }
-    t.status = '待复核';
-    saveLocalData();
+    t.status = 'review';
+    saveToStorage();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 function approveTask(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status !== '待复核') {
-        alert('只有「待复核」状态的任务才能验收通过');
+    if (t.status !== 'review') {
+        alert('只有「待复核 (review)」状态的任务才能验收通过');
         return;
     }
-    t.status = '验收通过';
-    saveLocalData();
+    t.status = 'done';
+    saveToStorage();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步到云端」保存', 'saving');
 }
 
 // ============================================================
 //  渲染
 // ============================================================
 function renderAll() {
-    if (!data) return;
     renderProjects();
     renderTasks();
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function renderProjects() {
@@ -680,7 +545,7 @@ function renderProjects() {
             <div class="task-row">
                 <span class="task-name">${escHtml(p.name)}</span>
                 <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
-                <span class="status-tag status-${p.status === '收尾完成' ? 'done' : p.status === '暂停' ? 'blocked' : 'progress'}">${p.status}</span>
+                <span class="status-tag status-${p.status}">${p.status}</span>
                 <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
                 <span class="task-meta">📍 ${escHtml(p.location)}</span>
                 <div class="task-actions">
@@ -702,10 +567,11 @@ function renderTasks() {
     else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
     else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
     else if (filter === 'p3') tasks = tasks.filter(t => t.priority === 'P3');
-    else if (filter === 'todo') tasks = tasks.filter(t => t.status === '待规划' || t.status === '待启动');
-    else if (filter === 'progress') tasks = tasks.filter(t => t.status === '执行中');
-    else if (filter === 'review') tasks = tasks.filter(t => t.status === '待复核');
-    else if (filter === 'done') tasks = tasks.filter(t => t.status === '验收通过' && !t.archived);
+    else if (filter === 'backlog') tasks = tasks.filter(t => t.status === 'backlog');
+    else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
+    else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
+    else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
+    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
     else if (filter === 'archived') {
         tasks = data.tasks.filter(t => t.archived);
         if (tasks.length === 0) {
@@ -724,25 +590,16 @@ function renderTasks() {
     container.innerHTML = topTasks.map(t => renderTaskItem(t, false)).join('');
 }
 
-function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 function renderTaskItem(task, isArchived) {
     const children = getChildren(task.id);
     const hasChildren = children.length > 0;
-    const statusClass = task.status === '验收通过' ? 'done' :
-        task.status === '待复核' ? 'review' :
-        task.status === '执行中' ? 'progress' :
-        task.status === '待规划' || task.status === '待启动' ? 'todo' : 'blocked';
-
+    
     let isBlocked = false;
     if (task.prevId) {
         const prev = getTask(task.prevId);
-        if (prev && prev.status !== '验收通过') isBlocked = true;
+        if (prev && prev.status !== 'done') isBlocked = true;
     }
-    const displayStatus = isBlocked ? '阻塞' : task.status;
+    const displayStatus = isBlocked ? 'blocked' : task.status;
 
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
@@ -755,7 +612,7 @@ function renderTaskItem(task, isArchived) {
             <div class="task-row">
                 <span class="task-name">${escHtml(task.name)}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
-                <span class="status-tag status-${isBlocked ? 'blocked' : statusClass}">${displayStatus}</span>
+                <span class="status-tag status-${displayStatus}">${displayStatus}</span>
                 ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
@@ -764,7 +621,7 @@ function renderTaskItem(task, isArchived) {
                     ${!isArchived ? `
                         <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
                         <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
-                        ${task.status === '待复核' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
+                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
                         <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">📦</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
                     ` : `
@@ -801,7 +658,7 @@ function toggleChildren(btn) {
 function updateStats() {
     if (!data) return;
     const total = data.tasks.filter(t => !t.archived).length;
-    const done = data.tasks.filter(t => t.status === '验收通过' && !t.archived).length;
+    const done = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
     const p0 = data.tasks.filter(t => t.priority === 'P0' && !t.archived).length;
     const archived = data.tasks.filter(t => t.archived).length;
     document.getElementById('statsBar').innerHTML = `
@@ -838,28 +695,9 @@ function switchTheme() {
     if (theme) document.documentElement.setAttribute('data-theme', theme);
 })();
 
-function checkDeadlines() {
-    if (!data) return;
-    const now = new Date();
-    const overdue = data.tasks.filter(t => {
-        if (t.archived || t.status === '验收通过') return false;
-        return new Date(t.end) < now;
-    });
-    if (overdue.length > 0) {
-        setTimeout(() => {
-            const names = overdue.map(t => t.name).join('、');
-            if (confirm(`⚠️ 有 ${overdue.length} 个任务已逾期：\n${names}\n\n立即查看？`)) {
-                document.getElementById('viewFilter').value = 'progress';
-                renderAll();
-            }
-        }, 500);
-    }
-}
-
-// ============================================================
-//  启动
-// ============================================================
-loadFromGitHub();
+// 启动
+renderAll();
+updateStats();
 </script>
 </body>
 </html>
