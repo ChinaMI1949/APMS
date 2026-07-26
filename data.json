@@ -1,17 +1,6 @@
 {
-  "projects": [
-    {
-      "name": "E",
-      "priority": "P2",
-      "start": "2026-07-26T12:00",
-      "end": "2026-07-26T13:00",
-      "location": "E",
-      "status": "进行迭代",
-      "standard": "E",
-      "id": 2
-    }
-  ],
+  "projects": [],
   "tasks": [],
-  "nextProjectId": 3,
+  "nextProjectId": 1,
   "nextTaskId": 1
 }
