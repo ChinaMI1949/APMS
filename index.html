@@ -5,1627 +5,853 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人全周期项目管理系统</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --bg: #f4f6fa;
-            --surface: #ffffff;
-            --surface-hover: #eef1f6;
-            --text: #1a1a2e;
-            --text-secondary: #3d3f5e;
-            --text-muted: #7a7a9a;
-            --border: #dce0e8;
-            --primary: #2d4b8c;
-            --primary-light: #e6edf8;
-            --primary-gradient: linear-gradient(135deg, #2d4b8c, #1f3a6b);
-            --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
-            --radius: 14px;
-            --radius-sm: 8px;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-        }
-        [data-theme="dark"] {
-            --bg: #14151c;
-            --surface: #1e1f2b;
-            --surface-hover: #2a2b3b;
-            --text: #edf0f7;
-            --text-secondary: #bcc0d0;
-            --text-muted: #7a7f96;
-            --border: #323446;
-            --primary: #6d8fd1;
-            --primary-light: #262d44;
-            --shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--text);
-            padding: 16px 20px 40px;
-            transition: background 0.2s, color 0.2s;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: var(--surface);
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-            position: sticky;
-            top: 12px;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.85);
-        }
-        [data-theme="dark"] nav {
-            background: rgba(30, 31, 43, 0.88);
-        }
-        .nav-brand {
-            font-weight: 700;
-            font-size: 1.2rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .nav-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .nav-actions button {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 6px 16px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .nav-actions button:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        .sync-status {
-            font-size: 0.75rem;
-            padding: 4px 14px;
-            border-radius: 20px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-            display: inline-block;
-        }
-        .sync-status.saving {
-            background: #fff3e0;
-            color: #e65100;
-            border-color: #ffcc80;
-        }
-        .sync-status.error {
-            background: #ffebee;
-            color: #c62828;
-            border-color: #ef9a9a;
-        }
-        .sync-status.loading {
-            background: #e3f2fd;
-            color: #1565c0;
-            border-color: #90caf9;
-        }
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 12px;
-            background: var(--surface);
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-        }
-        .stats-bar .stat {
-            text-align: center;
-        }
-        .stats-bar .stat .num {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .stats-bar .stat .label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            padding: 20px 24px;
-            margin-bottom: 20px;
-        }
-        .card-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .card-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card-header h2 span {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--primary-gradient);
-            color: #fff;
-            border: none;
-            padding: 7px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.15s;
-            box-shadow: 0 4px 12px rgba(45, 75, 140, 0.2);
-        }
-        .btn:hover {
-            transform: scale(1.02);
-        }
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 1.5px solid var(--primary);
-            box-shadow: none;
-        }
-        .btn-outline:hover {
-            background: var(--primary-light);
-        }
-        .btn-sm {
-            padding: 4px 14px;
-            font-size: 0.75rem;
-        }
-        .btn-danger {
-            background: #e74c3c;
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
-        }
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-        .btn-success {
-            background: #27ae60;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
-        }
-        .btn-success:hover {
-            background: #1e8449;
-        }
-        .btn-github {
-            background: #24292e;
-            color: #fff;
-            border: none;
-        }
-        .btn-github:hover {
-            background: #1a1e22;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px 16px;
-            margin-bottom: 16px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .form-group label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .form-group label .required {
-            color: #e74c3c;
-            margin-left: 2px;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            font-size: 0.88rem;
-            color: var(--text);
-            transition: 0.15s;
-            font-family: var(--font);
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(45, 75, 140, 0.12);
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 50px;
-        }
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-        .priority-tag {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-        .priority-p0 {
-            background: #fde8e8;
-            color: #c0392b;
-        }
-        .priority-p1 {
-            background: #fef3e7;
-            color: #d35400;
-        }
-        .priority-p2 {
-            background: #fef9e7;
-            color: #b7950b;
-        }
-        .priority-p3 {
-            background: #eef2f5;
-            color: #5d6d7e;
-        }
-        [data-theme="dark"] .priority-p0 {
-            background: #3d1a1a;
-            color: #f1948a;
-        }
-        [data-theme="dark"] .priority-p1 {
-            background: #3d2a1a;
-            color: #f0b27a;
-        }
-        [data-theme="dark"] .priority-p2 {
-            background: #3d3a1a;
-            color: #f4d03f;
-        }
-        [data-theme="dark"] .priority-p3 {
-            background: #2a2b33;
-            color: #99a3b0;
-        }
-        .status-tag {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .status-planning {
-            background: #eef2f5;
-            color: #5d6d7e;
-        }
-        .status-active {
-            background: #eaf2f8;
-            color: #2e86c1;
-        }
-        .status-paused {
-            background: #fef9e7;
-            color: #b7950b;
-        }
-        .status-completed {
-            background: #e9f7ef;
-            color: #1e8449;
-        }
-        .status-backlog {
-            background: #eef2f5;
-            color: #5d6d7e;
-        }
-        .status-todo {
-            background: #eef2f5;
-            color: #5d6d7e;
-        }
-        .status-doing {
-            background: #eaf2f8;
-            color: #2e86c1;
-        }
-        .status-review {
-            background: #fef9e7;
-            color: #b7950b;
-        }
-        .status-done {
-            background: #e9f7ef;
-            color: #1e8449;
-        }
-        .status-blocked {
-            background: #fde8e8;
-            color: #c0392b;
-        }
-        [data-theme="dark"] .status-planning {
-            background: #2a2b33;
-            color: #99a3b0;
-        }
-        [data-theme="dark"] .status-active {
-            background: #1a2a3d;
-            color: #5dade2;
-        }
-        [data-theme="dark"] .status-paused {
-            background: #3d3a1a;
-            color: #f4d03f;
-        }
-        [data-theme="dark"] .status-completed {
-            background: #1a3d2a;
-            color: #58d68d;
-        }
-        [data-theme="dark"] .status-backlog {
-            background: #2a2b33;
-            color: #99a3b0;
-        }
-        [data-theme="dark"] .status-todo {
-            background: #2a2b33;
-            color: #99a3b0;
-        }
-        [data-theme="dark"] .status-doing {
-            background: #1a2a3d;
-            color: #5dade2;
-        }
-        [data-theme="dark"] .status-review {
-            background: #3d3a1a;
-            color: #f4d03f;
-        }
-        [data-theme="dark"] .status-done {
-            background: #1a3d2a;
-            color: #58d68d;
-        }
-        [data-theme="dark"] .status-blocked {
-            background: #3d1a1a;
-            color: #f1948a;
-        }
-
-        /* ===== 分类系统样式 ===== */
-        .cat-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding: 4px 0;
-        }
-        .cat-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 10px 2px 6px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            margin: 2px 4px 2px 0;
-        }
-        .cat-tag .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        .cat-tag .del {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 0.65rem;
-            padding: 0 2px;
-            border-radius: 50%;
-        }
-        .cat-tag .del:hover {
-            color: #e74c3c;
-            background: #fde8e8;
-        }
-        .cat-add-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .cat-add-row input {
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            border: 1.5px solid var(--border);
-            border-radius: 20px;
-            background: var(--bg);
-            color: var(--text);
-            width: 130px;
-        }
-        .cat-add-row input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .task-cat-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            padding: 0 8px;
-            border-radius: 10px;
-            font-size: 0.6rem;
-            font-weight: 500;
-        }
-        .task-cat-tag .dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-        }
-
-        .task-item {
-            border-bottom: 1px solid var(--border);
-            padding: 14px 0;
-            transition: 0.1s;
-        }
-        .task-item:last-child {
-            border-bottom: none;
-        }
-        .task-item:hover {
-            background: var(--surface-hover);
-            margin: 0 -8px;
-            padding-left: 8px;
-            padding-right: 8px;
-            border-radius: var(--radius-sm);
-        }
-        .task-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px 16px;
-        }
-        .task-row .task-name {
-            font-weight: 600;
-            flex: 1 1 160px;
-            font-size: 0.95rem;
-        }
-        .task-row .task-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 10px;
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-        }
-        .task-row .task-actions {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            margin-left: auto;
-        }
-        .task-children {
-            margin-left: 28px;
-            border-left: 2px solid var(--border);
-            padding-left: 16px;
-            margin-top: 8px;
-        }
-        .task-sub-toggle {
-            cursor: pointer;
-            user-select: none;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            background: none;
-            border: none;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-        .task-sub-toggle:hover {
-            background: var(--surface-hover);
-        }
-        .empty-state {
-            text-align: center;
-            padding: 30px 10px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            padding: 20px;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal {
-            background: var(--surface);
-            border-radius: var(--radius);
-            max-width: 600px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 28px 32px;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .modal-header h3 {
-            font-size: 1.2rem;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .modal-close:hover {
-            color: var(--text);
-        }
-        .save-hint {
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            border-radius: 8px;
-            padding: 10px 16px;
-            margin-bottom: 16px;
-            font-size: 0.85rem;
-            color: #1565c0;
-        }
-        [data-theme="dark"] .save-hint {
-            background: #1a2a3d;
-            border-color: #2e7d32;
-            color: #81c784;
-        }
-        .token-warning {
-            background: #fff3e0;
-            border: 1px solid #ffcc80;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            font-size: 0.85rem;
-        }
-        [data-theme="dark"] .token-warning {
-            background: #2d1f0a;
-            border-color: #8d6e3f;
-        }
-        @media (max-width: 640px) {
-            body {
-                padding: 10px 12px 30px;
-            }
-            .card {
-                padding: 14px 16px;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            nav {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            .nav-actions {
-                justify-content: center;
-            }
-            .task-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .task-row .task-actions {
-                margin-left: 0;
-            }
-            .task-children {
-                margin-left: 12px;
-                padding-left: 10px;
-            }
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media print {
-            body {
-                background: #fff;
-                padding: 0.2in;
-            }
-            .card {
-                box-shadow: none;
-                border: 1px solid #ccc;
-                break-inside: avoid;
-            }
-            nav,
-            .btn,
-            .task-actions,
-            .modal-overlay {
-                display: none !important;
-            }
-            .task-item:hover {
-                background: none;
-                margin: 0;
-                padding: 14px 0;
-            }
-            .stats-bar {
-                border: 1px solid #ccc;
-                background: #f8f9fa;
-            }
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-        .collapse-enter {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.25s ease, opacity 0.2s ease;
-        }
-        .collapse-enter.active {
-            max-height: 3000px;
-            opacity: 1;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+        [data-theme="dark"]{--bg:#14151c;--surface:#1e1f2b;--surface-hover:#2a2b3b;--text:#edf0f7;--text-secondary:#bcc0d0;--text-muted:#7a7f96;--border:#323446;--primary:#6d8fd1;--primary-light:#262d44;--shadow:0 6px 24px rgba(0,0,0,0.4)}
+        html{scroll-behavior:smooth}
+        body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh}
+        .container{max-width:1100px;margin:0 auto}
+        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.85)}
+        [data-theme="dark"] nav{background:rgba(30,31,43,0.88)}
+        .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nav-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s}
+        .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .sync-status{font-size:.75rem;padding:4px 14px;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block}
+        .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+        .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
+        .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
+        .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:24px;box-shadow:var(--shadow)}
+        .stats-bar .stat{text-align:center}
+        .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
+        .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px}
+        .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+        .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
+        .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(45,75,140,0.2)}
+        .btn:hover{transform:scale(1.02)}
+        .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
+        .btn-outline:hover{background:var(--primary-light)}
+        .btn-sm{padding:4px 14px;font-size:.75rem}
+        .btn-danger{background:#e74c3c;box-shadow:0 4px 12px rgba(231,76,60,0.2)}
+        .btn-danger:hover{background:#c0392b}
+        .btn-success{background:#27ae60;box-shadow:0 4px 12px rgba(39,174,96,0.2)}
+        .btn-success:hover{background:#1e8449}
+        .btn-github{background:#24292e;color:#fff;border:none}
+        .btn-github:hover{background:#1a1e22}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
+        .form-group{display:flex;flex-direction:column;gap:4px}
+        .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
+        .form-group label .required{color:#e74c3c;margin-left:2px}
+        .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font)}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(45,75,140,0.12)}
+        .form-group textarea{resize:vertical;min-height:50px}
+        .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+        .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
+        .priority-p0{background:#fde8e8;color:#c0392b}
+        .priority-p1{background:#fef3e7;color:#d35400}
+        .priority-p2{background:#fef9e7;color:#b7950b}
+        .priority-p3{background:#eef2f5;color:#5d6d7e}
+        [data-theme="dark"] .priority-p0{background:#3d1a1a;color:#f1948a}
+        [data-theme="dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
+        [data-theme="dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
+        [data-theme="dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
+        .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
+        .status-planning{background:#eef2f5;color:#5d6d7e}
+        .status-active{background:#eaf2f8;color:#2e86c1}
+        .status-paused{background:#fef9e7;color:#b7950b}
+        .status-completed{background:#e9f7ef;color:#1e8449}
+        .status-backlog{background:#eef2f5;color:#5d6d7e}
+        .status-todo{background:#eef2f5;color:#5d6d7e}
+        .status-doing{background:#eaf2f8;color:#2e86c1}
+        .status-review{background:#fef9e7;color:#b7950b}
+        .status-done{background:#e9f7ef;color:#1e8449}
+        .status-blocked{background:#fde8e8;color:#c0392b}
+        [data-theme="dark"] .status-planning{background:#2a2b33;color:#99a3b0}
+        [data-theme="dark"] .status-active{background:#1a2a3d;color:#5dade2}
+        [data-theme="dark"] .status-paused{background:#3d3a1a;color:#f4d03f}
+        [data-theme="dark"] .status-completed{background:#1a3d2a;color:#58d68d}
+        [data-theme="dark"] .status-backlog{background:#2a2b33;color:#99a3b0}
+        [data-theme="dark"] .status-todo{background:#2a2b33;color:#99a3b0}
+        [data-theme="dark"] .status-doing{background:#1a2a3d;color:#5dade2}
+        [data-theme="dark"] .status-review{background:#3d3a1a;color:#f4d03f}
+        [data-theme="dark"] .status-done{background:#1a3d2a;color:#58d68d}
+        [data-theme="dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
+        .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
+        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0}
+        .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%}
+        .cat-tag .del:hover{color:#e74c3c;background:#fde8e8}
+        .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+        .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px}
+        .cat-add-row input:focus{outline:none;border-color:var(--primary)}
+        .task-cat-tag{display:inline-flex;align-items:center;gap:3px;padding:0 8px;border-radius:10px;font-size:.6rem;font-weight:500}
+        .task-cat-tag .dot{display:inline-block;width:6px;height:6px;border-radius:50%}
+        .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s}
+        .task-item:last-child{border-bottom:none}
+        .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
+        .task-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+        .task-row .task-name{font-weight:600;flex:1 1 160px;font-size:.95rem}
+        .task-row .task-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.78rem;color:var(--text-secondary)}
+        .task-row .task-actions{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+        .task-children{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px}
+        .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px}
+        .task-sub-toggle:hover{background:var(--surface-hover)}
+        .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+        .modal-overlay.active{display:flex}
+        .modal{background:var(--surface);border-radius:var(--radius);max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .modal-header h3{font-size:1.2rem}
+        .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)}
+        .modal-close:hover{color:var(--text)}
+        .save-hint{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:#1565c0}
+        [data-theme="dark"] .save-hint{background:#1a2a3d;border-color:#2e7d32;color:#81c784}
+        .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
+        [data-theme="dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
+        @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}}
+        @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
+        ::-webkit-scrollbar{width:6px;height:6px}
+        ::-webkit-scrollbar-track{background:var(--bg)}
+        ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+        ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+        .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
+        .collapse-enter.active{max-height:3000px;opacity:1}
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <nav>
-            <div class="nav-brand">📋 全周期项目事务管理</div>
-            <div class="nav-actions">
-                <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
-                <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步</button>
-                <button onclick="switchTheme()">🌓 主题</button>
-                <button onclick="window.print()">🖨️ 打印</button>
-                <button onclick="openTokenModal()">⚙️ 配置</button>
-            </div>
-        </nav>
-
-        <div class="stats-bar" id="statsBar"></div>
-
-        <!-- ===== 项目总库 ===== -->
-        <div class="card">
-            <div class="card-header">
-                <h2><span>📁 项目总库</span></h2>
-                <button class="btn" onclick="openProjectModal()">+ 新建项目</button>
-            </div>
-            <div id="projectList"></div>
+<div class="container" id="app">
+    <nav>
+        <div class="nav-brand">📋 全周期项目事务管理</div>
+        <div class="nav-actions">
+            <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
+            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步</button>
+            <button onclick="switchTheme()">🌓 主题</button>
+            <button onclick="window.print()">🖨️ 打印</button>
+            <button onclick="openTokenModal()">⚙️ 配置</button>
         </div>
+    </nav>
+    <div class="stats-bar" id="statsBar"></div>
 
-        <!-- ===== 分类管理 ===== -->
-        <div class="card" id="categorySection">
-            <div class="card-header">
-                <h2><span>🏷️ 分类管理</span></h2>
-                <div class="cat-add-row">
-                    <input id="catInput" placeholder="输入分类名" onkeydown="if(event.key==='Enter')addCategory()">
-                    <button class="btn btn-sm" onclick="addCategory()">+ 添加</button>
-                </div>
-            </div>
-            <div id="categoryList" class="cat-list"></div>
-        </div>
-
-        <!-- ===== 全局任务总库 ===== -->
-        <div class="card">
-            <div class="card-header">
-                <h2><span>📌 全局任务总库</span></h2>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
-                    <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
-                        <option value="all">📊 全部</option>
-                        <option value="p0">🔴 P0</option>
-                        <option value="p1">🟠 P1</option>
-                        <option value="p2">🟡 P2</option>
-                        <option value="p3">🔵 P3</option>
-                        <option value="backlog">⏳ Backlog</option>
-                        <option value="todo">📋 To Do</option>
-                        <option value="doing">🔄 Doing</option>
-                        <option value="review">🔍 Review</option>
-                        <option value="done">✅ Done</option>
-                        <option value="archived">📦 已归档</option>
-                    </select>
-                </div>
-            </div>
-            <div id="taskList"></div>
-        </div>
-
-        <!-- ===== 项目弹窗 ===== -->
-        <div class="modal-overlay" id="projectModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3 id="projectModalTitle">新建项目</h3>
-                    <button class="modal-close" onclick="closeModal('projectModal')">&times;</button>
-                </div>
-                <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。</div>
-                <form id="projectForm" onsubmit="saveProject(event)">
-                    <input type="hidden" id="projectEditId">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>项目名称 <span class="required">*</span></label>
-                            <input id="pName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>优先级 <span class="required">*</span></label>
-                            <select id="pPriority" required>
-                                <option value="P0">P0 最高</option>
-                                <option value="P1">P1 重要</option>
-                                <option value="P2" selected>P2 常规</option>
-                                <option value="P3">P3 次要</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>开始时间 <span class="required">*</span></label>
-                            <input id="pStart" type="datetime-local" required>
-                        </div>
-                        <div class="form-group">
-                            <label>截止时间 <span class="required">*</span></label>
-                            <input id="pEnd" type="datetime-local" required>
-                        </div>
-                        <div class="form-group">
-                            <label>执行场地 <span class="required">*</span></label>
-                            <input id="pLocation" required placeholder="如：学校实验室">
-                        </div>
-                        <div class="form-group">
-                            <label>状态 <span class="required">*</span></label>
-                            <select id="pStatus" required>
-                                <option value="planning">Planning</option>
-                                <option value="active" selected>Active</option>
-                                <option value="paused">Paused</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="grid-column:1/-1;">
-                            <label>整体验收标准 <span class="required">*</span></label>
-                            <textarea id="pStandard" required placeholder="如：论文查重率<15%+答辩通过"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn">保存</button>
-                        <button type="button" class="btn btn-outline" onclick="closeModal('projectModal')">取消</button>
-                    </div>
-                </form>
+    <!-- ===== 分类管理 ===== -->
+    <div class="card">
+        <div class="card-header">
+            <h2><span>🏷️ 分类管理</span></h2>
+            <div class="cat-add-row">
+                <input id="catInput" placeholder="输入分类名" onkeydown="if(event.key==='Enter')addCategory()">
+                <button class="btn btn-sm" onclick="addCategory()">+ 添加</button>
             </div>
         </div>
+        <div id="categoryList" class="cat-list"></div>
+    </div>
 
-        <!-- ===== 任务弹窗 ===== -->
-        <div class="modal-overlay" id="taskModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3 id="taskModalTitle">新建任务</h3>
-                    <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
-                </div>
-                <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。</div>
-                <form id="taskForm" onsubmit="saveTask(event)">
-                    <input type="hidden" id="taskEditId">
-                    <div class="form-grid">
-                        <div class="form-group" style="grid-column:1/-1;">
-                            <label>任务名称 <span class="required">*</span></label>
-                            <input id="tName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>所属项目</label>
-                            <select id="tProjects" multiple style="min-height:60px;"></select>
-                            <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选</small>
-                        </div>
-                        <!-- ===== 分类下拉（新增） ===== -->
-                        <div class="form-group">
-                            <label>分类</label>
-                            <select id="tCategory">
-                                <option value="">无分类</option>
-                            </select>
-                            <div style="display:flex;gap:4px;margin-top:3px;">
-                                <input id="newCategoryInput" placeholder="新分类名" style="flex:1;padding:3px 8px;font-size:.7rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);">
-                                <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>父级任务</label>
-                            <select id="tParent">
-                                <option value="">无</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>前置任务</label>
-                            <select id="tPrev">
-                                <option value="">无</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>优先级 <span class="required">*</span></label>
-                            <select id="tPriority" required>
-                                <option value="P0">P0 最高</option>
-                                <option value="P1">P1 重要</option>
-                                <option value="P2" selected>P2 常规</option>
-                                <option value="P3">P3 次要</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>开始时间 <span class="required">*</span></label>
-                            <input id="tStart" type="datetime-local" required>
-                        </div>
-                        <div class="form-group">
-                            <label>截止时间 <span class="required">*</span></label>
-                            <input id="tEnd" type="datetime-local" required>
-                        </div>
-                        <div class="form-group">
-                            <label>执行场地 <span class="required">*</span></label>
-                            <input id="tLocation" required placeholder="如：图书馆、线上">
-                        </div>
-                        <div class="form-group">
-                            <label>流转状态 <span class="required">*</span></label>
-                            <select id="tStatus" required>
-                                <option value="backlog">Backlog</option>
-                                <option value="todo">To Do</option>
-                                <option value="doing" selected>Doing</option>
-                                <option value="review">Review</option>
-                                <option value="done">Done</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="grid-column:1/-1;">
-                            <label>验收指标 <span class="required">*</span></label>
-                            <textarea id="tAccept" required placeholder="硬性验收标准"></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column:1/-1;">
-                            <label>备注</label>
-                            <textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn">保存</button>
-                        <button type="button" class="btn btn-outline" onclick="closeModal('taskModal')">取消</button>
-                    </div>
-                </form>
+    <!-- ===== 项目总库 ===== -->
+    <div class="card">
+        <div class="card-header"><h2><span>📁 项目总库</span></h2><button class="btn" onclick="openProjectModal()">+ 新建项目</button></div>
+        <div id="projectList"></div>
+    </div>
+
+    <!-- ===== 全局任务总库 ===== -->
+    <div class="card">
+        <div class="card-header">
+            <h2><span>📌 全局任务总库</span></h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
+                <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
+                    <option value="all">📊 全部</option>
+                    <option value="p0">🔴 P0</option>
+                    <option value="p1">🟠 P1</option>
+                    <option value="p2">🟡 P2</option>
+                    <option value="p3">🔵 P3</option>
+                    <option value="backlog">⏳ Backlog</option>
+                    <option value="todo">📋 To Do</option>
+                    <option value="doing">🔄 Doing</option>
+                    <option value="review">🔍 Review</option>
+                    <option value="done">✅ Done</option>
+                    <option value="archived">📦 已归档</option>
+                </select>
             </div>
         </div>
+        <div id="taskList"></div>
+    </div>
 
-        <!-- ===== 配置弹窗 ===== -->
-        <div class="modal-overlay" id="tokenModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3>⚙️ 配置 GitHub 同步</h3>
-                    <button class="modal-close" onclick="closeModal('tokenModal')">&times;</button>
+    <!-- ===== 项目弹窗 ===== -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
+            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。</div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <input type="hidden" id="projectEditId">
+                <div class="form-grid">
+                    <div class="form-group"><label>项目名称 <span class="required">*</span></label><input id="pName" required></div>
+                    <div class="form-group"><label>项目分类 <span class="required">*</span></label>
+                        <select id="pCategory" required>
+                            <option value="">请选择分类</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="pPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
+                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="pStart" type="datetime-local" required></div>
+                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="pEnd" type="datetime-local" required></div>
+                    <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="pLocation" required placeholder="如：学校实验室"></div>
+                    <div class="form-group"><label>状态 <span class="required">*</span></label><select id="pStatus" required><option value="planning">Planning</option><option value="active" selected>Active</option><option value="paused">Paused</option><option value="completed">Completed</option></select></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>整体验收标准 <span class="required">*</span></label><textarea id="pStandard" required placeholder="如：论文查重率<15%+答辩通过"></textarea></div>
                 </div>
-                <div class="token-warning">
-                    📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub，不依赖任何外部网站。<br>
-                    ⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token
-                </div>
-                <form onsubmit="saveConfig(event)">
-                    <div class="form-group">
-                        <label>GitHub Token</label>
-                        <input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;">
-                    </div>
-                    <div class="form-group" style="margin-top:12px;">
-                        <label>仓库地址</label>
-                        <input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;">
-                    </div>
-                    <div class="form-actions" style="margin-top:16px;">
-                        <button type="submit" class="btn">保存</button>
-                        <button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button>
-                    </div>
-                </form>
-            </div>
+                <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('projectModal')">取消</button></div>
+            </form>
         </div>
     </div>
 
-    <script>
-        // ============================================================
-        //  🔥 数据存储在 GitHub Issues 中
-        // ============================================================
-
-        const STORAGE_ISSUE_NUMBER = 1;
-        let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
-        let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
-        let data = {
-            projects: [],
-            tasks: [],
-            categories: [],
-            nextProjectId: 1,
-            nextTaskId: 1,
-            nextCategoryId: 1
-        };
-        let dataLoaded = false;
-
-        // ============================================================
-        //  配置
-        // ============================================================
-        function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
-
-        function saveConfig(e) {
-            e.preventDefault();
-            GITHUB_TOKEN = document.getElementById('tokenInput').value.trim();
-            GITHUB_REPO = document.getElementById('repoInput').value.trim();
-            localStorage.setItem('pms_github_token', GITHUB_TOKEN);
-            localStorage.setItem('pms_github_repo', GITHUB_REPO);
-            closeModal('tokenModal');
-            setStatus('✅ 配置已保存', '');
-            loadFromGitHub();
-        }
-
-        function openTokenModal() {
-            document.getElementById('tokenInput').value = GITHUB_TOKEN;
-            document.getElementById('repoInput').value = GITHUB_REPO;
-            document.getElementById('tokenModal').classList.add('active');
-        }
-
-        function setStatus(text, type) {
-            const el = document.getElementById('syncStatus');
-            el.textContent = text;
-            el.className = 'sync-status';
-            if (type === 'saving') el.classList.add('saving');
-            if (type === 'error') el.classList.add('error');
-            if (type === 'loading') el.classList.add('loading');
-        }
-
-        // ============================================================
-        //  数据操作
-        // ============================================================
-        function defaultData() {
-            return { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
-        }
-
-        function getProjects() { return data ? data.projects : []; }
-
-        function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
-
-        function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
-
-        function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
-
-        // ===== 分类函数 =====
-        function getCategories() {
-            if (!data.categories) data.categories = [];
-            return data.categories;
-        }
-
-        function getCategory(id) {
-            return getCategories().find(c => c.id === id);
-        }
-
-        function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
-
-        function loadLocalCache() {
-            try {
-                const raw = localStorage.getItem('pms_data_cache');
-                if (raw) {
-                    const d = JSON.parse(raw);
-                    d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
-                    if (!d.categories) d.categories = [];
-                    if (!d.nextCategoryId) d.nextCategoryId = 1;
-                    return d;
-                }
-            } catch (e) {}
-            return null;
-        }
-
-        // ============================================================
-        //  🔥 核心：通过 GitHub Issues 读写数据
-        // ============================================================
-        async function loadFromGitHub() {
-            const { token, repo } = getConfig();
-            if (!repo) {
-                setStatus('⚠️ 请点击「配置」设置仓库', 'error');
-                data = loadLocalCache() || defaultData();
-                dataLoaded = true;
-                renderAll();
-                updateStats();
-                renderCategories();
-                populateCategorySelect();
-                return;
-            }
-
-            try {
-                setStatus('📥 从 GitHub 加载...', 'loading');
-                const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
-                const headers = { 'Accept': 'application/vnd.github.v3+json' };
-                if (token) headers['Authorization'] = `token ${token}`;
-
-                let response = await fetch(url, { headers });
-
-                if (response.status === 404) {
-                    await createIssue();
-                    data = defaultData();
-                    dataLoaded = true;
-                    saveLocalCache();
-                    setStatus('📄 新数据已初始化', '');
-                    renderAll();
-                    updateStats();
-                    renderCategories();
-                    populateCategorySelect();
-                    return;
-                }
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const issue = await response.json();
-                const body = issue.body || '{}';
-                try {
-                    const parsed = JSON.parse(body);
-                    if (parsed.projects !== undefined && parsed.tasks !== undefined) {
-                        data = parsed;
-                        data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
-                        if (!data.categories) data.categories = [];
-                        if (!data.nextCategoryId) data.nextCategoryId = 1;
-                        dataLoaded = true;
-                        saveLocalCache();
-                        setStatus(`✅ 已同步 (${data.projects.length}个项目, ${data.tasks.length}个任务)`, '');
-                        renderAll();
-                        updateStats();
-                        renderCategories();
-                        populateCategorySelect();
-                        return;
-                    }
-                } catch (e) {}
-
-                data = defaultData();
-                dataLoaded = true;
-                saveLocalCache();
-                setStatus('⚠️ 数据格式错误，已重置', 'error');
-                renderAll();
-                updateStats();
-                renderCategories();
-                populateCategorySelect();
-            } catch (err) {
-                console.error('加载失败:', err);
-                data = loadLocalCache() || defaultData();
-                dataLoaded = true;
-                setStatus('⚠️ 离线模式', 'error');
-                renderAll();
-                updateStats();
-                renderCategories();
-                populateCategorySelect();
-            }
-        }
-
-        async function createIssue() {
-            const { token, repo } = getConfig();
-            if (!token || !repo) return;
-            try {
-                const url = `https://api.github.com/repos/${repo}/issues`;
-                await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: '📋 项目管理系统数据存储 (请勿删除)',
-                        body: JSON.stringify(defaultData(), null, 2),
-                        labels: ['pms-data']
-                    })
-                });
-            } catch (e) { console.error('创建 Issue 失败:', e); }
-        }
-
-        async function syncToGitHub() {
-            const { token, repo } = getConfig();
-            if (!repo) { alert('请先点击「配置」设置仓库'); openTokenModal(); return; }
-            if (!token) { alert('请先配置 GitHub Token'); openTokenModal(); return; }
-            if (!data) { alert('暂无数据'); return; }
-
-            const jsonContent = JSON.stringify(data, null, 2);
-
-            try {
-                setStatus('⏳ 同步中...', 'saving');
-                const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
-
-                let getRes = await fetch(url, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-
-                if (getRes.status === 404) {
-                    await createIssue();
-                    getRes = await fetch(url, {
-                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                    });
-                }
-
-                if (!getRes.ok) throw new Error(`获取 Issue 失败: ${getRes.status}`);
-
-                const putRes = await fetch(url, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ body: jsonContent })
-                });
-
-                if (!putRes.ok) throw new Error(`更新失败: ${putRes.status}`);
-
-                saveLocalCache();
-                setStatus(`✅ 已同步 (${new Date().toLocaleTimeString()})`, '');
-                alert('✅ 数据已同步到 GitHub！\n其他设备打开此网站将看到最新数据。');
-            } catch (err) {
-                console.error('同步失败:', err);
-                setStatus('❌ 同步失败: ' + err.message, 'error');
-                alert('❌ 同步失败：' + err.message);
-            }
-        }
-
-        // ============================================================
-        //  分类 CRUD
-        // ============================================================
-        function addCategory() {
-            const input = document.getElementById('catInput');
-            const name = input.value.trim();
-            if (!name) { alert('请输入分类名称'); return; }
-
-            if (getCategories().some(c => c.name === name)) {
-                alert('分类 "' + name + '" 已存在');
-                return;
-            }
-
-            const colors = ['#2d4b8c', '#e74c3c', '#27ae60', '#e67e22', '#8e44ad', '#1abc9c', '#f39c12', '#3498db', '#2ecc71',
-                '#e84393'
-            ];
-            const color = colors[getCategories().length % colors.length];
-
-            const obj = {
-                id: data.nextCategoryId || 1,
-                name: name,
-                color: color
-            };
-            if (!data.nextCategoryId) data.nextCategoryId = 1;
-            data.nextCategoryId++;
-            data.categories.push(obj);
-            saveLocalCache();
-            input.value = '';
-            renderCategories();
-            populateCategorySelect();
-            setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function deleteCategory(id) {
-            if (!confirm('确认删除此分类？\n（已使用此分类的任务将变为"无分类"）')) return;
-            data.categories = data.categories.filter(c => c.id !== id);
-            data.tasks.forEach(t => {
-                if (t.categoryId === id) t.categoryId = null;
-            });
-            saveLocalCache();
-            renderCategories();
-            populateCategorySelect();
-            renderAll();
-            setStatus('💡 分类已删除，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function renderCategories() {
-            const container = document.getElementById('categoryList');
-            if (!container) return;
-            const categories = getCategories();
-            if (categories.length === 0) {
-                container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>';
-                return;
-            }
-            container.innerHTML = categories.map(c => `
-                <span class="cat-tag" style="background:${c.color}20;border:1px solid ${c.color}40;">
-                    <span class="dot" style="background:${c.color};"></span>
-                    ${c.name}
-                    <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
-                </span>
-            `).join('');
-        }
-
-        function populateCategorySelect() {
-            const select = document.getElementById('tCategory');
-            if (!select) return;
-            const categories = getCategories();
-            const currentVal = select.value;
-            select.innerHTML = '<option value="">无分类</option>';
-            categories.forEach(c => {
-                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-            });
-            if (currentVal) select.value = currentVal;
-        }
-
-        function addCategoryFromTask() {
-            const input = document.getElementById('newCategoryInput');
-            if (!input) return;
-            const name = input.value.trim();
-            if (!name) { alert('请输入分类名称'); return; }
-            if (getCategories().some(c => c.name === name)) {
-                alert('分类 "' + name + '" 已存在');
-                return;
-            }
-            const colors = ['#2d4b8c', '#e74c3c', '#27ae60', '#e67e22', '#8e44ad', '#1abc9c', '#f39c12', '#3498db', '#2ecc71',
-                '#e84393'
-            ];
-            const color = colors[getCategories().length % colors.length];
-            const obj = {
-                id: data.nextCategoryId || 1,
-                name: name,
-                color: color
-            };
-            if (!data.nextCategoryId) data.nextCategoryId = 1;
-            data.nextCategoryId++;
-            data.categories.push(obj);
-            saveLocalCache();
-            input.value = '';
-            renderCategories();
-            populateCategorySelect();
-            // 自动选中新添加的分类
-            const select = document.getElementById('tCategory');
-            if (select) {
-                for (let opt of select.options) {
-                    if (opt.text === name) { opt.selected = true; break; }
-                }
-            }
-            setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        // ============================================================
-        //  项目 CRUD
-        // ============================================================
-        function saveProject(e) {
-            e.preventDefault();
-            const id = document.getElementById('projectEditId').value;
-            const status = document.getElementById('pStatus').value;
-            if (!status) { alert('请选择项目状态'); return; }
-            const obj = {
-                name: document.getElementById('pName').value.trim(),
-                priority: document.getElementById('pPriority').value,
-                start: document.getElementById('pStart').value,
-                end: document.getElementById('pEnd').value,
-                location: document.getElementById('pLocation').value.trim(),
-                status: status,
-                standard: document.getElementById('pStandard').value.trim()
-            };
-            if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段'); return; }
-            if (id) { const p = getProject(Number(id)); if (p) Object.assign(p, obj); } else { obj.id = data.nextProjectId++;
-                data.projects.push(obj); }
-            saveLocalCache();
-            closeModal('projectModal');
-            document.getElementById('projectForm').reset();
-            document.getElementById('projectEditId').value = '';
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function openProjectModal(projectId) {
-            const modal = document.getElementById('projectModal');
-            document.getElementById('projectForm').reset();
-            document.getElementById('projectEditId').value = '';
-            document.getElementById('projectModalTitle').textContent = '新建项目';
-            if (projectId) {
-                const p = getProject(projectId);
-                if (!p) return;
-                document.getElementById('projectEditId').value = p.id;
-                document.getElementById('projectModalTitle').textContent = '编辑项目';
-                document.getElementById('pName').value = p.name;
-                document.getElementById('pPriority').value = p.priority;
-                document.getElementById('pStart').value = p.start;
-                document.getElementById('pEnd').value = p.end;
-                document.getElementById('pLocation').value = p.location;
-                document.getElementById('pStatus').value = p.status;
-                document.getElementById('pStandard').value = p.standard;
-            }
-            modal.classList.add('active');
-        }
-
-        function deleteProject(id) {
-            if (!confirm('确定删除此项目吗？')) return;
-            data.projects = data.projects.filter(p => p.id !== id);
-            saveLocalCache();
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        // ============================================================
-        //  任务 CRUD
-        // ============================================================
-        function saveTask(e) {
-            e.preventDefault();
-            const id = document.getElementById('taskEditId').value;
-            const status = document.getElementById('tStatus').value;
-            if (!status) { alert('请选择任务状态'); return; }
-            const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
-            const obj = {
-                name: document.getElementById('tName').value.trim(),
-                projectIds: projectIds,
-                categoryId: document.getElementById('tCategory').value ? Number(document.getElementById('tCategory')
-                    .value) : null,
-                parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) :
-                    null,
-                prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
-                priority: document.getElementById('tPriority').value,
-                start: document.getElementById('tStart').value,
-                end: document.getElementById('tEnd').value,
-                location: document.getElementById('tLocation').value.trim(),
-                status: status,
-                accept: document.getElementById('tAccept').value.trim(),
-                note: document.getElementById('tNote').value.trim(),
-                archived: false
-            };
-            if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
-            if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
-            if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++;
-                data.tasks.push(obj); }
-            saveLocalCache();
-            closeModal('taskModal');
-            document.getElementById('taskForm').reset();
-            document.getElementById('taskEditId').value = '';
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function openTaskModal(taskId) {
-            const modal = document.getElementById('taskModal');
-            document.getElementById('taskForm').reset();
-            document.getElementById('taskEditId').value = '';
-            document.getElementById('taskModalTitle').textContent = '新建任务';
-            populateTaskSelects();
-            populateCategorySelect();
-            if (taskId) {
-                const t = getTask(taskId);
-                if (!t) return;
-                document.getElementById('taskEditId').value = t.id;
-                document.getElementById('taskModalTitle').textContent = '编辑任务';
-                document.getElementById('tName').value = t.name;
-                Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds &&
-                        t.projectIds.includes(Number(opt.value)); });
-                if (t.categoryId) document.getElementById('tCategory').value = t.categoryId;
-                if (t.parentId) document.getElementById('tParent').value = t.parentId;
-                if (t.prevId) document.getElementById('tPrev').value = t.prevId;
-                document.getElementById('tPriority').value = t.priority;
-                document.getElementById('tStart').value = t.start;
-                document.getElementById('tEnd').value = t.end;
-                document.getElementById('tLocation').value = t.location;
-                document.getElementById('tStatus').value = t.status;
-                document.getElementById('tAccept').value = t.accept;
-                document.getElementById('tNote').value = t.note || '';
-            }
-            modal.classList.add('active');
-        }
-
-        function populateTaskSelects() {
-            const projSelect = document.getElementById('tProjects');
-            projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-            const editId = document.getElementById('taskEditId').value;
-            const parentSelect = document.getElementById('tParent');
-            parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-            data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML +=
-                    `<option value="${t.id}">${t.name}</option>`; });
-            const prevSelect = document.getElementById('tPrev');
-            prevSelect.innerHTML = '<option value="">无</option>';
-            data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML +=
-                    `<option value="${t.id}">${t.name}</option>`; });
-        }
-
-        function deleteTask(id) {
-            if (!confirm('确定删除此任务吗？')) return;
-            data.tasks = data.tasks.filter(t => t.id !== id);
-            saveLocalCache();
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function toggleArchive(taskId) {
-            const t = getTask(taskId);
-            if (!t) return;
-            if (t.status === 'done') { t.archived = !t.archived;
-                saveLocalCache();
-                renderAll();
-                updateStats();
-                setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
-        }
-
-        function markDone(taskId) {
-            const t = getTask(taskId);
-            if (!t) return;
-            if (t.status === 'done') { alert('该任务已验收通过'); return; }
-            if (t.prevId) { const prev = getTask(t.prevId); if (prev && prev.status !== 'done') { alert('前置任务尚未验收通过');
-                    return; } }
-            if (!t.accept || t.accept.trim() === '') { alert('请填写验收指标后再标记完成'); return; }
-            t.status = 'review';
-            saveLocalCache();
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        function approveTask(taskId) {
-            const t = getTask(taskId);
-            if (!t) return;
-            if (t.status !== 'review') { alert('只有「Review」状态的任务才能验收通过'); return; }
-            t.status = 'done';
-            saveLocalCache();
-            renderAll();
-            updateStats();
-            setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
-        }
-
-        // ============================================================
-        //  渲染
-        // ============================================================
-        function renderAll() { renderProjects();
-            renderTasks(); }
-
-        function escHtml(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g,
-                '&gt;').replace(/"/g, '&quot;'); }
-
-        function renderProjects() {
-            const container = document.getElementById('projectList');
-            if (data.projects.length === 0) { container.innerHTML =
-                '<div class="empty-state">暂无项目，点击「新建项目」开始</div>'; return; }
-            container.innerHTML = data.projects.map(p => `
-                <div class="task-item">
-                    <div class="task-row">
-                        <span class="task-name">${escHtml(p.name)}</span>
-                        <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
-                        <span class="status-tag status-${p.status}">${p.status}</span>
-                        <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
-                        <span class="task-meta">📍 ${escHtml(p.location)}</span>
-                        <div class="task-actions">
-                            <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
+    <!-- ===== 任务弹窗 ===== -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
+            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。<br>💡 选择项目后，分类会自动继承项目的分类。</div>
+            <form id="taskForm" onsubmit="saveTask(event)">
+                <input type="hidden" id="taskEditId">
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column:1/-1;"><label>任务名称 <span class="required">*</span></label><input id="tName" required></div>
+                    <div class="form-group"><label>所属项目</label>
+                        <select id="tProjects" multiple style="min-height:60px;" onchange="autoFillCategory()">
+                        </select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选</small>
+                    </div>
+                    <div class="form-group">
+                        <label>分类 <span class="required">*</span></label>
+                        <select id="tCategory" required>
+                            <option value="">请选择分类</option>
+                        </select>
+                        <div style="display:flex;gap:4px;margin-top:3px;">
+                            <input id="newCategoryInput" placeholder="新分类名" style="flex:1;padding:3px 8px;font-size:.7rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);">
+                            <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
                         </div>
                     </div>
-                    <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;">✅ ${escHtml(p.standard)}</div>
+                    <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
+                    <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
+                    <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
+                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="tStart" type="datetime-local" required></div>
+                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="tEnd" type="datetime-local" required></div>
+                    <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="tLocation" required placeholder="如：图书馆、线上"></div>
+                    <div class="form-group"><label>流转状态 <span class="required">*</span></label><select id="tStatus" required><option value="backlog">Backlog</option><option value="todo">To Do</option><option value="doing" selected>Doing</option><option value="review">Review</option><option value="done">Done</option></select></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>验收指标 <span class="required">*</span></label><textarea id="tAccept" required placeholder="硬性验收标准"></textarea></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>备注</label><textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea></div>
                 </div>
-            `).join('');
-        }
+                <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('taskModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
 
-        function renderTasks() {
-            const container = document.getElementById('taskList');
-            const filter = document.getElementById('viewFilter').value;
-            let tasks = data.tasks.filter(t => !t.archived);
-            if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
-            else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
-            else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
-            else if (filter === 'p3') tasks = tasks.filter(t => t.priority === 'P3');
-            else if (filter === 'backlog') tasks = tasks.filter(t => t.status === 'backlog');
-            else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
-            else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
-            else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
-            else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
-            else if (filter === 'archived') {
-                tasks = data.tasks.filter(t => t.archived);
-                if (tasks.length === 0) { container.innerHTML = '<div class="empty-state">📦 暂无已归档任务</div>'; return; }
-                container.innerHTML = tasks.map(t => renderTaskItem(t, true)).join('');
+    <!-- ===== 配置弹窗 ===== -->
+    <div class="modal-overlay" id="tokenModal">
+        <div class="modal">
+            <div class="modal-header"><h3>⚙️ 配置 GitHub 同步</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
+            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub，不依赖任何外部网站。<br>⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token</div>
+            <form onsubmit="saveConfig(event)">
+                <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
+                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;"></div>
+                <div class="form-actions" style="margin-top:16px;"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+//  数据存储
+// ============================================================
+const STORAGE_ISSUE_NUMBER = 1;
+let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
+let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
+let data = { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
+let dataLoaded = false;
+
+function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
+
+function saveConfig(e) {
+    e.preventDefault();
+    GITHUB_TOKEN = document.getElementById('tokenInput').value.trim();
+    GITHUB_REPO = document.getElementById('repoInput').value.trim();
+    localStorage.setItem('pms_github_token', GITHUB_TOKEN);
+    localStorage.setItem('pms_github_repo', GITHUB_REPO);
+    closeModal('tokenModal');
+    setStatus('✅ 配置已保存', '');
+    loadFromGitHub();
+}
+
+function openTokenModal() {
+    document.getElementById('tokenInput').value = GITHUB_TOKEN;
+    document.getElementById('repoInput').value = GITHUB_REPO;
+    document.getElementById('tokenModal').classList.add('active');
+}
+
+function setStatus(text, type) {
+    const el = document.getElementById('syncStatus');
+    el.textContent = text;
+    el.className = 'sync-status';
+    if (type === 'saving') el.classList.add('saving');
+    if (type === 'error') el.classList.add('error');
+    if (type === 'loading') el.classList.add('loading');
+}
+
+function defaultData() { return { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
+
+function getProjects() { return data ? data.projects : []; }
+function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
+function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
+function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
+
+// ===== 分类函数 =====
+function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
+function getCategory(id) { return getCategories().find(c => c.id === id); }
+
+function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
+
+function loadLocalCache() {
+    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; }); if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; return d; } } catch (e) {}
+    return null;
+}
+
+// ============================================================
+//  GitHub 同步
+// ============================================================
+async function loadFromGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) {
+        setStatus('⚠️ 请点击「配置」设置仓库', 'error');
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+        return;
+    }
+    try {
+        setStatus('📥 从 GitHub 加载...', 'loading');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        if (token) headers['Authorization'] = `token ${token}`;
+        let response = await fetch(url, { headers });
+        if (response.status === 404) {
+            await createIssue();
+            data = defaultData();
+            dataLoaded = true;
+            saveLocalCache();
+            setStatus('📄 新数据已初始化', '');
+            renderAll();
+            updateStats();
+            renderCategories();
+            populateAllSelects();
+            return;
+        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const issue = await response.json();
+        const body = issue.body || '{}';
+        try {
+            const parsed = JSON.parse(body);
+            if (parsed.projects !== undefined && parsed.tasks !== undefined) {
+                data = parsed;
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+                if (!data.categories) data.categories = [];
+                if (!data.nextCategoryId) data.nextCategoryId = 1;
+                dataLoaded = true;
+                saveLocalCache();
+                setStatus(`✅ 已同步 (${data.projects.length}个项目, ${data.tasks.length}个任务)`, '');
+                renderAll();
+                updateStats();
+                renderCategories();
+                populateAllSelects();
                 return;
             }
-            const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
-            if (topTasks.length === 0 && tasks.length > 0) { container.innerHTML = tasks.map(t => renderTaskItem(t, false))
-                    .join(''); return; }
-            container.innerHTML = topTasks.map(t => renderTaskItem(t, false)).join('');
-        }
+        } catch (e) {}
+        data = defaultData();
+        dataLoaded = true;
+        saveLocalCache();
+        setStatus('⚠️ 数据格式错误，已重置', 'error');
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+    } catch (err) {
+        console.error('加载失败:', err);
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        setStatus('⚠️ 离线模式', 'error');
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+    }
+}
 
-        function renderTaskItem(task, isArchived) {
-            const children = getChildren(task.id);
-            const hasChildren = children.length > 0;
-            let isBlocked = false;
-            if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
-            const displayStatus = isBlocked ? 'blocked' : task.status;
-            const projectTags = (task.projectIds || []).map(id => {
-                const p = getProject(id);
-                return p ?
-                    `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` :
-                    '';
-            }).join('');
-
-            // ===== 分类标签 =====
-            const cat = task.categoryId ? getCategory(task.categoryId) : null;
-            const catTag = cat ?
-                `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` :
-                '';
-
-            return `
-                <div class="task-item">
-                    <div class="task-row">
-                        <span class="task-name">${escHtml(task.name)}</span>
-                        ${catTag}
-                        <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
-                        <span class="status-tag status-${displayStatus}">${displayStatus}</span>
-                        ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
-                        <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
-                        <span class="task-meta">📍 ${escHtml(task.location)}</span>
-                        ${task.prevId ? `<span class="task-meta">⬅️ 依赖 #${task.prevId}</span>` : ''}
-                        <div class="task-actions">
-                            ${!isArchived ? `
-                                <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
-                                <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
-                                ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
-                                <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">📦</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
-                            ` : `
-                                <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">↩️ 取消归档</button>
-                            `}
-                            ${hasChildren ? `<button class="task-sub-toggle" onclick="toggleChildren(this)">▼ ${children.length}个子任务</button>` : ''}
-                        </div>
-                    </div>
-                    <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
-                    ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
-                    ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItem(c, isArchived)).join('')}</div>` : ''}
-                </div>
-            `;
-        }
-
-        function toggleChildren(btn) {
-            const parent = btn.closest('.task-item');
-            const children = parent.querySelector('.task-children');
-            if (children) {
-                children.classList.toggle('active');
-                btn.textContent = children.classList.contains('active') ?
-                    `▼ ${children.querySelectorAll('.task-item').length}个子任务` :
-                    `▶ ${children.querySelectorAll('.task-item').length}个子任务`;
-            }
-        }
-
-        function updateStats() {
-            if (!data) return;
-            const total = data.tasks.filter(t => !t.archived).length;
-            const done = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
-            const p0 = data.tasks.filter(t => t.priority === 'P0' && !t.archived).length;
-            const archived = data.tasks.filter(t => t.archived).length;
-            document.getElementById('statsBar').innerHTML = `
-                <div class="stat"><div class="num">${data.projects.length}</div><div class="label">📁 项目</div></div>
-                <div class="stat"><div class="num">${total}</div><div class="label">📌 进行中</div></div>
-                <div class="stat"><div class="num">${done}</div><div class="label">✅ 已完成</div></div>
-                <div class="stat"><div class="num">${p0}</div><div class="label">🔴 P0</div></div>
-                <div class="stat"><div class="num">${archived}</div><div class="label">📦 已归档</div></div>
-            `;
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        document.querySelectorAll('.modal-overlay').forEach(el => {
-            el.addEventListener('click', function(e) {
-                if (e.target === this) this.classList.remove('active');
-            });
+async function createIssue() {
+    const { token, repo } = getConfig();
+    if (!token || !repo) return;
+    try {
+        const url = `https://api.github.com/repos/${repo}/issues`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: '📋 项目管理系统数据存储 (请勿删除)', body: JSON.stringify(defaultData(), null, 2), labels: ['pms-data'] })
         });
+    } catch (e) { console.error('创建 Issue 失败:', e); }
+}
 
-        function switchTheme() {
-            const html = document.documentElement;
-            const current = html.getAttribute('data-theme');
-            html.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
-            localStorage.setItem('pms_theme', html.getAttribute('data-theme') || '');
-        }
-        (function() {
-            const theme = localStorage.getItem('pms_theme');
-            if (theme) document.documentElement.setAttribute('data-theme', theme);
-        })();
+async function syncToGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) { alert('请先点击「配置」设置仓库'); openTokenModal(); return; }
+    if (!token) { alert('请先配置 GitHub Token'); openTokenModal(); return; }
+    if (!data) { alert('暂无数据'); return; }
+    const jsonContent = JSON.stringify(data, null, 2);
+    try {
+        setStatus('⏳ 同步中...', 'saving');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+        let getRes = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+        if (getRes.status === 404) { await createIssue(); getRes = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }); }
+        if (!getRes.ok) throw new Error(`获取 Issue 失败: ${getRes.status}`);
+        const putRes = await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ body: jsonContent })
+        });
+        if (!putRes.ok) throw new Error(`更新失败: ${putRes.status}`);
+        saveLocalCache();
+        setStatus(`✅ 已同步 (${new Date().toLocaleTimeString()})`, '');
+        alert('✅ 数据已同步到 GitHub！');
+    } catch (err) {
+        console.error('同步失败:', err);
+        setStatus('❌ 同步失败: ' + err.message, 'error');
+        alert('❌ 同步失败：' + err.message);
+    }
+}
 
-        // ============================================================
-        //  启动
-        // ============================================================
-        loadFromGitHub();
-    </script>
+// ============================================================
+//  分类 CRUD
+// ============================================================
+function addCategory() {
+    const input = document.getElementById('catInput');
+    const name = input.value.trim();
+    if (!name) { alert('请输入分类名称'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
+    const colors = ['#2d4b8c', '#e74c3c', '#27ae60', '#e67e22', '#8e44ad', '#1abc9c', '#f39c12', '#3498db', '#2ecc71', '#e84393'];
+    const color = colors[getCategories().length % colors.length];
+    const obj = { id: data.nextCategoryId || 1, name: name, color: color };
+    if (!data.nextCategoryId) data.nextCategoryId = 1;
+    data.nextCategoryId++;
+    data.categories.push(obj);
+    saveLocalCache();
+    input.value = '';
+    renderCategories();
+    populateAllSelects();
+    setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
+}
+
+function deleteCategory(id) {
+    if (!confirm('确认删除此分类？\n（已使用此分类的项目和任务将变为"未分类"）')) return;
+    data.categories = data.categories.filter(c => c.id !== id);
+    data.projects.forEach(p => { if (p.categoryId === id) p.categoryId = null; });
+    data.tasks.forEach(t => { if (t.categoryId === id) t.categoryId = null; });
+    saveLocalCache();
+    renderCategories();
+    populateAllSelects();
+    renderAll();
+    setStatus('💡 分类已删除，点击「同步」保存到 GitHub', 'saving');
+}
+
+function renderCategories() {
+    const container = document.getElementById('categoryList');
+    if (!container) return;
+    const categories = getCategories();
+    if (categories.length === 0) { container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; return; }
+    container.innerHTML = categories.map(c => `
+        <span class="cat-tag" style="background:${c.color}20;border:1px solid ${c.color}40;">
+            <span class="dot" style="background:${c.color};"></span>
+            ${c.name}
+            <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
+        </span>
+    `).join('');
+}
+
+function populateAllSelects() {
+    populateProjectCategorySelect();
+    populateTaskCategorySelect();
+    populateTaskSelects();
+}
+
+function populateProjectCategorySelect() {
+    const select = document.getElementById('pCategory');
+    if (!select) return;
+    const categories = getCategories();
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">请选择分类</option>';
+    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+    if (currentVal) select.value = currentVal;
+}
+
+function populateTaskCategorySelect() {
+    const select = document.getElementById('tCategory');
+    if (!select) return;
+    const categories = getCategories();
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">请选择分类</option>';
+    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+    if (currentVal) select.value = currentVal;
+}
+
+function addCategoryFromTask() {
+    const input = document.getElementById('newCategoryInput');
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) { alert('请输入分类名称'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
+    const colors = ['#2d4b8c', '#e74c3c', '#27ae60', '#e67e22', '#8e44ad', '#1abc9c', '#f39c12', '#3498db', '#2ecc71', '#e84393'];
+    const color = colors[getCategories().length % colors.length];
+    const obj = { id: data.nextCategoryId || 1, name: name, color: color };
+    if (!data.nextCategoryId) data.nextCategoryId = 1;
+    data.nextCategoryId++;
+    data.categories.push(obj);
+    saveLocalCache();
+    input.value = '';
+    renderCategories();
+    populateAllSelects();
+    const select = document.getElementById('tCategory');
+    if (select) { for (let opt of select.options) { if (opt.text === name) { opt.selected = true; break; } } }
+    setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
+}
+
+// ===== 自动继承项目分类 =====
+function autoFillCategory() {
+    const projSelect = document.getElementById('tProjects');
+    const catSelect = document.getElementById('tCategory');
+    if (!projSelect || !catSelect) return;
+    const selected = Array.from(projSelect.selectedOptions).map(o => Number(o.value));
+    if (selected.length === 0) return;
+    // 取第一个选中的项目
+    const project = getProject(selected[0]);
+    if (project && project.categoryId) {
+        catSelect.value = project.categoryId;
+    }
+}
+
+// ============================================================
+//  项目 CRUD
+// ============================================================
+function saveProject(e) {
+    e.preventDefault();
+    const id = document.getElementById('projectEditId').value;
+    const categoryId = document.getElementById('pCategory').value;
+    if (!categoryId) { alert('请选择项目分类'); return; }
+    const status = document.getElementById('pStatus').value;
+    if (!status) { alert('请选择项目状态'); return; }
+    const obj = {
+        name: document.getElementById('pName').value.trim(),
+        categoryId: Number(categoryId),
+        priority: document.getElementById('pPriority').value,
+        start: document.getElementById('pStart').value,
+        end: document.getElementById('pEnd').value,
+        location: document.getElementById('pLocation').value.trim(),
+        status: status,
+        standard: document.getElementById('pStandard').value.trim()
+    };
+    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段'); return; }
+    if (id) { const p = getProject(Number(id)); if (p) Object.assign(p, obj); } else { obj.id = data.nextProjectId++; data.projects.push(obj); }
+    saveLocalCache();
+    closeModal('projectModal');
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectEditId').value = '';
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+function openProjectModal(projectId) {
+    const modal = document.getElementById('projectModal');
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectEditId').value = '';
+    document.getElementById('projectModalTitle').textContent = '新建项目';
+    populateProjectCategorySelect();
+    if (projectId) {
+        const p = getProject(projectId);
+        if (!p) return;
+        document.getElementById('projectEditId').value = p.id;
+        document.getElementById('projectModalTitle').textContent = '编辑项目';
+        document.getElementById('pName').value = p.name;
+        if (p.categoryId) document.getElementById('pCategory').value = p.categoryId;
+        document.getElementById('pPriority').value = p.priority;
+        document.getElementById('pStart').value = p.start;
+        document.getElementById('pEnd').value = p.end;
+        document.getElementById('pLocation').value = p.location;
+        document.getElementById('pStatus').value = p.status;
+        document.getElementById('pStandard').value = p.standard;
+    }
+    modal.classList.add('active');
+}
+
+function deleteProject(id) {
+    if (!confirm('确定删除此项目吗？')) return;
+    data.projects = data.projects.filter(p => p.id !== id);
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+// ============================================================
+//  任务 CRUD
+// ============================================================
+function saveTask(e) {
+    e.preventDefault();
+    const id = document.getElementById('taskEditId').value;
+    const status = document.getElementById('tStatus').value;
+    if (!status) { alert('请选择任务状态'); return; }
+    const categoryId = document.getElementById('tCategory').value;
+    if (!categoryId) { alert('请选择分类'); return; }
+    const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
+    const obj = {
+        name: document.getElementById('tName').value.trim(),
+        projectIds: projectIds,
+        categoryId: Number(categoryId),
+        parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
+        prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
+        priority: document.getElementById('tPriority').value,
+        start: document.getElementById('tStart').value,
+        end: document.getElementById('tEnd').value,
+        location: document.getElementById('tLocation').value.trim(),
+        status: status,
+        accept: document.getElementById('tAccept').value.trim(),
+        note: document.getElementById('tNote').value.trim(),
+        archived: false
+    };
+    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
+    if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
+    if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++; data.tasks.push(obj); }
+    saveLocalCache();
+    closeModal('taskModal');
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskEditId').value = '';
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+function openTaskModal(taskId) {
+    const modal = document.getElementById('taskModal');
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskEditId').value = '';
+    document.getElementById('taskModalTitle').textContent = '新建任务';
+    populateAllSelects();
+    if (taskId) {
+        const t = getTask(taskId);
+        if (!t) return;
+        document.getElementById('taskEditId').value = t.id;
+        document.getElementById('taskModalTitle').textContent = '编辑任务';
+        document.getElementById('tName').value = t.name;
+        Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds && t.projectIds.includes(Number(opt.value)); });
+        if (t.categoryId) document.getElementById('tCategory').value = t.categoryId;
+        if (t.parentId) document.getElementById('tParent').value = t.parentId;
+        if (t.prevId) document.getElementById('tPrev').value = t.prevId;
+        document.getElementById('tPriority').value = t.priority;
+        document.getElementById('tStart').value = t.start;
+        document.getElementById('tEnd').value = t.end;
+        document.getElementById('tLocation').value = t.location;
+        document.getElementById('tStatus').value = t.status;
+        document.getElementById('tAccept').value = t.accept;
+        document.getElementById('tNote').value = t.note || '';
+    } else {
+        // 新建任务时，如果有选中的项目，自动填充分类
+        setTimeout(autoFillCategory, 100);
+    }
+    modal.classList.add('active');
+}
+
+function populateTaskSelects() {
+    const projSelect = document.getElementById('tProjects');
+    projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    const editId = document.getElementById('taskEditId').value;
+    const parentSelect = document.getElementById('tParent');
+    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    const prevSelect = document.getElementById('tPrev');
+    prevSelect.innerHTML = '<option value="">无</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+}
+
+function deleteTask(id) {
+    if (!confirm('确定删除此任务吗？')) return;
+    data.tasks = data.tasks.filter(t => t.id !== id);
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+function toggleArchive(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'done') { t.archived = !t.archived; saveLocalCache(); renderAll(); updateStats(); setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
+}
+
+function markDone(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'done') { alert('该任务已验收通过'); return; }
+    if (t.prevId) { const prev = getTask(t.prevId); if (prev && prev.status !== 'done') { alert('前置任务尚未验收通过'); return; } }
+    if (!t.accept || t.accept.trim() === '') { alert('请填写验收指标后再标记完成'); return; }
+    t.status = 'review';
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+function approveTask(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status !== 'review') { alert('只有「Review」状态的任务才能验收通过'); return; }
+    t.status = 'done';
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+}
+
+// ============================================================
+//  渲染
+// ============================================================
+function renderAll() { renderProjects(); renderTasks(); }
+
+function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderProjects() {
+    const container = document.getElementById('projectList');
+    if (data.projects.length === 0) { container.innerHTML = '<div class="empty-state">暂无项目，点击「新建项目」开始</div>'; return; }
+    container.innerHTML = data.projects.map(p => {
+        const cat = p.categoryId ? getCategory(p.categoryId) : null;
+        const catTag = cat ? `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+        return `
+            <div class="task-item">
+                <div class="task-row">
+                    <span class="task-name">${escHtml(p.name)}</span>
+                    ${catTag}
+                    <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
+                    <span class="status-tag status-${p.status}">${p.status}</span>
+                    <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
+                    <span class="task-meta">📍 ${escHtml(p.location)}</span>
+                    <div class="task-actions">
+                        <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
+                    </div>
+                </div>
+                <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;">✅ ${escHtml(p.standard)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderTasks() {
+    const container = document.getElementById('taskList');
+    const filter = document.getElementById('viewFilter').value;
+    let tasks = data.tasks.filter(t => !t.archived);
+    if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
+    else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
+    else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
+    else if (filter === 'p3') tasks = tasks.filter(t => t.priority === 'P3');
+    else if (filter === 'backlog') tasks = tasks.filter(t => t.status === 'backlog');
+    else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
+    else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
+    else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
+    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
+    else if (filter === 'archived') {
+        tasks = data.tasks.filter(t => t.archived);
+        if (tasks.length === 0) { container.innerHTML = '<div class="empty-state">📦 暂无已归档任务</div>'; return; }
+        container.innerHTML = tasks.map(t => renderTaskItem(t, true)).join('');
+        return;
+    }
+    const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
+    if (topTasks.length === 0 && tasks.length > 0) { container.innerHTML = tasks.map(t => renderTaskItem(t, false)).join(''); return; }
+    container.innerHTML = topTasks.map(t => renderTaskItem(t, false)).join('');
+}
+
+function renderTaskItem(task, isArchived) {
+    const children = getChildren(task.id);
+    const hasChildren = children.length > 0;
+    let isBlocked = false;
+    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+    const displayStatus = isBlocked ? 'blocked' : task.status;
+    const projectTags = (task.projectIds || []).map(id => {
+        const p = getProject(id);
+        return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
+    }).join('');
+    const cat = task.categoryId ? getCategory(task.categoryId) : null;
+    const catTag = cat ? `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` : '';
+
+    return `
+        <div class="task-item">
+            <div class="task-row">
+                <span class="task-name">${escHtml(task.name)}</span>
+                ${catTag}
+                <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
+                <span class="status-tag status-${displayStatus}">${displayStatus}</span>
+                ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
+                <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
+                <span class="task-meta">📍 ${escHtml(task.location)}</span>
+                ${task.prevId ? `<span class="task-meta">⬅️ 依赖 #${task.prevId}</span>` : ''}
+                <div class="task-actions">
+                    ${!isArchived ? `
+                        <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
+                        <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
+                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
+                        <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">📦</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
+                    ` : `
+                        <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">↩️ 取消归档</button>
+                    `}
+                    ${hasChildren ? `<button class="task-sub-toggle" onclick="toggleChildren(this)">▼ ${children.length}个子任务</button>` : ''}
+                </div>
+            </div>
+            <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
+            ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
+            ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItem(c, isArchived)).join('')}</div>` : ''}
+        </div>
+    `;
+}
+
+function toggleChildren(btn) {
+    const parent = btn.closest('.task-item');
+    const children = parent.querySelector('.task-children');
+    if (children) { children.classList.toggle('active'); btn.textContent = children.classList.contains('active') ? `▼ ${children.querySelectorAll('.task-item').length}个子任务` : `▶ ${children.querySelectorAll('.task-item').length}个子任务`; }
+}
+
+function updateStats() {
+    if (!data) return;
+    const total = data.tasks.filter(t => !t.archived).length;
+    const done = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
+    const p0 = data.tasks.filter(t => t.priority === 'P0' && !t.archived).length;
+    const archived = data.tasks.filter(t => t.archived).length;
+    document.getElementById('statsBar').innerHTML = `
+        <div class="stat"><div class="num">${data.projects.length}</div><div class="label">📁 项目</div></div>
+        <div class="stat"><div class="num">${total}</div><div class="label">📌 进行中</div></div>
+        <div class="stat"><div class="num">${done}</div><div class="label">✅ 已完成</div></div>
+        <div class="stat"><div class="num">${p0}</div><div class="label">🔴 P0</div></div>
+        <div class="stat"><div class="num">${archived}</div><div class="label">📦 已归档</div></div>
+    `;
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
+
+function switchTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
+    localStorage.setItem('pms_theme', html.getAttribute('data-theme') || '');
+}
+(function() { const theme = localStorage.getItem('pms_theme'); if (theme) document.documentElement.setAttribute('data-theme', theme); })();
+
+// ============================================================
+//  启动
+// ============================================================
+loadFromGitHub();
+</script>
 </body>
 </html>
