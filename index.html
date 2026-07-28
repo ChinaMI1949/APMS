@@ -316,7 +316,7 @@ let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
-let dragInfo = null; // 拖拽状态
+let dragInfo = null;
 
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -532,12 +532,10 @@ function deleteCategory(id) {
     setStatus('💡 分类已删除 (请同步到GitHub)', 'saving');
 }
 
-// 拖拽排序核心逻辑
 function initDragSort() {
     const container = document.getElementById('categoryList');
     if (!container) return;
     
-    // 使用mousedown/mousemove/mouseup实现拖拽
     let draggedEl = null;
     let dragOverEl = null;
     let startX = 0, startY = 0;
@@ -548,7 +546,6 @@ function initDragSort() {
     container.addEventListener('mousedown', (e) => {
         const tag = e.target.closest('.cat-tag');
         if (!tag) return;
-        // 点击删除按钮不触发拖拽
         if (e.target.closest('.del')) return;
         
         const rect = tag.getBoundingClientRect();
@@ -559,7 +556,6 @@ function initDragSort() {
         draggedEl = tag;
         isDragging = false;
         
-        // 创建克隆跟随鼠标
         clone = tag.cloneNode(true);
         clone.style.position = 'fixed';
         clone.style.pointerEvents = 'none';
@@ -580,13 +576,11 @@ function initDragSort() {
         if (!draggedEl) return;
         isDragging = true;
         
-        // 移动克隆
         if (clone) {
             clone.style.left = (e.clientX - offsetX) + 'px';
             clone.style.top = (e.clientY - offsetY) + 'px';
         }
         
-        // 检测悬停的目标
         const container = document.getElementById('categoryList');
         const tags = container.querySelectorAll('.cat-tag');
         let target = null;
@@ -599,7 +593,6 @@ function initDragSort() {
             }
         });
         
-        // 清除之前的悬停状态
         if (dragOverEl && dragOverEl !== target) {
             dragOverEl.classList.remove('drag-over');
         }
@@ -612,18 +605,15 @@ function initDragSort() {
     document.addEventListener('mouseup', (e) => {
         if (!draggedEl) return;
         
-        // 移除克隆
         if (clone) {
             clone.remove();
             clone = null;
         }
         
-        // 如果发生了拖拽且有目标，执行交换
         if (isDragging && dragOverEl) {
             const fromIndex = Array.from(container.children).indexOf(draggedEl);
             const toIndex = Array.from(container.children).indexOf(dragOverEl);
             if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                // 交换数据
                 const categories = getCategories();
                 const [removed] = categories.splice(fromIndex, 1);
                 categories.splice(toIndex, 0, removed);
@@ -634,7 +624,6 @@ function initDragSort() {
             }
         }
         
-        // 清理
         if (draggedEl) draggedEl.classList.remove('dragging');
         if (dragOverEl) dragOverEl.classList.remove('drag-over');
         draggedEl = null;
@@ -659,7 +648,6 @@ function renderCategories() {
         </span>
     `).join('');
     
-    // 每次重新渲染后初始化拖拽
     setTimeout(initDragSort, 50);
 }
 
@@ -942,9 +930,10 @@ function approveTask(taskId) {
 }
 
 // ============================================================
-//  排序工具
+//  排序工具 - 修复优先级排序
 // ============================================================
 const URGENCY_ORDER = { critical: 0, high: 1, medium: 2, low: 3, none: 4 };
+// 修正：P0 最高（数值最小），P3 最低（数值最大）
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
 function sortTasks(tasks, sortKey) {
@@ -954,7 +943,9 @@ function sortTasks(tasks, sortKey) {
         case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
         case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
         case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
+        // 修复：priority-desc = P0 在前（数值小 → 大）
         case 'priority-desc': return copy.sort((a,b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
+        // priority-asc = P3 在前（数值大 → 小）
         case 'priority-asc': return copy.sort((a,b) => (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2));
         case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
         case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
