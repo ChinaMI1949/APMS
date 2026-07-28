@@ -316,7 +316,6 @@ let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
-let dragInfo = null;
 
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -538,10 +537,9 @@ function initDragSort() {
     
     let draggedEl = null;
     let dragOverEl = null;
-    let startX = 0, startY = 0;
-    let offsetX = 0, offsetY = 0;
     let clone = null;
     let isDragging = false;
+    let offsetX = 0, offsetY = 0;
 
     container.addEventListener('mousedown', (e) => {
         const tag = e.target.closest('.cat-tag');
@@ -549,8 +547,6 @@ function initDragSort() {
         if (e.target.closest('.del')) return;
         
         const rect = tag.getBoundingClientRect();
-        startX = e.clientX;
-        startY = e.clientY;
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
         draggedEl = tag;
@@ -568,7 +564,6 @@ function initDragSort() {
         document.body.appendChild(clone);
         
         tag.classList.add('dragging');
-        
         e.preventDefault();
     });
 
@@ -611,6 +606,7 @@ function initDragSort() {
         }
         
         if (isDragging && dragOverEl) {
+            const container = document.getElementById('categoryList');
             const fromIndex = Array.from(container.children).indexOf(draggedEl);
             const toIndex = Array.from(container.children).indexOf(dragOverEl);
             if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
@@ -930,26 +926,43 @@ function approveTask(taskId) {
 }
 
 // ============================================================
-//  排序工具 - 修复优先级排序
+//  排序工具 - 修复优先级排序逻辑
 // ============================================================
 const URGENCY_ORDER = { critical: 0, high: 1, medium: 2, low: 3, none: 4 };
-// 修正：P0 最高（数值最小），P3 最低（数值最大）
+// P0 最高（数值最小），P3 最低（数值最大）
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
 function sortTasks(tasks, sortKey) {
     const copy = [...tasks];
     switch(sortKey) {
-        case 'urgency-desc': return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
-        case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
-        case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
-        case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
-        // 修复：priority-desc = P0 在前（数值小 → 大）
-        case 'priority-desc': return copy.sort((a,b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
-        // priority-asc = P3 在前（数值大 → 小）
-        case 'priority-asc': return copy.sort((a,b) => (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2));
-        case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
-        case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
-        default: return copy;
+        case 'urgency-desc': 
+            return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
+        case 'urgency-asc': 
+            return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
+        case 'deadline-asc': 
+            return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
+        case 'deadline-desc': 
+            return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
+        case 'priority-desc': 
+            // P0 → P3：数值从小到大
+            return copy.sort((a, b) => {
+                const orderA = PRIORITY_ORDER[a.priority] ?? 2;
+                const orderB = PRIORITY_ORDER[b.priority] ?? 2;
+                return orderA - orderB;
+            });
+        case 'priority-asc': 
+            // P3 → P0：数值从大到小
+            return copy.sort((a, b) => {
+                const orderA = PRIORITY_ORDER[a.priority] ?? 2;
+                const orderB = PRIORITY_ORDER[b.priority] ?? 2;
+                return orderB - orderA;
+            });
+        case 'name-asc': 
+            return copy.sort((a,b) => a.name.localeCompare(b.name));
+        case 'name-desc': 
+            return copy.sort((a,b) => b.name.localeCompare(a.name));
+        default: 
+            return copy;
     }
 }
 
