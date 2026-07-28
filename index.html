@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人全周期项目管理系统</title>
+    <title>个人全周期项目管理系统 · GitHub同步</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
@@ -118,15 +118,17 @@
         ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
         .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
         .collapse-enter.active{max-height:3000px;opacity:1}
+        .badge-local{background:#2d4b8c20;color:var(--primary);border-radius:30px;padding:0 10px;font-size:.7rem;border:1px solid var(--border);display:inline-block;margin-left:4px}
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <nav>
-        <div class="nav-brand">📋 全周期项目事务管理</div>
+        <div class="nav-brand">📋 全周期管理 · GitHub同步</div>
         <div class="nav-actions">
             <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
-            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步</button>
+            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
+            <button onclick="exportJSON()" class="btn btn-sm btn-outline">📤 导出JSON</button>
             <button onclick="switchTheme()">🌓 主题</button>
             <button onclick="window.print()">🖨️ 打印</button>
             <button onclick="openTokenModal()">⚙️ 配置</button>
@@ -245,7 +247,7 @@
     <div class="modal-overlay" id="tokenModal">
         <div class="modal">
             <div class="modal-header"><h3>⚙️ 配置 GitHub 同步</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
-            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub，不依赖任何外部网站。<br>⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token</div>
+            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub。<br>⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token</div>
             <form onsubmit="saveConfig(event)">
                 <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
                 <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;"></div>
@@ -257,7 +259,7 @@
 
 <script>
 // ============================================================
-//  数据存储
+//  数据存储：优先从 localStorage 加载，同步到 GitHub Issues
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
@@ -299,8 +301,6 @@ function getProjects() { return data ? data.projects : []; }
 function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
 function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
 function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
-
-// ===== 分类函数 =====
 function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
 function getCategory(id) { return getCategories().find(c => c.id === id); }
 
@@ -376,7 +376,7 @@ async function loadFromGitHub() {
         console.error('加载失败:', err);
         data = loadLocalCache() || defaultData();
         dataLoaded = true;
-        setStatus('⚠️ 离线模式', 'error');
+        setStatus('⚠️ 离线模式 (使用本地缓存)', 'error');
         renderAll();
         updateStats();
         renderCategories();
@@ -416,8 +416,8 @@ async function syncToGitHub() {
         });
         if (!putRes.ok) throw new Error(`更新失败: ${putRes.status}`);
         saveLocalCache();
-        setStatus(`✅ 已同步 (${new Date().toLocaleTimeString()})`, '');
-        alert('✅ 数据已同步到 GitHub！');
+        setStatus(`✅ 已同步到 GitHub (${new Date().toLocaleTimeString()})`, '');
+        alert('✅ 数据已同步到 GitHub Issues！');
     } catch (err) {
         console.error('同步失败:', err);
         setStatus('❌ 同步失败: ' + err.message, 'error');
@@ -426,7 +426,26 @@ async function syncToGitHub() {
 }
 
 // ============================================================
-//  分类 CRUD
+//  导出 JSON 文件（可用于上传到 GitHub 仓库）
+// ============================================================
+function exportJSON() {
+    if (!data) { alert('暂无数据'); return; }
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setStatus('📤 已导出 data.json', 'saving');
+    alert('✅ data.json 已导出，请将文件上传到您的 GitHub 仓库中。');
+}
+
+// ============================================================
+//  分类 CRUD (修改后自动保存到本地缓存)
 // ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
@@ -443,7 +462,7 @@ function addCategory() {
     input.value = '';
     renderCategories();
     populateAllSelects();
-    setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
 }
 
 function deleteCategory(id) {
@@ -455,12 +474,11 @@ function deleteCategory(id) {
     renderCategories();
     populateAllSelects();
     renderAll();
-    setStatus('💡 分类已删除，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 分类已删除 (请同步到GitHub)', 'saving');
 }
 
 function renderCategories() {
     const container = document.getElementById('categoryList');
-    if (!container) return;
     const categories = getCategories();
     if (categories.length === 0) { container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; return; }
     container.innerHTML = categories.map(c => `
@@ -516,17 +534,15 @@ function addCategoryFromTask() {
     populateAllSelects();
     const select = document.getElementById('tCategory');
     if (select) { for (let opt of select.options) { if (opt.text === name) { opt.selected = true; break; } } }
-    setStatus('💡 分类已添加，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
 }
 
-// ===== 自动继承项目分类 =====
 function autoFillCategory() {
     const projSelect = document.getElementById('tProjects');
     const catSelect = document.getElementById('tCategory');
     if (!projSelect || !catSelect) return;
     const selected = Array.from(projSelect.selectedOptions).map(o => Number(o.value));
     if (selected.length === 0) return;
-    // 取第一个选中的项目
     const project = getProject(selected[0]);
     if (project && project.categoryId) {
         catSelect.value = project.categoryId;
@@ -561,7 +577,7 @@ function saveProject(e) {
     document.getElementById('projectEditId').value = '';
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 项目已保存 (请同步到GitHub)', 'saving');
 }
 
 function openProjectModal(projectId) {
@@ -593,7 +609,7 @@ function deleteProject(id) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 项目已删除 (请同步到GitHub)', 'saving');
 }
 
 // ============================================================
@@ -631,7 +647,7 @@ function saveTask(e) {
     document.getElementById('taskEditId').value = '';
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 任务已保存 (请同步到GitHub)', 'saving');
 }
 
 function openTaskModal(taskId) {
@@ -658,7 +674,6 @@ function openTaskModal(taskId) {
         document.getElementById('tAccept').value = t.accept;
         document.getElementById('tNote').value = t.note || '';
     } else {
-        // 新建任务时，如果有选中的项目，自动填充分类
         setTimeout(autoFillCategory, 100);
     }
     modal.classList.add('active');
@@ -682,13 +697,13 @@ function deleteTask(id) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 任务已删除 (请同步到GitHub)', 'saving');
 }
 
 function toggleArchive(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status === 'done') { t.archived = !t.archived; saveLocalCache(); renderAll(); updateStats(); setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
+    if (t.status === 'done') { t.archived = !t.archived; saveLocalCache(); renderAll(); updateStats(); setStatus('💡 归档状态已切换 (请同步到GitHub)', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
 }
 
 function markDone(taskId) {
@@ -701,7 +716,7 @@ function markDone(taskId) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 任务状态已更新 (请同步到GitHub)', 'saving');
 }
 
 function approveTask(taskId) {
@@ -712,7 +727,7 @@ function approveTask(taskId) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 数据已修改，点击「同步」保存到 GitHub', 'saving');
+    setStatus('💡 任务已验收通过 (请同步到GitHub)', 'saving');
 }
 
 // ============================================================
