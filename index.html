@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>统一多分类 · 全周期管理</title>
+    <title>分类可排序 · 全周期管理</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
@@ -40,6 +40,8 @@
         .btn-success:hover{background:#1e8449}
         .btn-github{background:#24292e;color:#fff;border:none}
         .btn-github:hover{background:#1a1e22}
+        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
+        .btn-ghost:hover{background:var(--surface-hover)}
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
         .form-group{display:flex;flex-direction:column;gap:4px}
         .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
@@ -92,11 +94,16 @@
         [data-theme="dark"] .status-review{background:#3d3a1a;color:#f4d03f}
         [data-theme="dark"] .status-done{background:#1a3d2a;color:#58d68d}
         [data-theme="dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
-        .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
-        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0}
-        .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%}
-        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%}
+        .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;align-items:center}
+        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent}
+        .cat-tag:active{cursor:grabbing;opacity:.7}
+        .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0}
+        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%;line-height:1}
         .cat-tag .del:hover{color:#e74c3c;background:#fde8e8}
+        .cat-tag .drag-handle{font-size:.7rem;color:var(--text-muted);cursor:grab;padding:0 2px;opacity:.5}
+        .cat-tag .drag-handle:hover{opacity:1}
+        .cat-tag.dragging{opacity:.3;border-color:var(--primary)}
+        .cat-tag.drag-over{border-color:var(--primary);border-style:dashed;background:var(--primary-light)}
         .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
         .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px}
         .cat-add-row input:focus{outline:none;border-color:var(--primary)}
@@ -130,6 +137,7 @@
         .sort-bar select:focus{outline:none;border-color:var(--primary)}
         .project-cats,.task-cats{display:inline-flex;flex-wrap:wrap;gap:3px;margin:0 4px}
         .mini-cat{font-size:.6rem;padding:1px 8px;border-radius:12px;font-weight:500}
+        .cat-sort-hint{font-size:.7rem;color:var(--text-muted);margin-left:8px;font-weight:400}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -143,7 +151,7 @@
 <body>
 <div class="container" id="app">
     <nav>
-        <div class="nav-brand">📋 统一多分类 · 全周期管理</div>
+        <div class="nav-brand">📋 分类可排序 · 全周期管理</div>
         <div class="nav-actions">
             <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
             <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
@@ -155,10 +163,10 @@
     </nav>
     <div class="stats-bar" id="statsBar"></div>
 
-    <!-- ===== 分类管理 ===== -->
+    <!-- ===== 分类管理（可拖拽排序） ===== -->
     <div class="card">
         <div class="card-header">
-            <h2><span>🏷️ 分类管理</span></h2>
+            <h2><span>🏷️ 分类管理</span> <span class="cat-sort-hint">↕ 拖拽标签调整顺序</span></h2>
             <div class="cat-add-row">
                 <input id="catInput" placeholder="输入分类名" onkeydown="if(event.key==='Enter')addCategory()">
                 <button class="btn btn-sm" onclick="addCategory()">+ 添加</button>
@@ -167,13 +175,13 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库（多分类） ===== -->
+    <!-- ===== 项目总库 ===== -->
     <div class="card">
         <div class="card-header"><h2><span>📁 项目总库</span></h2><button class="btn" onclick="openProjectModal()">+ 新建项目</button></div>
         <div id="projectList"></div>
     </div>
 
-    <!-- ===== 全局任务总库（多分类） ===== -->
+    <!-- ===== 全局任务总库 ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span></h2>
@@ -210,7 +218,7 @@
         <div id="taskList"></div>
     </div>
 
-    <!-- ===== 项目弹窗（多分类） ===== -->
+    <!-- ===== 项目弹窗 ===== -->
     <div class="modal-overlay" id="projectModal">
         <div class="modal">
             <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
@@ -237,7 +245,7 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗（多分类） ===== -->
+    <!-- ===== 任务弹窗 ===== -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
@@ -308,6 +316,7 @@ let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
+let dragInfo = null; // 拖拽状态
 
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -491,7 +500,7 @@ function exportJSON() {
 }
 
 // ============================================================
-//  分类 CRUD
+//  分类 CRUD + 拖拽排序
 // ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
@@ -523,17 +532,135 @@ function deleteCategory(id) {
     setStatus('💡 分类已删除 (请同步到GitHub)', 'saving');
 }
 
+// 拖拽排序核心逻辑
+function initDragSort() {
+    const container = document.getElementById('categoryList');
+    if (!container) return;
+    
+    // 使用mousedown/mousemove/mouseup实现拖拽
+    let draggedEl = null;
+    let dragOverEl = null;
+    let startX = 0, startY = 0;
+    let offsetX = 0, offsetY = 0;
+    let clone = null;
+    let isDragging = false;
+
+    container.addEventListener('mousedown', (e) => {
+        const tag = e.target.closest('.cat-tag');
+        if (!tag) return;
+        // 点击删除按钮不触发拖拽
+        if (e.target.closest('.del')) return;
+        
+        const rect = tag.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        draggedEl = tag;
+        isDragging = false;
+        
+        // 创建克隆跟随鼠标
+        clone = tag.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.pointerEvents = 'none';
+        clone.style.zIndex = '9999';
+        clone.style.opacity = '0.85';
+        clone.style.transform = 'scale(1.05)';
+        clone.style.width = rect.width + 'px';
+        clone.style.boxShadow = '0 8px 30px rgba(0,0,0,0.15)';
+        clone.style.borderColor = 'var(--primary)';
+        document.body.appendChild(clone);
+        
+        tag.classList.add('dragging');
+        
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!draggedEl) return;
+        isDragging = true;
+        
+        // 移动克隆
+        if (clone) {
+            clone.style.left = (e.clientX - offsetX) + 'px';
+            clone.style.top = (e.clientY - offsetY) + 'px';
+        }
+        
+        // 检测悬停的目标
+        const container = document.getElementById('categoryList');
+        const tags = container.querySelectorAll('.cat-tag');
+        let target = null;
+        tags.forEach(t => {
+            if (t === draggedEl) return;
+            const rect = t.getBoundingClientRect();
+            if (e.clientX >= rect.left && e.clientX <= rect.right &&
+                e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                target = t;
+            }
+        });
+        
+        // 清除之前的悬停状态
+        if (dragOverEl && dragOverEl !== target) {
+            dragOverEl.classList.remove('drag-over');
+        }
+        if (target) {
+            target.classList.add('drag-over');
+        }
+        dragOverEl = target;
+    });
+
+    document.addEventListener('mouseup', (e) => {
+        if (!draggedEl) return;
+        
+        // 移除克隆
+        if (clone) {
+            clone.remove();
+            clone = null;
+        }
+        
+        // 如果发生了拖拽且有目标，执行交换
+        if (isDragging && dragOverEl) {
+            const fromIndex = Array.from(container.children).indexOf(draggedEl);
+            const toIndex = Array.from(container.children).indexOf(dragOverEl);
+            if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+                // 交换数据
+                const categories = getCategories();
+                const [removed] = categories.splice(fromIndex, 1);
+                categories.splice(toIndex, 0, removed);
+                saveLocalCache();
+                renderCategories();
+                populateAllSelects();
+                setStatus('💡 分类顺序已更新 (请同步到GitHub)', 'saving');
+            }
+        }
+        
+        // 清理
+        if (draggedEl) draggedEl.classList.remove('dragging');
+        if (dragOverEl) dragOverEl.classList.remove('drag-over');
+        draggedEl = null;
+        dragOverEl = null;
+        isDragging = false;
+    });
+}
+
 function renderCategories() {
     const container = document.getElementById('categoryList');
     const categories = getCategories();
-    if (categories.length === 0) { container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; return; }
+    if (categories.length === 0) { 
+        container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; 
+        return; 
+    }
     container.innerHTML = categories.map(c => `
-        <span class="cat-tag" style="background:${c.color}20;border:1px solid ${c.color}40;">
+        <span class="cat-tag" draggable="false" style="background:${c.color}20;border:1px solid ${c.color}40;" data-id="${c.id}">
+            <span class="drag-handle">⠿</span>
             <span class="dot" style="background:${c.color};"></span>
             ${c.name}
             <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
         </span>
     `).join('');
+    
+    // 每次重新渲染后初始化拖拽
+    setTimeout(initDragSort, 50);
 }
 
 function populateAllSelects() {
@@ -546,7 +673,6 @@ function populateProjectCategorySelect() {
     const select = document.getElementById('pCategory');
     if (!select) return;
     const categories = getCategories();
-    // 保存当前选中值
     const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
     select.innerHTML = '';
     categories.forEach(c => { 
@@ -555,7 +681,6 @@ function populateProjectCategorySelect() {
         opt.textContent = c.name;
         select.appendChild(opt);
     });
-    // 恢复选中
     if (selectedVals.length) {
         Array.from(select.options).forEach(opt => {
             if (selectedVals.includes(Number(opt.value))) opt.selected = true;
@@ -598,7 +723,6 @@ function addCategoryFromTask() {
     input.value = '';
     renderCategories();
     populateAllSelects();
-    // 自动选中新添加的分类
     const select = document.getElementById('tCategory');
     if (select) {
         Array.from(select.options).forEach(opt => {
@@ -616,7 +740,6 @@ function autoFillCategory() {
     if (selected.length === 0) return;
     const project = getProject(selected[0]);
     if (project && project.categoryIds && project.categoryIds.length > 0) {
-        // 清空当前选中，然后选中项目的分类
         Array.from(catSelect.options).forEach(opt => {
             opt.selected = project.categoryIds.includes(Number(opt.value));
         });
@@ -624,7 +747,7 @@ function autoFillCategory() {
 }
 
 // ============================================================
-//  项目 CRUD（多分类）
+//  项目 CRUD
 // ============================================================
 function saveProject(e) {
     e.preventDefault();
@@ -693,7 +816,7 @@ function deleteProject(id) {
 }
 
 // ============================================================
-//  任务 CRUD（多分类）
+//  任务 CRUD
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
@@ -840,7 +963,7 @@ function sortTasks(tasks, sortKey) {
 }
 
 // ============================================================
-//  渲染（项目和任务都显示多分类标签）
+//  渲染
 // ============================================================
 function renderAll() { renderProjects(); renderTasks(); }
 
@@ -918,7 +1041,6 @@ function renderTaskItem(task, isArchived) {
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
     }).join('');
     
-    // 任务多分类标签
     const cats = getCategoriesByIds(task.categoryIds || []);
     const catTags = cats.length ? cats.map(c => 
         `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
