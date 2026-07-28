@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人全周期项目管理系统 · GitHub同步</title>
+    <title>任务紧急度 · 全周期管理</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
@@ -57,6 +57,18 @@
         [data-theme="dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
         [data-theme="dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
         [data-theme="dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
+        /* 紧急度标签 */
+        .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
+        .urgency-critical{background:#7b1fa2;color:#fff}
+        .urgency-high{background:#e74c3c;color:#fff}
+        .urgency-medium{background:#f39c12;color:#fff}
+        .urgency-low{background:#3498db;color:#fff}
+        .urgency-none{background:#bdc3c7;color:#2c3e50}
+        [data-theme="dark"] .urgency-critical{background:#9b4dca;color:#fff}
+        [data-theme="dark"] .urgency-high{background:#e74c3c;color:#fff}
+        [data-theme="dark"] .urgency-medium{background:#f39c12;color:#fff}
+        [data-theme="dark"] .urgency-low{background:#3498db;color:#fff}
+        [data-theme="dark"] .urgency-none{background:#5d6d7e;color:#ecf0f1}
         .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
         .status-planning{background:#eef2f5;color:#5d6d7e}
         .status-active{background:#eaf2f8;color:#2e86c1}
@@ -118,13 +130,16 @@
         ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
         .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
         .collapse-enter.active{max-height:3000px;opacity:1}
-        .badge-local{background:#2d4b8c20;color:var(--primary);border-radius:30px;padding:0 10px;font-size:.7rem;border:1px solid var(--border);display:inline-block;margin-left:4px}
+        .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
+        .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
+        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text)}
+        .sort-bar select:focus{outline:none;border-color:var(--primary)}
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <nav>
-        <div class="nav-brand">📋 全周期管理 · GitHub同步</div>
+        <div class="nav-brand">📋 任务紧急度 · 全周期管理</div>
         <div class="nav-actions">
             <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
             <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
@@ -154,11 +169,11 @@
         <div id="projectList"></div>
     </div>
 
-    <!-- ===== 全局任务总库 ===== -->
+    <!-- ===== 全局任务总库（含紧急度排序） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span></h2>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                 <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
                 <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
                     <option value="all">📊 全部</option>
@@ -174,6 +189,20 @@
                     <option value="archived">📦 已归档</option>
                 </select>
             </div>
+        </div>
+        <!-- 排序栏 -->
+        <div class="sort-bar">
+            <label>🔽 排序方式：</label>
+            <select id="taskSortOrder" onchange="renderAll()">
+                <option value="urgency-desc">紧急度 (高→低)</option>
+                <option value="urgency-asc">紧急度 (低→高)</option>
+                <option value="deadline-asc">截止时间 (最近优先)</option>
+                <option value="deadline-desc">截止时间 (最远优先)</option>
+                <option value="priority-desc">优先级 (P0→P3)</option>
+                <option value="priority-asc">优先级 (P3→P0)</option>
+                <option value="name-asc">名称 (A→Z)</option>
+                <option value="name-desc">名称 (Z→A)</option>
+            </select>
         </div>
         <div id="taskList"></div>
     </div>
@@ -204,7 +233,7 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗 ===== -->
+    <!-- ===== 任务弹窗（含紧急度） ===== -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
@@ -231,6 +260,16 @@
                     <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
                     <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
+                    <!-- 紧急度字段 -->
+                    <div class="form-group"><label>紧急度 <span class="required">*</span></label>
+                        <select id="tUrgency" required>
+                            <option value="critical">🔥 紧急 (24h内)</option>
+                            <option value="high">⚡ 高 (3天内)</option>
+                            <option value="medium" selected>📌 中 (7天内)</option>
+                            <option value="low">📅 低 (7天以上)</option>
+                            <option value="none">⏳ 无明确时间</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="tStart" type="datetime-local" required></div>
                     <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="tEnd" type="datetime-local" required></div>
                     <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="tLocation" required placeholder="如：图书馆、线上"></div>
@@ -307,7 +346,7 @@ function getCategory(id) { return getCategories().find(c => c.id === id); }
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
 
 function loadLocalCache() {
-    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; }); if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; return d; } } catch (e) {}
+    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; }); if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; return d; } } catch (e) {}
     return null;
 }
 
@@ -351,7 +390,7 @@ async function loadFromGitHub() {
             const parsed = JSON.parse(body);
             if (parsed.projects !== undefined && parsed.tasks !== undefined) {
                 data = parsed;
-                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; });
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; });
                 if (!data.categories) data.categories = [];
                 if (!data.nextCategoryId) data.nextCategoryId = 1;
                 dataLoaded = true;
@@ -425,9 +464,6 @@ async function syncToGitHub() {
     }
 }
 
-// ============================================================
-//  导出 JSON 文件（可用于上传到 GitHub 仓库）
-// ============================================================
 function exportJSON() {
     if (!data) { alert('暂无数据'); return; }
     const jsonContent = JSON.stringify(data, null, 2);
@@ -445,7 +481,7 @@ function exportJSON() {
 }
 
 // ============================================================
-//  分类 CRUD (修改后自动保存到本地缓存)
+//  分类 CRUD
 // ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
@@ -613,7 +649,7 @@ function deleteProject(id) {
 }
 
 // ============================================================
-//  任务 CRUD
+//  任务 CRUD（含紧急度）
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
@@ -630,6 +666,7 @@ function saveTask(e) {
         parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
         prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
         priority: document.getElementById('tPriority').value,
+        urgency: document.getElementById('tUrgency').value,
         start: document.getElementById('tStart').value,
         end: document.getElementById('tEnd').value,
         location: document.getElementById('tLocation').value.trim(),
@@ -667,6 +704,7 @@ function openTaskModal(taskId) {
         if (t.parentId) document.getElementById('tParent').value = t.parentId;
         if (t.prevId) document.getElementById('tPrev').value = t.prevId;
         document.getElementById('tPriority').value = t.priority;
+        document.getElementById('tUrgency').value = t.urgency || 'medium';
         document.getElementById('tStart').value = t.start;
         document.getElementById('tEnd').value = t.end;
         document.getElementById('tLocation').value = t.location;
@@ -731,7 +769,28 @@ function approveTask(taskId) {
 }
 
 // ============================================================
-//  渲染
+//  排序工具
+// ============================================================
+const URGENCY_ORDER = { critical: 0, high: 1, medium: 2, low: 3, none: 4 };
+const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+function sortTasks(tasks, sortKey) {
+    const copy = [...tasks];
+    switch(sortKey) {
+        case 'urgency-desc': return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
+        case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
+        case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
+        case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
+        case 'priority-desc': return copy.sort((a,b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
+        case 'priority-asc': return copy.sort((a,b) => (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2));
+        case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
+        case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
+        default: return copy;
+    }
+}
+
+// ============================================================
+//  渲染（含紧急度标签 + 排序）
 // ============================================================
 function renderAll() { renderProjects(); renderTasks(); }
 
@@ -766,6 +825,8 @@ function renderProjects() {
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
+    const sortKey = document.getElementById('taskSortOrder').value;
+
     let tasks = data.tasks.filter(t => !t.archived);
     if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
     else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
@@ -779,12 +840,21 @@ function renderTasks() {
     else if (filter === 'archived') {
         tasks = data.tasks.filter(t => t.archived);
         if (tasks.length === 0) { container.innerHTML = '<div class="empty-state">📦 暂无已归档任务</div>'; return; }
+        tasks = sortTasks(tasks, sortKey);
         container.innerHTML = tasks.map(t => renderTaskItem(t, true)).join('');
         return;
     }
+
+    // 排序（顶层任务保留层级关系，但子任务跟随父任务排序）
     const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
-    if (topTasks.length === 0 && tasks.length > 0) { container.innerHTML = tasks.map(t => renderTaskItem(t, false)).join(''); return; }
-    container.innerHTML = topTasks.map(t => renderTaskItem(t, false)).join('');
+    const sortedTop = sortTasks(topTasks, sortKey);
+    if (sortedTop.length === 0 && tasks.length > 0) {
+        // 所有任务都是子任务，直接排序显示
+        const sorted = sortTasks(tasks, sortKey);
+        container.innerHTML = sorted.map(t => renderTaskItem(t, false)).join('');
+        return;
+    }
+    container.innerHTML = sortedTop.map(t => renderTaskItem(t, false)).join('');
 }
 
 function renderTaskItem(task, isArchived) {
@@ -800,11 +870,22 @@ function renderTaskItem(task, isArchived) {
     const cat = task.categoryId ? getCategory(task.categoryId) : null;
     const catTag = cat ? `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` : '';
 
+    // 紧急度标签
+    const urgencyMap = {
+        critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+        high: { label: '⚡ 高', cls: 'urgency-high' },
+        medium: { label: '📌 中', cls: 'urgency-medium' },
+        low: { label: '📅 低', cls: 'urgency-low' },
+        none: { label: '⏳ 无', cls: 'urgency-none' }
+    };
+    const u = urgencyMap[task.urgency] || urgencyMap.medium;
+
     return `
         <div class="task-item">
             <div class="task-row">
                 <span class="task-name">${escHtml(task.name)}</span>
                 ${catTag}
+                <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
                 <span class="status-tag status-${displayStatus}">${displayStatus}</span>
                 ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
