@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>任务紧急度 · 全周期管理</title>
+    <title>统一多分类 · 全周期管理</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f4f6fa;--surface:#fff;--surface-hover:#eef1f6;--text:#1a1a2e;--text-secondary:#3d3f5e;--text-muted:#7a7a9a;--border:#dce0e8;--primary:#2d4b8c;--primary-light:#e6edf8;--primary-gradient:linear-gradient(135deg,#2d4b8c,#1f3a6b);--shadow:0 6px 24px rgba(0,0,0,0.06);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
@@ -47,6 +47,9 @@
         .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font)}
         .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(45,75,140,0.12)}
         .form-group textarea{resize:vertical;min-height:50px}
+        .form-group select[multiple]{min-height:70px;padding:4px}
+        .form-group select[multiple] option{padding:4px 8px;border-radius:4px}
+        .form-group select[multiple] option:hover{background:var(--primary-light)}
         .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
         .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .priority-p0{background:#fde8e8;color:#c0392b}
@@ -57,7 +60,6 @@
         [data-theme="dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
         [data-theme="dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
         [data-theme="dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
-        /* 紧急度标签 */
         .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .urgency-critical{background:#7b1fa2;color:#fff}
         .urgency-high{background:#e74c3c;color:#fff}
@@ -98,8 +100,8 @@
         .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
         .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px}
         .cat-add-row input:focus{outline:none;border-color:var(--primary)}
-        .task-cat-tag{display:inline-flex;align-items:center;gap:3px;padding:0 8px;border-radius:10px;font-size:.6rem;font-weight:500}
-        .task-cat-tag .dot{display:inline-block;width:6px;height:6px;border-radius:50%}
+        .multi-cat-tag{display:inline-flex;align-items:center;gap:3px;padding:0 8px;border-radius:10px;font-size:.6rem;font-weight:500}
+        .multi-cat-tag .dot{display:inline-block;width:6px;height:6px;border-radius:50%}
         .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s}
         .task-item:last-child{border-bottom:none}
         .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
@@ -113,7 +115,7 @@
         .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
         .modal-overlay.active{display:flex}
-        .modal{background:var(--surface);border-radius:var(--radius);max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+        .modal{background:var(--surface);border-radius:var(--radius);max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
         .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
         .modal-header h3{font-size:1.2rem}
         .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)}
@@ -122,6 +124,12 @@
         [data-theme="dark"] .save-hint{background:#1a2a3d;border-color:#2e7d32;color:#81c784}
         .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
         [data-theme="dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
+        .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
+        .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
+        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text)}
+        .sort-bar select:focus{outline:none;border-color:var(--primary)}
+        .project-cats,.task-cats{display:inline-flex;flex-wrap:wrap;gap:3px;margin:0 4px}
+        .mini-cat{font-size:.6rem;padding:1px 8px;border-radius:12px;font-weight:500}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -130,16 +138,12 @@
         ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
         .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
         .collapse-enter.active{max-height:3000px;opacity:1}
-        .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
-        .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
-        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text)}
-        .sort-bar select:focus{outline:none;border-color:var(--primary)}
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <nav>
-        <div class="nav-brand">📋 任务紧急度 · 全周期管理</div>
+        <div class="nav-brand">📋 统一多分类 · 全周期管理</div>
         <div class="nav-actions">
             <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
             <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
@@ -163,13 +167,13 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库 ===== -->
+    <!-- ===== 项目总库（多分类） ===== -->
     <div class="card">
         <div class="card-header"><h2><span>📁 项目总库</span></h2><button class="btn" onclick="openProjectModal()">+ 新建项目</button></div>
         <div id="projectList"></div>
     </div>
 
-    <!-- ===== 全局任务总库（含紧急度排序） ===== -->
+    <!-- ===== 全局任务总库（多分类） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span></h2>
@@ -190,7 +194,6 @@
                 </select>
             </div>
         </div>
-        <!-- 排序栏 -->
         <div class="sort-bar">
             <label>🔽 排序方式：</label>
             <select id="taskSortOrder" onchange="renderAll()">
@@ -207,19 +210,20 @@
         <div id="taskList"></div>
     </div>
 
-    <!-- ===== 项目弹窗 ===== -->
+    <!-- ===== 项目弹窗（多分类） ===== -->
     <div class="modal-overlay" id="projectModal">
         <div class="modal">
             <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。</div>
+            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
             <form id="projectForm" onsubmit="saveProject(event)">
                 <input type="hidden" id="projectEditId">
                 <div class="form-grid">
-                    <div class="form-group"><label>项目名称 <span class="required">*</span></label><input id="pName" required></div>
-                    <div class="form-group"><label>项目分类 <span class="required">*</span></label>
-                        <select id="pCategory" required>
-                            <option value="">请选择分类</option>
+                    <div class="form-group" style="grid-column:1/-1;"><label>项目名称 <span class="required">*</span></label><input id="pName" required></div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>项目分类（可多选） <span class="required">*</span></label>
+                        <select id="pCategory" multiple required style="min-height:70px;">
                         </select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
                     </div>
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="pPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
                     <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="pStart" type="datetime-local" required></div>
@@ -233,11 +237,11 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗（含紧急度） ===== -->
+    <!-- ===== 任务弹窗（多分类） ===== -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。<br>💡 选择项目后，分类会自动继承项目的分类。</div>
+            <div class="save-hint">💡 所有带 <span style="color:#e74c3c;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -247,11 +251,11 @@
                         </select>
                         <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选</small>
                     </div>
-                    <div class="form-group">
-                        <label>分类 <span class="required">*</span></label>
-                        <select id="tCategory" required>
-                            <option value="">请选择分类</option>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>任务分类（可多选） <span class="required">*</span></label>
+                        <select id="tCategory" multiple required style="min-height:70px;">
                         </select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
                         <div style="display:flex;gap:4px;margin-top:3px;">
                             <input id="newCategoryInput" placeholder="新分类名" style="flex:1;padding:3px 8px;font-size:.7rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);">
                             <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
@@ -260,7 +264,6 @@
                     <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
                     <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
-                    <!-- 紧急度字段 -->
                     <div class="form-group"><label>紧急度 <span class="required">*</span></label>
                         <select id="tUrgency" required>
                             <option value="critical">🔥 紧急 (24h内)</option>
@@ -298,7 +301,7 @@
 
 <script>
 // ============================================================
-//  数据存储：优先从 localStorage 加载，同步到 GitHub Issues
+//  数据存储
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
@@ -342,11 +345,17 @@ function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
 function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
 function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
 function getCategory(id) { return getCategories().find(c => c.id === id); }
+function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
 
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
 
 function loadLocalCache() {
-    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; }); if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; return d; } } catch (e) {}
+    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); 
+        d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
+        d.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
+        if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; 
+        return d; 
+    } } catch (e) {}
     return null;
 }
 
@@ -390,7 +399,8 @@ async function loadFromGitHub() {
             const parsed = JSON.parse(body);
             if (parsed.projects !== undefined && parsed.tasks !== undefined) {
                 data = parsed;
-                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; });
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
+                data.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
                 if (!data.categories) data.categories = [];
                 if (!data.nextCategoryId) data.nextCategoryId = 1;
                 dataLoaded = true;
@@ -502,10 +512,10 @@ function addCategory() {
 }
 
 function deleteCategory(id) {
-    if (!confirm('确认删除此分类？\n（已使用此分类的项目和任务将变为"未分类"）')) return;
+    if (!confirm('确认删除此分类？')) return;
     data.categories = data.categories.filter(c => c.id !== id);
-    data.projects.forEach(p => { if (p.categoryId === id) p.categoryId = null; });
-    data.tasks.forEach(t => { if (t.categoryId === id) t.categoryId = null; });
+    data.projects.forEach(p => { if (p.categoryIds) p.categoryIds = p.categoryIds.filter(cid => cid !== id); });
+    data.tasks.forEach(t => { if (t.categoryIds) t.categoryIds = t.categoryIds.filter(cid => cid !== id); });
     saveLocalCache();
     renderCategories();
     populateAllSelects();
@@ -536,20 +546,40 @@ function populateProjectCategorySelect() {
     const select = document.getElementById('pCategory');
     if (!select) return;
     const categories = getCategories();
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">请选择分类</option>';
-    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
-    if (currentVal) select.value = currentVal;
+    // 保存当前选中值
+    const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
+    select.innerHTML = '';
+    categories.forEach(c => { 
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+    });
+    // 恢复选中
+    if (selectedVals.length) {
+        Array.from(select.options).forEach(opt => {
+            if (selectedVals.includes(Number(opt.value))) opt.selected = true;
+        });
+    }
 }
 
 function populateTaskCategorySelect() {
     const select = document.getElementById('tCategory');
     if (!select) return;
     const categories = getCategories();
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">请选择分类</option>';
-    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
-    if (currentVal) select.value = currentVal;
+    const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
+    select.innerHTML = '';
+    categories.forEach(c => { 
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+    });
+    if (selectedVals.length) {
+        Array.from(select.options).forEach(opt => {
+            if (selectedVals.includes(Number(opt.value))) opt.selected = true;
+        });
+    }
 }
 
 function addCategoryFromTask() {
@@ -568,8 +598,13 @@ function addCategoryFromTask() {
     input.value = '';
     renderCategories();
     populateAllSelects();
+    // 自动选中新添加的分类
     const select = document.getElementById('tCategory');
-    if (select) { for (let opt of select.options) { if (opt.text === name) { opt.selected = true; break; } } }
+    if (select) {
+        Array.from(select.options).forEach(opt => {
+            if (opt.text === name) opt.selected = true;
+        });
+    }
     setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
 }
 
@@ -580,24 +615,28 @@ function autoFillCategory() {
     const selected = Array.from(projSelect.selectedOptions).map(o => Number(o.value));
     if (selected.length === 0) return;
     const project = getProject(selected[0]);
-    if (project && project.categoryId) {
-        catSelect.value = project.categoryId;
+    if (project && project.categoryIds && project.categoryIds.length > 0) {
+        // 清空当前选中，然后选中项目的分类
+        Array.from(catSelect.options).forEach(opt => {
+            opt.selected = project.categoryIds.includes(Number(opt.value));
+        });
     }
 }
 
 // ============================================================
-//  项目 CRUD
+//  项目 CRUD（多分类）
 // ============================================================
 function saveProject(e) {
     e.preventDefault();
     const id = document.getElementById('projectEditId').value;
-    const categoryId = document.getElementById('pCategory').value;
-    if (!categoryId) { alert('请选择项目分类'); return; }
+    const select = document.getElementById('pCategory');
+    const categoryIds = Array.from(select.selectedOptions).map(o => Number(o.value));
+    if (categoryIds.length === 0) { alert('请至少选择一个分类'); return; }
     const status = document.getElementById('pStatus').value;
     if (!status) { alert('请选择项目状态'); return; }
     const obj = {
         name: document.getElementById('pName').value.trim(),
-        categoryId: Number(categoryId),
+        categoryIds: categoryIds,
         priority: document.getElementById('pPriority').value,
         start: document.getElementById('pStart').value,
         end: document.getElementById('pEnd').value,
@@ -628,7 +667,12 @@ function openProjectModal(projectId) {
         document.getElementById('projectEditId').value = p.id;
         document.getElementById('projectModalTitle').textContent = '编辑项目';
         document.getElementById('pName').value = p.name;
-        if (p.categoryId) document.getElementById('pCategory').value = p.categoryId;
+        const select = document.getElementById('pCategory');
+        if (p.categoryIds && p.categoryIds.length) {
+            Array.from(select.options).forEach(opt => {
+                opt.selected = p.categoryIds.includes(Number(opt.value));
+            });
+        }
         document.getElementById('pPriority').value = p.priority;
         document.getElementById('pStart').value = p.start;
         document.getElementById('pEnd').value = p.end;
@@ -649,20 +693,21 @@ function deleteProject(id) {
 }
 
 // ============================================================
-//  任务 CRUD（含紧急度）
+//  任务 CRUD（多分类）
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
     const id = document.getElementById('taskEditId').value;
     const status = document.getElementById('tStatus').value;
     if (!status) { alert('请选择任务状态'); return; }
-    const categoryId = document.getElementById('tCategory').value;
-    if (!categoryId) { alert('请选择分类'); return; }
+    const select = document.getElementById('tCategory');
+    const categoryIds = Array.from(select.selectedOptions).map(o => Number(o.value));
+    if (categoryIds.length === 0) { alert('请至少选择一个分类'); return; }
     const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
     const obj = {
         name: document.getElementById('tName').value.trim(),
         projectIds: projectIds,
-        categoryId: Number(categoryId),
+        categoryIds: categoryIds,
         parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
         prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
         priority: document.getElementById('tPriority').value,
@@ -700,7 +745,12 @@ function openTaskModal(taskId) {
         document.getElementById('taskModalTitle').textContent = '编辑任务';
         document.getElementById('tName').value = t.name;
         Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds && t.projectIds.includes(Number(opt.value)); });
-        if (t.categoryId) document.getElementById('tCategory').value = t.categoryId;
+        const catSelect = document.getElementById('tCategory');
+        if (t.categoryIds && t.categoryIds.length) {
+            Array.from(catSelect.options).forEach(opt => {
+                opt.selected = t.categoryIds.includes(Number(opt.value));
+            });
+        }
         if (t.parentId) document.getElementById('tParent').value = t.parentId;
         if (t.prevId) document.getElementById('tPrev').value = t.prevId;
         document.getElementById('tPriority').value = t.priority;
@@ -790,7 +840,7 @@ function sortTasks(tasks, sortKey) {
 }
 
 // ============================================================
-//  渲染（含紧急度标签 + 排序）
+//  渲染（项目和任务都显示多分类标签）
 // ============================================================
 function renderAll() { renderProjects(); renderTasks(); }
 
@@ -800,13 +850,15 @@ function renderProjects() {
     const container = document.getElementById('projectList');
     if (data.projects.length === 0) { container.innerHTML = '<div class="empty-state">暂无项目，点击「新建项目」开始</div>'; return; }
     container.innerHTML = data.projects.map(p => {
-        const cat = p.categoryId ? getCategory(p.categoryId) : null;
-        const catTag = cat ? `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+        const cats = getCategoriesByIds(p.categoryIds || []);
+        const catTags = cats.length ? cats.map(c => 
+            `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+        ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         return `
             <div class="task-item">
                 <div class="task-row">
                     <span class="task-name">${escHtml(p.name)}</span>
-                    ${catTag}
+                    <span class="project-cats">${catTags}</span>
                     <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
                     <span class="status-tag status-${p.status}">${p.status}</span>
                     <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
@@ -845,11 +897,9 @@ function renderTasks() {
         return;
     }
 
-    // 排序（顶层任务保留层级关系，但子任务跟随父任务排序）
     const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
     const sortedTop = sortTasks(topTasks, sortKey);
     if (sortedTop.length === 0 && tasks.length > 0) {
-        // 所有任务都是子任务，直接排序显示
         const sorted = sortTasks(tasks, sortKey);
         container.innerHTML = sorted.map(t => renderTaskItem(t, false)).join('');
         return;
@@ -867,10 +917,13 @@ function renderTaskItem(task, isArchived) {
         const p = getProject(id);
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
     }).join('');
-    const cat = task.categoryId ? getCategory(task.categoryId) : null;
-    const catTag = cat ? `<span class="task-cat-tag" style="background:${cat.color}20;border:1px solid ${cat.color}40;color:${cat.color};"><span class="dot" style="background:${cat.color};"></span>${cat.name}</span>` : '';
+    
+    // 任务多分类标签
+    const cats = getCategoriesByIds(task.categoryIds || []);
+    const catTags = cats.length ? cats.map(c => 
+        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+    ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
 
-    // 紧急度标签
     const urgencyMap = {
         critical: { label: '🔥 紧急', cls: 'urgency-critical' },
         high: { label: '⚡ 高', cls: 'urgency-high' },
@@ -884,7 +937,7 @@ function renderTaskItem(task, isArchived) {
         <div class="task-item">
             <div class="task-row">
                 <span class="task-name">${escHtml(task.name)}</span>
-                ${catTag}
+                <span class="task-cats">${catTags}</span>
                 <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
                 <span class="status-tag status-${displayStatus}">${displayStatus}</span>
