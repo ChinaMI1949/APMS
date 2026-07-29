@@ -155,12 +155,22 @@
         .pagination .page-info{font-size:.75rem;color:var(--text-muted);padding:0 8px}
         .pagination .page-btn.ellipsis{background:transparent;border:none;cursor:default;color:var(--text-muted)}
 
-        .confetti-single{position:fixed;pointer-events:none;z-index:9999;font-size:36px;opacity:1;animation:confettiFlySingle 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;user-select:none;text-shadow:0 0 20px rgba(255,255,255,0.3)}
-        @keyframes confettiFlySingle{
-            0%{opacity:1;transform:translate(0,0) scale(0.5) rotate(0deg)}
-            40%{opacity:1;transform:translate(var(--tx, 60px), var(--ty, -180px)) scale(1.2) rotate(var(--rot, 200deg))}
-            100%{opacity:0;transform:translate(var(--tx2, 120px), var(--ty2, -320px)) scale(0.6) rotate(var(--rot2, 400deg))}
+        /* 原地绽放动画 */
+        .confetti-pop{position:fixed;pointer-events:none;z-index:9999;font-size:42px;opacity:0;animation:confettiPop 1s ease-out forwards;user-select:none;text-shadow:0 0 30px rgba(255,255,255,0.4)}
+        @keyframes confettiPop{
+            0%{opacity:0;transform:scale(0.2) rotate(0deg)}
+            25%{opacity:1;transform:scale(1.3) rotate(var(--rot, 20deg))}
+            50%{opacity:1;transform:scale(1) rotate(var(--rot2, 40deg))}
+            75%{opacity:0.8;transform:scale(0.9) rotate(var(--rot3, 30deg))}
+            100%{opacity:0;transform:scale(0.5) rotate(var(--rot4, 10deg))}
         }
+
+        /* 项目展开子任务样式 */
+        .project-expandable{cursor:pointer}
+        .project-expandable .expand-icon{display:inline-block;transition:transform .25s;margin-right:6px;font-size:.8rem}
+        .project-expandable .expand-icon.open{transform:rotate(90deg)}
+        .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
+        .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
 
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
@@ -218,7 +228,7 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库 ===== -->
+    <!-- ===== 项目总库（可展开显示任务） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
@@ -357,46 +367,40 @@
 
 <script>
 // ============================================================
-//  单发五彩赞
+//  原地绽放的彩色赞
 // ============================================================
-const EMOJIS_SINGLE = ['👍', '❤️', '🌟', '✨', '🔥', '💪', '🎉', '⭐', '🌈', '🦋', '🌸', '🌺', '💖', '🏆', '👏', '🎊', '💎', '🌻', '🦄', '🌹', '🍀', '🎯', '💫', '🌊'];
+const EMOJIS_POP = ['👍', '❤️', '🌟', '✨', '🔥', '💪', '🎉', '⭐', '🌈', '🦋', '🌸', '🌺', '💖', '🏆', '👏', '🎊', '💎', '🌻', '🦄', '🌹', '🍀', '🎯', '💫', '🌊'];
 
-function burstSingle(x, y) {
-    const emoji = EMOJIS_SINGLE[Math.floor(Math.random() * EMOJIS_SINGLE.length)];
+function burstPop(x, y) {
+    const emoji = EMOJIS_POP[Math.floor(Math.random() * EMOJIS_POP.length)];
     const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bcb', '#a66bff', '#ff9f43', '#00d2d3', '#f368e0', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff4757', '#2ed573', '#1e90ff', '#ff6348'];
     const color = colors[Math.floor(Math.random() * colors.length)];
     
     const el = document.createElement('div');
-    el.className = 'confetti-single';
+    el.className = 'confetti-pop';
     el.textContent = emoji;
-    el.style.left = (x - 18) + 'px';
-    el.style.top = (y - 18) + 'px';
+    el.style.left = (x - 21) + 'px';
+    el.style.top = (y - 21) + 'px';
     el.style.color = color;
     
-    const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.2;
-    const dist = 80 + Math.random() * 140;
-    const tx = Math.cos(angle) * dist;
-    const ty = -(60 + Math.random() * 180);
-    const rot = (Math.random() - 0.5) * 400;
-    const tx2 = tx + (Math.random() - 0.5) * 80;
-    const ty2 = ty - (30 + Math.random() * 80);
-    const rot2 = rot + (Math.random() - 0.5) * 300;
-    
-    el.style.setProperty('--tx', tx + 'px');
-    el.style.setProperty('--ty', ty + 'px');
-    el.style.setProperty('--rot', rot + 'deg');
-    el.style.setProperty('--tx2', tx2 + 'px');
-    el.style.setProperty('--ty2', ty2 + 'px');
+    // 随机旋转角度
+    const rot1 = (Math.random() - 0.5) * 60;
+    const rot2 = (Math.random() - 0.5) * 80;
+    const rot3 = (Math.random() - 0.5) * 40;
+    const rot4 = (Math.random() - 0.5) * 30;
+    el.style.setProperty('--rot', rot1 + 'deg');
     el.style.setProperty('--rot2', rot2 + 'deg');
+    el.style.setProperty('--rot3', rot3 + 'deg');
+    el.style.setProperty('--rot4', rot4 + 'deg');
     
-    const size = 28 + Math.random() * 28;
+    const size = 32 + Math.random() * 28;
     el.style.fontSize = size + 'px';
     
     document.body.appendChild(el);
     
     setTimeout(() => {
         if (el.parentNode) el.remove();
-    }, 1300);
+    }, 1100);
 }
 
 document.addEventListener('click', function(e) {
@@ -404,14 +408,11 @@ document.addEventListener('click', function(e) {
     if (e.target.closest('button')) return;
     if (e.target.closest('input, select, textarea')) return;
     if (e.target.closest('.page-btn')) return;
-    burstSingle(e.clientX, e.clientY);
+    burstPop(e.clientX, e.clientY);
 });
 
 // ============================================================
 //  ChinaMI1949 · 结构化个人事务管理系统
-//  核心理念：边界 · 框架 · 规矩 · 讲究 · 价值 · 利益
-//  精神格言：勇气是人类的赞歌
-//  特别祝福：祝董佳浩早日学会斗争，早日学会取得斗争胜利
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
@@ -422,6 +423,9 @@ let dataLoaded = false;
 
 let projectPage = 1;
 let taskPage = 1;
+
+// 记录展开的项目
+let expandedProjects = new Set();
 
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -457,6 +461,7 @@ function getProjects() { return data ? data.projects : []; }
 function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
 function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
 function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
+function getTasksByProject(projectId) { return data ? data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived) : []; }
 function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
 function getCategory(id) { return getCategories().find(c => c.id === id); }
 function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
@@ -605,7 +610,7 @@ function exportJSON() {
 }
 
 // ============================================================
-//  分类 CRUD + 拖拽排序
+//  分类 CRUD
 // ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
@@ -906,6 +911,15 @@ function deleteProject(id) {
     setStatus('💡 项目已删除 (请同步到GitHub)', 'saving');
 }
 
+function toggleProjectExpand(projectId) {
+    if (expandedProjects.has(projectId)) {
+        expandedProjects.delete(projectId);
+    } else {
+        expandedProjects.add(projectId);
+    }
+    renderProjects();
+}
+
 // ============================================================
 //  任务 CRUD
 // ============================================================
@@ -1142,6 +1156,7 @@ function renderAll() {
 
 function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// 渲染项目及其子任务
 function renderProjects() {
     const container = document.getElementById('projectList');
     const projects = data.projects;
@@ -1160,21 +1175,42 @@ function renderProjects() {
         const catTags = cats.length ? cats.map(c => 
             `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
         ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+        
+        // 获取该项目关联的任务
+        const projectTasks = getTasksByProject(p.id);
+        const isExpanded = expandedProjects.has(p.id);
+        const taskCount = projectTasks.length;
+        
+        // 渲染子任务
+        let tasksHtml = '';
+        if (taskCount > 0) {
+            // 对子任务排序（按紧急度）
+            const sortedTasks = sortTasks([...projectTasks], document.getElementById('taskSortOrder').value || 'urgency-desc');
+            tasksHtml = sortedTasks.map(t => renderTaskItemSimple(t, false)).join('');
+        } else {
+            tasksHtml = '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>';
+        }
+        
         return `
-            <div class="task-item">
-                <div class="task-row">
+            <div class="task-item project-expandable">
+                <div class="task-row" style="cursor:pointer;" onclick="toggleProjectExpand(${p.id})">
+                    <span class="expand-icon ${isExpanded ? 'open' : ''}">▶</span>
                     <span class="task-name">${escHtml(p.name)}</span>
                     <span class="project-cats">${catTags}</span>
                     <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
                     <span class="status-tag status-${p.status}">${p.status}</span>
                     <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
                     <span class="task-meta">📍 ${escHtml(p.location)}</span>
-                    <div class="task-actions">
+                    <span class="task-meta" style="font-weight:600;color:var(--primary);">📌 ${taskCount}个任务</span>
+                    <div class="task-actions" onclick="event.stopPropagation();">
                         <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
                     </div>
                 </div>
-                <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;">✅ ${escHtml(p.standard)}</div>
+                <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;padding-left:30px;">✅ ${escHtml(p.standard)}</div>
+                <div class="project-tasks ${isExpanded ? 'open' : ''}">
+                    ${tasksHtml}
+                </div>
             </div>
         `;
     }).join('');
@@ -1183,6 +1219,52 @@ function renderProjects() {
         `function(page){ projectPage = page; renderProjects(); }`);
 }
 
+// 简化的任务渲染（用于项目内部）
+function renderTaskItemSimple(task, isArchived) {
+    const children = getChildren(task.id);
+    const hasChildren = children.length > 0;
+    let isBlocked = false;
+    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+    const displayStatus = isBlocked ? 'blocked' : task.status;
+    
+    const cats = getCategoriesByIds(task.categoryIds || []);
+    const catTags = cats.length ? cats.map(c => 
+        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+    ).join('') : '';
+
+    const urgencyMap = {
+        critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+        high: { label: '⚡ 高', cls: 'urgency-high' },
+        medium: { label: '📌 中', cls: 'urgency-medium' },
+        low: { label: '📅 低', cls: 'urgency-low' },
+        none: { label: '⏳ 无', cls: 'urgency-none' }
+    };
+    const u = urgencyMap[task.urgency] || urgencyMap.medium;
+
+    return `
+        <div class="task-item" style="padding:10px 0;">
+            <div class="task-row" style="gap:6px 12px;">
+                <span class="task-name" style="font-size:.85rem;">${escHtml(task.name)}</span>
+                ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
+                <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
+                <span class="priority-tag priority-${task.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${task.priority}</span>
+                <span class="status-tag status-${displayStatus}" style="font-size:.6rem;padding:1px 10px;">${displayStatus}</span>
+                <span class="task-meta" style="font-size:.7rem;">📅 ${task.start}</span>
+                ${task.prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${task.prevId}</span>` : ''}
+                <div class="task-actions">
+                    <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${task.id})">✎</button>
+                    <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${task.id})">✔</button>
+                    ${task.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${task.id})">✅</button>` : ''}
+                    <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${task.id})">✕</button>
+                </div>
+            </div>
+            ${task.note ? `<div style="font-size:.7rem;color:var(--text-muted);padding-left:12px;">📝 ${escHtml(task.note)}</div>` : ''}
+            ${hasChildren ? `<div class="task-children" style="margin-left:16px;padding-left:12px;">${children.map(c => renderTaskItemSimple(c, isArchived)).join('')}</div>` : ''}
+        </div>
+    `;
+}
+
+// 全局任务列表渲染（不显示父级关系，只显示任务本身）
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
@@ -1207,57 +1289,35 @@ function renderTasks() {
         }
         tasks = sortTasks(tasks, sortKey);
         const result = paginateItems(tasks, taskPage, PAGE_SIZE);
-        container.innerHTML = result.items.map(t => renderTaskItem(t, true)).join('');
+        container.innerHTML = result.items.map(t => renderTaskItemGlobal(t, true)).join('');
         renderPagination('taskPagination', result.currentPage, result.totalPages, 
             `function(page){ taskPage = page; renderTasks(); }`);
         return;
     }
 
-    const topTasks = tasks.filter(t => t.parentId === null || t.parentId === undefined);
-    const sortedTop = sortTasks(topTasks, sortKey);
+    // 不显示父级关系，所有任务平铺显示，但保留子任务缩进作为视觉提示
+    const sorted = sortTasks(tasks, sortKey);
     
-    let allSorted = [];
-    if (sortedTop.length === 0 && tasks.length > 0) {
-        allSorted = sortTasks(tasks, sortKey);
-    } else {
-        const taskMap = {};
-        tasks.forEach(t => { taskMap[t.id] = t; });
-        const getChildrenIds = (parentId) => {
-            const children = tasks.filter(t => t.parentId === parentId);
-            const sortedChildren = sortTasks(children, sortKey);
-            let result = [];
-            sortedChildren.forEach(c => {
-                result.push(c.id);
-                result = result.concat(getChildrenIds(c.id));
-            });
-            return result;
-        };
-        let orderedIds = [];
-        sortedTop.forEach(t => {
-            orderedIds.push(t.id);
-            orderedIds = orderedIds.concat(getChildrenIds(t.id));
-        });
-        allSorted = orderedIds.map(id => taskMap[id]).filter(t => t);
-    }
-    
-    if (allSorted.length === 0) {
+    if (sorted.length === 0) {
         container.innerHTML = '<div class="empty-state">暂无符合条件的任务</div>';
         document.getElementById('taskPagination').innerHTML = '';
         return;
     }
     
-    const result = paginateItems(allSorted, taskPage, PAGE_SIZE);
-    container.innerHTML = result.items.map(t => renderTaskItem(t, false)).join('');
+    const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+    container.innerHTML = result.items.map(t => renderTaskItemGlobal(t, false)).join('');
     renderPagination('taskPagination', result.currentPage, result.totalPages, 
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-function renderTaskItem(task, isArchived) {
+// 全局任务渲染（不显示父级任务关系）
+function renderTaskItemGlobal(task, isArchived) {
     const children = getChildren(task.id);
     const hasChildren = children.length > 0;
     let isBlocked = false;
     if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
     const displayStatus = isBlocked ? 'blocked' : task.status;
+    
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
@@ -1266,7 +1326,7 @@ function renderTaskItem(task, isArchived) {
     const cats = getCategoriesByIds(task.categoryIds || []);
     const catTags = cats.length ? cats.map(c => 
         `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
-    ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+    ).join('') : '';
 
     const urgencyMap = {
         critical: { label: '🔥 紧急', cls: 'urgency-critical' },
@@ -1281,7 +1341,7 @@ function renderTaskItem(task, isArchived) {
         <div class="task-item">
             <div class="task-row">
                 <span class="task-name">${escHtml(task.name)}</span>
-                <span class="task-cats">${catTags}</span>
+                ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
                 <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
                 <span class="status-tag status-${displayStatus}">${displayStatus}</span>
@@ -1299,12 +1359,11 @@ function renderTaskItem(task, isArchived) {
                     ` : `
                         <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">↩️ 取消归档</button>
                     `}
-                    ${hasChildren ? `<button class="task-sub-toggle" onclick="toggleChildren(this)">▼ ${children.length}个子任务</button>` : ''}
                 </div>
             </div>
             <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
             ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
-            ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItem(c, isArchived)).join('')}</div>` : ''}
+            ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItemGlobal(c, isArchived)).join('')}</div>` : ''}
         </div>
     `;
 }
