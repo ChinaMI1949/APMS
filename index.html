@@ -170,7 +170,6 @@
         .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
         .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
 
-        /* 项目内任务层级缩进 */
         .task-level-0{padding-left:0}
         .task-level-1{padding-left:24px}
         .task-level-2{padding-left:48px}
@@ -178,6 +177,9 @@
         .task-level-4{padding-left:96px}
         .task-level-5{padding-left:120px}
         .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
+
+        /* 任务总库 - 无层级，无从属标识 */
+        .task-flat .task-meta-relation{display:none !important}
 
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
@@ -245,7 +247,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库（平铺显示，无层级） ===== -->
+    <!-- ===== 全局任务总库（平铺，无任何从属关系） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -279,7 +281,7 @@
                 <option value="name-desc">名称 (Z→A)</option>
             </select>
         </div>
-        <div id="taskList"></div>
+        <div id="taskList" class="task-flat"></div>
         <div id="taskPagination" class="pagination"></div>
     </div>
 
@@ -1157,29 +1159,24 @@ function buildProjectTaskTree(projectId) {
     const allTasks = getTasksByProject(projectId);
     if (allTasks.length === 0) return [];
     
-    // 按父级分组
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
     
-    // 找出顶级任务（父级不在该项目任务中，或parentId为null）
+    // 找出顶级任务
     const topTasks = allTasks.filter(t => {
         if (!t.parentId) return true;
-        // 检查父级是否属于该项目
         const parent = taskMap[t.parentId];
         return !parent;
     });
     
-    // 按紧急度排序顶级任务
     const sortKey = document.getElementById('taskSortOrder').value || 'urgency-desc';
     const sortedTop = sortTasks([...topTasks], sortKey);
     
-    // 递归获取子任务
     function getChildrenWithSort(parentId) {
         const children = allTasks.filter(t => t.parentId === parentId);
         return sortTasks([...children], sortKey);
     }
     
-    // 构建树形结构
     function buildTree(task) {
         const children = getChildrenWithSort(task.id);
         return {
@@ -1223,12 +1220,10 @@ function renderProjects() {
             `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
         ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         
-        // 构建该项目的任务树
         const tree = buildProjectTaskTree(p.id);
         const taskCount = tree.length;
         const isExpanded = expandedProjects.has(p.id);
         
-        // 递归渲染任务树
         function renderTreeNodes(nodes, level) {
             if (!nodes || nodes.length === 0) return '';
             const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
@@ -1314,7 +1309,7 @@ function renderProjects() {
 }
 
 // ============================================================
-//  全局任务渲染（平铺，无层级关系）
+//  全局任务渲染（纯平铺，无任何从属关系标识）
 // ============================================================
 function renderTasks() {
     const container = document.getElementById('taskList');
@@ -1360,7 +1355,7 @@ function renderTasks() {
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-// 平铺任务渲染（无层级）
+// 平铺任务渲染 - 不显示任何从属关系（无父级、无前置依赖、无层级）
 function renderTaskFlat(task, isArchived) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
@@ -1381,9 +1376,8 @@ function renderTaskFlat(task, isArchived) {
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
     
-    let isBlocked = false;
-    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
-    const displayStatus = isBlocked ? 'blocked' : task.status;
+    // 不显示前置依赖和父级关系
+    const displayStatus = task.status;
 
     return `
         <div class="task-item">
@@ -1396,8 +1390,6 @@ function renderTaskFlat(task, isArchived) {
                 ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
-                ${task.prevId ? `<span class="task-meta">⬅️ 依赖 #${task.prevId}</span>` : ''}
-                ${task.parentId ? `<span class="task-meta">📎 父级 #${task.parentId}</span>` : ''}
                 <div class="task-actions">
                     ${!isArchived ? `
                         <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
