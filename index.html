@@ -155,7 +155,6 @@
         .pagination .page-info{font-size:.75rem;color:var(--text-muted);padding:0 8px}
         .pagination .page-btn.ellipsis{background:transparent;border:none;cursor:default;color:var(--text-muted)}
 
-        /* 原地绽放动画 */
         .confetti-pop{position:fixed;pointer-events:none;z-index:9999;font-size:42px;opacity:0;animation:confettiPop 1s ease-out forwards;user-select:none;text-shadow:0 0 30px rgba(255,255,255,0.4)}
         @keyframes confettiPop{
             0%{opacity:0;transform:scale(0.2) rotate(0deg)}
@@ -165,12 +164,20 @@
             100%{opacity:0;transform:scale(0.5) rotate(var(--rot4, 10deg))}
         }
 
-        /* 项目展开子任务样式 */
         .project-expandable{cursor:pointer}
         .project-expandable .expand-icon{display:inline-block;transition:transform .25s;margin-right:6px;font-size:.8rem}
         .project-expandable .expand-icon.open{transform:rotate(90deg)}
         .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
         .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
+
+        /* 项目内任务层级缩进 */
+        .task-level-0{padding-left:0}
+        .task-level-1{padding-left:24px}
+        .task-level-2{padding-left:48px}
+        .task-level-3{padding-left:72px}
+        .task-level-4{padding-left:96px}
+        .task-level-5{padding-left:120px}
+        .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
 
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
@@ -228,7 +235,7 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库（可展开显示任务） ===== -->
+    <!-- ===== 项目总库（可展开显示任务层级） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
@@ -238,7 +245,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库 ===== -->
+    <!-- ===== 全局任务总库（平铺显示，无层级） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -383,7 +390,6 @@ function burstPop(x, y) {
     el.style.top = (y - 21) + 'px';
     el.style.color = color;
     
-    // 随机旋转角度
     const rot1 = (Math.random() - 0.5) * 60;
     const rot2 = (Math.random() - 0.5) * 80;
     const rot3 = (Math.random() - 0.5) * 40;
@@ -423,8 +429,6 @@ let dataLoaded = false;
 
 let projectPage = 1;
 let taskPage = 1;
-
-// 记录展开的项目
 let expandedProjects = new Set();
 
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
@@ -1147,6 +1151,47 @@ function renderPagination(containerId, currentPage, totalPages, onChange) {
 }
 
 // ============================================================
+//  构建项目内任务树（按父子层级）
+// ============================================================
+function buildProjectTaskTree(projectId) {
+    const allTasks = getTasksByProject(projectId);
+    if (allTasks.length === 0) return [];
+    
+    // 按父级分组
+    const taskMap = {};
+    allTasks.forEach(t => { taskMap[t.id] = t; });
+    
+    // 找出顶级任务（父级不在该项目任务中，或parentId为null）
+    const topTasks = allTasks.filter(t => {
+        if (!t.parentId) return true;
+        // 检查父级是否属于该项目
+        const parent = taskMap[t.parentId];
+        return !parent;
+    });
+    
+    // 按紧急度排序顶级任务
+    const sortKey = document.getElementById('taskSortOrder').value || 'urgency-desc';
+    const sortedTop = sortTasks([...topTasks], sortKey);
+    
+    // 递归获取子任务
+    function getChildrenWithSort(parentId) {
+        const children = allTasks.filter(t => t.parentId === parentId);
+        return sortTasks([...children], sortKey);
+    }
+    
+    // 构建树形结构
+    function buildTree(task) {
+        const children = getChildrenWithSort(task.id);
+        return {
+            ...task,
+            children: children.map(c => buildTree(c))
+        };
+    }
+    
+    return sortedTop.map(t => buildTree(t));
+}
+
+// ============================================================
 //  渲染
 // ============================================================
 function renderAll() { 
@@ -1156,7 +1201,9 @@ function renderAll() {
 
 function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// 渲染项目及其子任务
+// ============================================================
+//  渲染项目（含任务层级树）
+// ============================================================
 function renderProjects() {
     const container = document.getElementById('projectList');
     const projects = data.projects;
@@ -1176,20 +1223,67 @@ function renderProjects() {
             `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
         ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         
-        // 获取该项目关联的任务
-        const projectTasks = getTasksByProject(p.id);
+        // 构建该项目的任务树
+        const tree = buildProjectTaskTree(p.id);
+        const taskCount = tree.length;
         const isExpanded = expandedProjects.has(p.id);
-        const taskCount = projectTasks.length;
         
-        // 渲染子任务
-        let tasksHtml = '';
-        if (taskCount > 0) {
-            // 对子任务排序（按紧急度）
-            const sortedTasks = sortTasks([...projectTasks], document.getElementById('taskSortOrder').value || 'urgency-desc');
-            tasksHtml = sortedTasks.map(t => renderTaskItemSimple(t, false)).join('');
-        } else {
-            tasksHtml = '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>';
+        // 递归渲染任务树
+        function renderTreeNodes(nodes, level) {
+            if (!nodes || nodes.length === 0) return '';
+            const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
+            return nodes.map(node => {
+                const children = node.children || [];
+                const hasChildren = children.length > 0;
+                let isBlocked = false;
+                if (node.prevId) { const prev = getTask(node.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+                const displayStatus = isBlocked ? 'blocked' : node.status;
+                
+                const nodeCats = getCategoriesByIds(node.categoryIds || []);
+                const nodeCatTags = nodeCats.length ? nodeCats.map(c => 
+                    `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+                ).join('') : '';
+                
+                const urgencyMap = {
+                    critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+                    high: { label: '⚡ 高', cls: 'urgency-high' },
+                    medium: { label: '📌 中', cls: 'urgency-medium' },
+                    low: { label: '📅 低', cls: 'urgency-low' },
+                    none: { label: '⏳ 无', cls: 'urgency-none' }
+                };
+                const u = urgencyMap[node.urgency] || urgencyMap.medium;
+                
+                const childrenHtml = hasChildren ? 
+                    `<div class="task-level-indent">${renderTreeNodes(children, level + 1)}</div>` : '';
+                
+                return `
+                    <div class="task-item ${levelClass}" style="padding:8px 0;">
+                        <div class="task-row" style="gap:6px 12px;">
+                            ${hasChildren ? `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : `<span style="width:16px;display:inline-block;"></span>`}
+                            <span class="task-name" style="font-size:.85rem;">${escHtml(node.name)}</span>
+                            ${nodeCatTags ? `<span class="task-cats">${nodeCatTags}</span>` : ''}
+                            <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
+                            <span class="priority-tag priority-${node.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${node.priority}</span>
+                            <span class="status-tag status-${displayStatus}" style="font-size:.6rem;padding:1px 10px;">${displayStatus}</span>
+                            <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
+                            ${node.prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node.prevId}</span>` : ''}
+                            <div class="task-actions">
+                                <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
+                                <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>
+                                ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
+                                <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${node.id})">✕</button>
+                            </div>
+                        </div>
+                        ${node.note ? `<div style="font-size:.7rem;color:var(--text-muted);padding-left:12px;">📝 ${escHtml(node.note)}</div>` : ''}
+                        ${childrenHtml}
+                    </div>
+                `;
+            }).join('');
         }
+        
+        const tasksHtml = taskCount > 0 ? 
+            renderTreeNodes(tree, 1) : 
+            '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>';
         
         return `
             <div class="task-item project-expandable">
@@ -1219,52 +1313,9 @@ function renderProjects() {
         `function(page){ projectPage = page; renderProjects(); }`);
 }
 
-// 简化的任务渲染（用于项目内部）
-function renderTaskItemSimple(task, isArchived) {
-    const children = getChildren(task.id);
-    const hasChildren = children.length > 0;
-    let isBlocked = false;
-    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
-    const displayStatus = isBlocked ? 'blocked' : task.status;
-    
-    const cats = getCategoriesByIds(task.categoryIds || []);
-    const catTags = cats.length ? cats.map(c => 
-        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
-    ).join('') : '';
-
-    const urgencyMap = {
-        critical: { label: '🔥 紧急', cls: 'urgency-critical' },
-        high: { label: '⚡ 高', cls: 'urgency-high' },
-        medium: { label: '📌 中', cls: 'urgency-medium' },
-        low: { label: '📅 低', cls: 'urgency-low' },
-        none: { label: '⏳ 无', cls: 'urgency-none' }
-    };
-    const u = urgencyMap[task.urgency] || urgencyMap.medium;
-
-    return `
-        <div class="task-item" style="padding:10px 0;">
-            <div class="task-row" style="gap:6px 12px;">
-                <span class="task-name" style="font-size:.85rem;">${escHtml(task.name)}</span>
-                ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
-                <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
-                <span class="priority-tag priority-${task.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${task.priority}</span>
-                <span class="status-tag status-${displayStatus}" style="font-size:.6rem;padding:1px 10px;">${displayStatus}</span>
-                <span class="task-meta" style="font-size:.7rem;">📅 ${task.start}</span>
-                ${task.prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${task.prevId}</span>` : ''}
-                <div class="task-actions">
-                    <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${task.id})">✎</button>
-                    <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${task.id})">✔</button>
-                    ${task.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${task.id})">✅</button>` : ''}
-                    <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${task.id})">✕</button>
-                </div>
-            </div>
-            ${task.note ? `<div style="font-size:.7rem;color:var(--text-muted);padding-left:12px;">📝 ${escHtml(task.note)}</div>` : ''}
-            ${hasChildren ? `<div class="task-children" style="margin-left:16px;padding-left:12px;">${children.map(c => renderTaskItemSimple(c, isArchived)).join('')}</div>` : ''}
-        </div>
-    `;
-}
-
-// 全局任务列表渲染（不显示父级关系，只显示任务本身）
+// ============================================================
+//  全局任务渲染（平铺，无层级关系）
+// ============================================================
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
@@ -1287,16 +1338,15 @@ function renderTasks() {
             document.getElementById('taskPagination').innerHTML = '';
             return; 
         }
-        tasks = sortTasks(tasks, sortKey);
-        const result = paginateItems(tasks, taskPage, PAGE_SIZE);
-        container.innerHTML = result.items.map(t => renderTaskItemGlobal(t, true)).join('');
+        const sorted = sortTasks([...tasks], sortKey);
+        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+        container.innerHTML = result.items.map(t => renderTaskFlat(t, true)).join('');
         renderPagination('taskPagination', result.currentPage, result.totalPages, 
             `function(page){ taskPage = page; renderTasks(); }`);
         return;
     }
 
-    // 不显示父级关系，所有任务平铺显示，但保留子任务缩进作为视觉提示
-    const sorted = sortTasks(tasks, sortKey);
+    const sorted = sortTasks([...tasks], sortKey);
     
     if (sorted.length === 0) {
         container.innerHTML = '<div class="empty-state">暂无符合条件的任务</div>';
@@ -1305,19 +1355,13 @@ function renderTasks() {
     }
     
     const result = paginateItems(sorted, taskPage, PAGE_SIZE);
-    container.innerHTML = result.items.map(t => renderTaskItemGlobal(t, false)).join('');
+    container.innerHTML = result.items.map(t => renderTaskFlat(t, false)).join('');
     renderPagination('taskPagination', result.currentPage, result.totalPages, 
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-// 全局任务渲染（不显示父级任务关系）
-function renderTaskItemGlobal(task, isArchived) {
-    const children = getChildren(task.id);
-    const hasChildren = children.length > 0;
-    let isBlocked = false;
-    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
-    const displayStatus = isBlocked ? 'blocked' : task.status;
-    
+// 平铺任务渲染（无层级）
+function renderTaskFlat(task, isArchived) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
@@ -1336,6 +1380,10 @@ function renderTaskItemGlobal(task, isArchived) {
         none: { label: '⏳ 无', cls: 'urgency-none' }
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
+    
+    let isBlocked = false;
+    if (task.prevId) { const prev = getTask(task.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+    const displayStatus = isBlocked ? 'blocked' : task.status;
 
     return `
         <div class="task-item">
@@ -1349,6 +1397,7 @@ function renderTaskItemGlobal(task, isArchived) {
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
                 ${task.prevId ? `<span class="task-meta">⬅️ 依赖 #${task.prevId}</span>` : ''}
+                ${task.parentId ? `<span class="task-meta">📎 父级 #${task.parentId}</span>` : ''}
                 <div class="task-actions">
                     ${!isArchived ? `
                         <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
@@ -1363,15 +1412,8 @@ function renderTaskItemGlobal(task, isArchived) {
             </div>
             <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
             ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
-            ${hasChildren ? `<div class="task-children collapse-enter active">${children.map(c => renderTaskItemGlobal(c, isArchived)).join('')}</div>` : ''}
         </div>
     `;
-}
-
-function toggleChildren(btn) {
-    const parent = btn.closest('.task-item');
-    const children = parent.querySelector('.task-children');
-    if (children) { children.classList.toggle('active'); btn.textContent = children.classList.contains('active') ? `▼ ${children.querySelectorAll('.task-item').length}个子任务` : `▶ ${children.querySelectorAll('.task-item').length}个子任务`; }
 }
 
 function updateStats() {
