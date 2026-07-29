@@ -178,8 +178,14 @@
         .task-level-5{padding-left:120px}
         .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
 
-        /* 任务总库 - 无层级，无从属标识 */
         .task-flat .task-meta-relation{display:none !important}
+
+        /* 编辑项目内任务关系的弹窗 */
+        .relation-modal .task-list{max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;margin:8px 0}
+        .relation-modal .task-item-row{display:flex;align-items:center;gap:12px;padding:6px 8px;border-radius:4px;cursor:pointer;transition:background .15s}
+        .relation-modal .task-item-row:hover{background:var(--surface-hover)}
+        .relation-modal .task-item-row.selected{background:var(--primary-light);border-left:3px solid var(--primary)}
+        .relation-modal .task-item-row .task-check{width:20px;text-align:center}
 
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
@@ -237,7 +243,7 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库（可展开显示任务层级） ===== -->
+    <!-- ===== 项目总库 ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
@@ -247,7 +253,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库（平铺，无任何从属关系） ===== -->
+    <!-- ===== 全局任务总库 ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -336,8 +342,7 @@
                             <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
                         </div>
                     </div>
-                    <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
-                    <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
+                    <!-- 注意：父级任务和前置任务已移除，改为在项目内编辑关系 -->
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
                     <div class="form-group"><label>紧急度 <span class="required">*</span></label>
                         <select id="tUrgency" required>
@@ -356,6 +361,31 @@
                     <div class="form-group" style="grid-column:1/-1;"><label>备注</label><textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea></div>
                 </div>
                 <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('taskModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== 编辑项目内任务关系弹窗 ===== -->
+    <div class="modal-overlay" id="relationModal">
+        <div class="modal relation-modal">
+            <div class="modal-header"><h3 id="relationModalTitle">编辑项目内任务关系</h3><button class="modal-close" onclick="closeModal('relationModal')">&times;</button></div>
+            <div class="save-hint">💡 设置任务在项目中的父子关系和先后顺序。<br>📌 父级任务：当前任务挂在哪个任务下面。<br>📌 前置任务：当前任务需要等待哪个任务完成。</div>
+            <form id="relationForm" onsubmit="saveRelation(event)">
+                <input type="hidden" id="relationProjectId">
+                <input type="hidden" id="relationTaskId">
+                <div class="form-grid">
+                    <div class="form-group"><label>父级任务</label>
+                        <select id="rParent" style="min-height:40px;">
+                            <option value="">无（顶级任务）</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>前置任务</label>
+                        <select id="rPrev" style="min-height:40px;">
+                            <option value="">无</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions"><button type="submit" class="btn">保存关系</button><button type="button" class="btn btn-outline" onclick="closeModal('relationModal')">取消</button></div>
             </form>
         </div>
     </div>
@@ -421,12 +451,16 @@ document.addEventListener('click', function(e) {
 
 // ============================================================
 //  ChinaMI1949 · 结构化个人事务管理系统
+//  数据结构：
+//  - tasks: 任务本身的数据（名称、分类、优先级、时间等）
+//  - taskRelations: { taskId: { projectId: { parentId, prevId } } }
+//    每个任务在每个项目中都有独立的关系
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
 let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
-let data = { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
+let data = { projects: [], tasks: [], categories: [], taskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
 
 let projectPage = 1;
@@ -461,16 +495,43 @@ function setStatus(text, type) {
     if (type === 'loading') el.classList.add('loading');
 }
 
-function defaultData() { return { projects: [], tasks: [], categories: [], nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
+function defaultData() { return { projects: [], tasks: [], categories: [], taskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
 
 function getProjects() { return data ? data.projects : []; }
 function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
 function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
-function getChildren(taskId) { return data ? data.tasks.filter(t => t.parentId === taskId && !t.archived) : []; }
-function getTasksByProject(projectId) { return data ? data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived) : []; }
 function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
 function getCategory(id) { return getCategories().find(c => c.id === id); }
 function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
+
+// 获取任务在某个项目中的关系
+function getTaskRelation(taskId, projectId) {
+    if (!data.taskRelations) data.taskRelations = {};
+    if (!data.taskRelations[taskId]) return null;
+    return data.taskRelations[taskId][projectId] || null;
+}
+
+// 设置任务在某个项目中的关系
+function setTaskRelation(taskId, projectId, parentId, prevId) {
+    if (!data.taskRelations) data.taskRelations = {};
+    if (!data.taskRelations[taskId]) data.taskRelations[taskId] = {};
+    data.taskRelations[taskId][projectId] = { parentId: parentId || null, prevId: prevId || null };
+}
+
+// 获取项目中的所有任务（含关系）
+function getTasksByProject(projectId) {
+    const allTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
+    return allTasks.map(t => {
+        const rel = getTaskRelation(t.id, projectId);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
+// 获取任务在项目中的子任务
+function getChildrenInProject(taskId, projectId) {
+    const tasks = getTasksByProject(projectId);
+    return tasks.filter(t => t._parentId === taskId);
+}
 
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
 
@@ -478,7 +539,9 @@ function loadLocalCache() {
     try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); 
         d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
         d.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
-        if (!d.categories) d.categories = []; if (!d.nextCategoryId) d.nextCategoryId = 1; 
+        if (!d.categories) d.categories = [];
+        if (!d.taskRelations) d.taskRelations = {};
+        if (!d.nextCategoryId) d.nextCategoryId = 1; 
         return d; 
     } } catch (e) {}
     return null;
@@ -527,6 +590,7 @@ async function loadFromGitHub() {
                 data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
                 data.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
                 if (!data.categories) data.categories = [];
+                if (!data.taskRelations) data.taskRelations = {};
                 if (!data.nextCategoryId) data.nextCategoryId = 1;
                 dataLoaded = true;
                 saveLocalCache();
@@ -911,6 +975,14 @@ function openProjectModal(projectId) {
 function deleteProject(id) {
     if (!confirm('确定删除此项目吗？')) return;
     data.projects = data.projects.filter(p => p.id !== id);
+    // 清理任务关系
+    if (data.taskRelations) {
+        Object.keys(data.taskRelations).forEach(taskId => {
+            if (data.taskRelations[taskId]) {
+                delete data.taskRelations[taskId][id];
+            }
+        });
+    }
     saveLocalCache();
     renderAll();
     updateStats();
@@ -942,8 +1014,6 @@ function saveTask(e) {
         name: document.getElementById('tName').value.trim(),
         projectIds: projectIds,
         categoryIds: categoryIds,
-        parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
-        prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
         priority: document.getElementById('tPriority').value,
         urgency: document.getElementById('tUrgency').value,
         start: document.getElementById('tStart').value,
@@ -956,7 +1026,16 @@ function saveTask(e) {
     };
     if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
     if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
-    if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++; data.tasks.push(obj); }
+    if (id) { 
+        const t = getTask(Number(id)); 
+        if (t) {
+            // 保留原有关系，更新其他字段
+            Object.assign(t, obj);
+        }
+    } else { 
+        obj.id = data.nextTaskId++; 
+        data.tasks.push(obj);
+    }
     saveLocalCache();
     closeModal('taskModal');
     document.getElementById('taskForm').reset();
@@ -986,8 +1065,6 @@ function openTaskModal(taskId) {
                 opt.selected = t.categoryIds.includes(Number(opt.value));
             });
         }
-        if (t.parentId) document.getElementById('tParent').value = t.parentId;
-        if (t.prevId) document.getElementById('tPrev').value = t.prevId;
         document.getElementById('tPriority').value = t.priority;
         document.getElementById('tUrgency').value = t.urgency || 'medium';
         document.getElementById('tStart').value = t.start;
@@ -1005,18 +1082,15 @@ function openTaskModal(taskId) {
 function populateTaskSelects() {
     const projSelect = document.getElementById('tProjects');
     projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    const editId = document.getElementById('taskEditId').value;
-    const parentSelect = document.getElementById('tParent');
-    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
-    const prevSelect = document.getElementById('tPrev');
-    prevSelect.innerHTML = '<option value="">无</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
 }
 
 function deleteTask(id) {
     if (!confirm('确定删除此任务吗？')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
+    // 清理关系
+    if (data.taskRelations) {
+        delete data.taskRelations[id];
+    }
     saveLocalCache();
     renderAll();
     updateStats();
@@ -1033,7 +1107,20 @@ function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
     if (t.status === 'done') { alert('该任务已验收通过'); return; }
-    if (t.prevId) { const prev = getTask(t.prevId); if (prev && prev.status !== 'done') { alert('前置任务尚未验收通过'); return; } }
+    // 检查在关联项目中的前置任务是否完成
+    // 简化：只要有前置任务且未完成就阻止
+    if (data.taskRelations && data.taskRelations[taskId]) {
+        for (const projectId in data.taskRelations[taskId]) {
+            const rel = data.taskRelations[taskId][projectId];
+            if (rel && rel.prevId) {
+                const prev = getTask(rel.prevId);
+                if (prev && prev.status !== 'done') {
+                    alert('前置任务尚未验收通过（项目 #' + projectId + '）');
+                    return;
+                }
+            }
+        }
+    }
     if (!t.accept || t.accept.trim() === '') { alert('请填写验收指标后再标记完成'); return; }
     t.status = 'review';
     saveLocalCache();
@@ -1051,6 +1138,64 @@ function approveTask(taskId) {
     renderAll();
     updateStats();
     setStatus('💡 任务已验收通过 (请同步到GitHub)', 'saving');
+}
+
+// ============================================================
+//  编辑项目内任务关系
+// ============================================================
+function openRelationModal(taskId, projectId) {
+    const modal = document.getElementById('relationModal');
+    document.getElementById('relationProjectId').value = projectId;
+    document.getElementById('relationTaskId').value = taskId;
+    document.getElementById('relationModalTitle').textContent = '编辑任务关系 - ' + (getTask(taskId)?.name || '任务');
+    
+    const task = getTask(taskId);
+    if (!task) { alert('任务不存在'); return; }
+    
+    // 获取该项目下的所有其他任务
+    const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
+    
+    // 填充父级任务下拉
+    const parentSelect = document.getElementById('rParent');
+    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
+    projectTasks.forEach(t => {
+        parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+    
+    // 填充前置任务下拉
+    const prevSelect = document.getElementById('rPrev');
+    prevSelect.innerHTML = '<option value="">无</option>';
+    projectTasks.forEach(t => {
+        prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+    
+    // 加载当前关系
+    const rel = getTaskRelation(taskId, projectId);
+    if (rel) {
+        if (rel.parentId) parentSelect.value = rel.parentId;
+        if (rel.prevId) prevSelect.value = rel.prevId;
+    }
+    
+    modal.classList.add('active');
+}
+
+function saveRelation(e) {
+    e.preventDefault();
+    const projectId = Number(document.getElementById('relationProjectId').value);
+    const taskId = Number(document.getElementById('relationTaskId').value);
+    const parentId = document.getElementById('rParent').value ? Number(document.getElementById('rParent').value) : null;
+    const prevId = document.getElementById('rPrev').value ? Number(document.getElementById('rPrev').value) : null;
+    
+    // 检查循环依赖
+    if (parentId === taskId) { alert('不能将自己设为父级任务'); return; }
+    if (prevId === taskId) { alert('不能将自己设为前置任务'); return; }
+    
+    setTaskRelation(taskId, projectId, parentId, prevId);
+    saveLocalCache();
+    closeModal('relationModal');
+    renderAll();
+    updateStats();
+    setStatus('💡 任务关系已保存 (请同步到GitHub)', 'saving');
 }
 
 // ============================================================
@@ -1153,27 +1298,26 @@ function renderPagination(containerId, currentPage, totalPages, onChange) {
 }
 
 // ============================================================
-//  构建项目内任务树（按父子层级）
+//  构建项目内任务树（使用项目独立的关系）
 // ============================================================
 function buildProjectTaskTree(projectId) {
     const allTasks = getTasksByProject(projectId);
     if (allTasks.length === 0) return [];
     
+    // 找出顶级任务（_parentId 为空或指向不在该项目中的任务）
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
     
-    // 找出顶级任务
     const topTasks = allTasks.filter(t => {
-        if (!t.parentId) return true;
-        const parent = taskMap[t.parentId];
-        return !parent;
+        if (!t._parentId) return true;
+        return !taskMap[t._parentId];
     });
     
     const sortKey = document.getElementById('taskSortOrder').value || 'urgency-desc';
     const sortedTop = sortTasks([...topTasks], sortKey);
     
     function getChildrenWithSort(parentId) {
-        const children = allTasks.filter(t => t.parentId === parentId);
+        const children = allTasks.filter(t => t._parentId === parentId);
         return sortTasks([...children], sortKey);
     }
     
@@ -1231,7 +1375,7 @@ function renderProjects() {
                 const children = node.children || [];
                 const hasChildren = children.length > 0;
                 let isBlocked = false;
-                if (node.prevId) { const prev = getTask(node.prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+                if (node._prevId) { const prev = getTask(node._prevId); if (prev && prev.status !== 'done') isBlocked = true; }
                 const displayStatus = isBlocked ? 'blocked' : node.status;
                 
                 const nodeCats = getCategoriesByIds(node.categoryIds || []);
@@ -1251,6 +1395,9 @@ function renderProjects() {
                 const childrenHtml = hasChildren ? 
                     `<div class="task-level-indent">${renderTreeNodes(children, level + 1)}</div>` : '';
                 
+                // 关系按钮
+                const relBtn = `<button class="btn btn-sm btn-ghost" style="padding:1px 8px;font-size:.6rem;" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})">🔗</button>`;
+                
                 return `
                     <div class="task-item ${levelClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
@@ -1261,8 +1408,9 @@ function renderProjects() {
                             <span class="priority-tag priority-${node.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${node.priority}</span>
                             <span class="status-tag status-${displayStatus}" style="font-size:.6rem;padding:1px 10px;">${displayStatus}</span>
                             <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
-                            ${node.prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node.prevId}</span>` : ''}
+                            ${node._prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node._prevId}</span>` : ''}
                             <div class="task-actions">
+                                ${relBtn}
                                 <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
                                 <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>
                                 ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
@@ -1309,7 +1457,7 @@ function renderProjects() {
 }
 
 // ============================================================
-//  全局任务渲染（纯平铺，无任何从属关系标识）
+//  全局任务渲染（纯平铺，无任何从属关系）
 // ============================================================
 function renderTasks() {
     const container = document.getElementById('taskList');
@@ -1355,7 +1503,7 @@ function renderTasks() {
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-// 平铺任务渲染 - 不显示任何从属关系（无父级、无前置依赖、无层级）
+// 平铺任务渲染 - 不显示任何从属关系
 function renderTaskFlat(task, isArchived) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
@@ -1376,7 +1524,6 @@ function renderTaskFlat(task, isArchived) {
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
     
-    // 不显示前置依赖和父级关系
     const displayStatus = task.status;
 
     return `
