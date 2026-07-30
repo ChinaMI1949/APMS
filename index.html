@@ -6,14 +6,14 @@
     <title>ChinaMI1949 · 结构化个人事务管理系统</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg:#e8ddd0;--surface:#f5efe8;--surface-hover:#dccfc0;--text:#3d2c1b;--text-secondary:#6b5340;--text-muted:#a68b78;--border:#c4b09a;--primary:#8b7355;--primary-light:#e0d2c0;--primary-gradient:linear-gradient(135deg,#8b7355,#6b5740);--shadow:0 6px 24px rgba(107,87,64,0.10);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
-        [data-theme="dark"]{--bg:#1e1813;--surface:#2a221b;--surface-hover:#3d3228;--text:#e8ddd0;--text-secondary:#c4b4a0;--text-muted:#8a7a6a;--border:#4d3d2e;--primary:#b8956a;--primary-light:#3d3228;--shadow:0 6px 24px rgba(0,0,0,0.5)}
+        :root{--bg:#f5f0e8;--surface:#ffffff;--surface-hover:#f0eadc;--text:#1a1610;--text-secondary:#5a4d38;--text-muted:#9a8a70;--border:#e0d4c0;--primary:#c49a3a;--primary-light:#f5eddc;--primary-gradient:linear-gradient(135deg,#c49a3a,#a0782a);--shadow:0 6px 24px rgba(196,154,58,0.18);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+        [data-theme="dark"]{--bg:#1a1610;--surface:#262018;--surface-hover:#3a3228;--text:#ede8dc;--text-secondary:#c4b8a0;--text-muted:#8a7a68;--border:#4d4030;--primary:#d4aa4a;--primary-light:#3a3228;--shadow:0 6px 24px rgba(0,0,0,0.5)}
         html{scroll-behavior:smooth}
         body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh;cursor:pointer}
         .container{max-width:1100px;margin:0 auto;pointer-events:none}
         .container > * {pointer-events:auto}
-        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(245,239,232,0.88)}
-        [data-theme="dark"] nav{background:rgba(42,34,27,0.90)}
+        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.88)}
+        [data-theme="dark"] nav{background:rgba(38,32,24,0.90)}
         .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .nav-brand small{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.5px}
         .nav-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -27,20 +27,31 @@
         .stats-bar .stat{text-align:center}
         .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
         .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+        
+        /* 分类查询栏 */
+        .filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--surface);padding:12px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;pointer-events:auto}
+        .filter-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary);white-space:nowrap}
+        .filter-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;color:var(--text);min-width:140px;pointer-events:auto;cursor:pointer}
+        .filter-bar select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(196,154,58,0.15)}
+        .filter-bar .filter-hint{font-size:.7rem;color:var(--text-muted);margin-left:4px}
+        .filter-bar .filter-badge{display:inline-block;background:var(--primary-gradient);color:#fff;padding:0 12px;border-radius:12px;font-size:.65rem;font-weight:600;line-height:22px}
+        .filter-bar .clear-filter{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-decoration:underline;pointer-events:auto}
+        .filter-bar .clear-filter:hover{color:var(--primary)}
+        
         .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;pointer-events:auto}
         .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
         .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
         .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .card-header .sub{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.3px;margin-left:4px}
-        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(139,115,85,0.25);pointer-events:auto}
-        .btn:hover{transform:scale(1.02)}
+        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(196,154,58,0.30);pointer-events:auto}
+        .btn:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(196,154,58,0.40)}
         .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
         .btn-outline:hover{background:var(--primary-light)}
         .btn-sm{padding:4px 14px;font-size:.75rem}
-        .btn-danger{background:#a0524a;box-shadow:0 4px 12px rgba(160,82,74,0.2)}
-        .btn-danger:hover{background:#8a443d}
-        .btn-success{background:#6b8f5e;box-shadow:0 4px 12px rgba(107,143,94,0.2)}
-        .btn-success:hover{background:#5a7a4e}
+        .btn-danger{background:#c0392b;box-shadow:0 4px 12px rgba(192,57,43,0.2)}
+        .btn-danger:hover{background:#a93226}
+        .btn-success{background:#27ae60;box-shadow:0 4px 12px rgba(39,174,96,0.2)}
+        .btn-success:hover{background:#1e8449}
         .btn-github{background:#24292e;color:#fff;border:none}
         .btn-github:hover{background:#1a1e22}
         .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
@@ -48,18 +59,18 @@
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
         .form-group{display:flex;flex-direction:column;gap:4px}
         .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
-        .form-group label .required{color:#a0524a;margin-left:2px}
+        .form-group label .required{color:#c49a3a;margin-left:2px}
         .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font);pointer-events:auto}
-        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(139,115,85,0.15)}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(196,154,58,0.15)}
         .form-group textarea{resize:vertical;min-height:50px}
         .form-group select[multiple]{min-height:70px;padding:4px}
         .form-group select[multiple] option{padding:4px 8px;border-radius:4px}
         .form-group select[multiple] option:hover{background:var(--primary-light)}
         .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
         .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
-        .priority-p0{background:#fde8e8;color:#a0524a}
-        .priority-p1{background:#fef3e7;color:#b06a3a}
-        .priority-p2{background:#fef9e7;color:#9a8a3a}
+        .priority-p0{background:#fde8e8;color:#c0392b}
+        .priority-p1{background:#fef3e7;color:#d35400}
+        .priority-p2{background:#fef9e7;color:#b7950b}
         .priority-p3{background:#eef2f5;color:#5d6d7e}
         [data-theme="dark"] .priority-p0{background:#3d1a1a;color:#f1948a}
         [data-theme="dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
@@ -67,9 +78,9 @@
         [data-theme="dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
         .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .urgency-critical{background:#7b1fa2;color:#fff}
-        .urgency-high{background:#a0524a;color:#fff}
-        .urgency-medium{background:#b8956a;color:#fff}
-        .urgency-low{background:#6b8f5e;color:#fff}
+        .urgency-high{background:#c0392b;color:#fff}
+        .urgency-medium{background:#c49a3a;color:#fff}
+        .urgency-low{background:#27ae60;color:#fff}
         .urgency-none{background:#bdc3c7;color:#2c3e50}
         [data-theme="dark"] .urgency-critical{background:#9b4dca;color:#fff}
         [data-theme="dark"] .urgency-high{background:#c0392b;color:#fff}
@@ -86,7 +97,7 @@
         .status-doing{background:#eaf2f8;color:#2e86c1}
         .status-review{background:#fef9e7;color:#9a8a3a}
         .status-done{background:#e9f7ef;color:#1e8449}
-        .status-blocked{background:#fde8e8;color:#a0524a}
+        .status-blocked{background:#fde8e8;color:#c0392b}
         [data-theme="dark"] .status-planning{background:#2a2b33;color:#99a3b0}
         [data-theme="dark"] .status-active{background:#1a2a3d;color:#5dade2}
         [data-theme="dark"] .status-paused{background:#3d3a1a;color:#f4d03f}
@@ -102,7 +113,7 @@
         .cat-tag:active{cursor:grabbing;opacity:.7}
         .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0}
         .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%;line-height:1;pointer-events:auto}
-        .cat-tag .del:hover{color:#a0524a;background:#fde8e8}
+        .cat-tag .del:hover{color:#c49a3a;background:#f5eddc}
         .cat-tag .drag-handle{font-size:.7rem;color:var(--text-muted);cursor:grab;padding:0 2px;opacity:.5}
         .cat-tag .drag-handle:hover{opacity:1}
         .cat-tag.dragging{opacity:.3;border-color:var(--primary)}
@@ -123,15 +134,15 @@
         .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px;pointer-events:auto}
         .task-sub-toggle:hover{background:var(--surface-hover)}
         .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
-        .modal-overlay{position:fixed;inset:0;background:rgba(30,24,19,0.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;pointer-events:auto}
+        .modal-overlay{position:fixed;inset:0;background:rgba(26,22,16,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;pointer-events:auto}
         .modal-overlay.active{display:flex}
         .modal{background:var(--surface);border-radius:var(--radius);max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
         .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
         .modal-header h3{font-size:1.2rem}
         .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)}
         .modal-close:hover{color:var(--text)}
-        .save-hint{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:#1565c0}
-        [data-theme="dark"] .save-hint{background:#1a2a3d;border-color:#2e7d32;color:#81c784}
+        .save-hint{background:#f5eddc;border:1px solid #e8d8b8;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:#a0782a}
+        [data-theme="dark"] .save-hint{background:#2a2418;border-color:#4d3d28;color:#d4aa4a}
         .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
         [data-theme="dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
         .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
@@ -146,7 +157,7 @@
         .system-motto .motto-divider{background:transparent;padding:0 4px;color:var(--border)}
         .system-motto .courage{background:var(--primary-gradient);color:#fff;font-weight:600;padding:2px 14px;border-radius:20px;font-size:.7rem}
         .system-motto .tagline{color:var(--primary);font-weight:600;font-size:.7rem;background:transparent;padding:0}
-        .system-motto .blessing{background:linear-gradient(135deg,#8b7355,#6b5740);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(139,115,85,0.3)}
+        .system-motto .blessing{background:var(--primary-gradient);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(196,154,58,0.30)}
         .pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:12px}
         .pagination .page-btn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--text-secondary);cursor:pointer;transition:.15s;min-width:32px;text-align:center;pointer-events:auto}
         .pagination .page-btn:hover:not(.active):not(.disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
@@ -191,7 +202,14 @@
 
         .relation-badge{font-size:.55rem;color:var(--text-muted);background:var(--surface-hover);padding:0 6px;border-radius:8px;margin-left:4px}
 
-        @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
+        .project-link{cursor:pointer;color:var(--primary);text-decoration:none;transition:color .2s;font-weight:700}
+        .project-link:hover{color:#a0782a;text-decoration:underline}
+
+        /* 分类查询高亮 */
+        .filter-active .card{border-color:var(--primary);border-width:2px}
+        .filter-active .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+        @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
         ::-webkit-scrollbar-track{background:var(--bg)}
@@ -235,6 +253,17 @@
 
     <div class="stats-bar" id="statsBar"></div>
 
+    <!-- ===== 分类查询栏 ===== -->
+    <div class="filter-bar" id="filterBar">
+        <label>🔍 按分类筛选：</label>
+        <select id="categoryFilter" onchange="applyCategoryFilter()">
+            <option value="">📊 全部</option>
+        </select>
+        <span class="filter-hint" id="filterHint">选择分类查看对应的项目和任务</span>
+        <button class="clear-filter" id="clearFilterBtn" onclick="clearCategoryFilter()" style="display:none;">✕ 清除筛选</button>
+        <span class="filter-badge" id="filterBadge" style="display:none;"></span>
+    </div>
+
     <!-- ===== 分类管理 ===== -->
     <div class="card">
         <div class="card-header">
@@ -248,7 +277,7 @@
     </div>
 
     <!-- ===== 项目总库 ===== -->
-    <div class="card">
+    <div class="card" id="projectCard">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
             <button class="btn" onclick="openProjectModal()">+ 新建项目</button>
@@ -258,7 +287,7 @@
     </div>
 
     <!-- ===== 全局任务总库 ===== -->
-    <div class="card">
+    <div class="card" id="taskCard">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
@@ -299,7 +328,7 @@
     <div class="modal-overlay" id="projectModal">
         <div class="modal">
             <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:#a0524a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
+            <div class="save-hint">💡 所有带 <span style="color:#c49a3a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
             <form id="projectForm" onsubmit="saveProject(event)">
                 <input type="hidden" id="projectEditId">
                 <div class="form-grid">
@@ -326,7 +355,7 @@
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:#a0524a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
+            <div class="save-hint">💡 所有带 <span style="color:#c49a3a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -454,13 +483,6 @@ document.addEventListener('click', function(e) {
 
 // ============================================================
 //  ChinaMI1949 · 结构化个人事务管理系统
-//  
-//  数据结构：
-//  - tasks: 任务本身的数据（名称、分类、优先级、时间、状态等）
-//  - projectTaskRelations: { projectId: { taskId: { parentId, prevId } } }
-//    每个任务在每个项目中都有独立的关系
-//  - 全局任务总库不显示任何从属或先后关系
-//  - 每个项目内部独立维护任务层级树，可通过 🔗 按钮编辑关系
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
@@ -468,11 +490,93 @@ let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
+let selectedCategoryId = null;
 
 let projectPage = 1;
 let taskPage = 1;
 let expandedProjects = new Set();
 
+// ============================================================
+//  分类查询功能
+// ============================================================
+function populateCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    if (!select) return;
+    const categories = getCategories();
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">📊 全部</option>';
+    categories.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+    if (currentVal) select.value = currentVal;
+}
+
+function applyCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    selectedCategoryId = select.value ? Number(select.value) : null;
+    renderAll();
+    updateFilterUI();
+}
+
+function clearCategoryFilter() {
+    document.getElementById('categoryFilter').value = '';
+    selectedCategoryId = null;
+    renderAll();
+    updateFilterUI();
+}
+
+function updateFilterUI() {
+    const hint = document.getElementById('filterHint');
+    const badge = document.getElementById('filterBadge');
+    const clearBtn = document.getElementById('clearFilterBtn');
+    const filterBar = document.getElementById('filterBar');
+    
+    if (selectedCategoryId) {
+        const cat = getCategory(selectedCategoryId);
+        hint.textContent = `🔍 当前筛选分类：「${cat ? cat.name : '已删除'}」`;
+        badge.textContent = `📌 ${cat ? cat.name : '已删除'}`;
+        badge.style.display = 'inline-block';
+        clearBtn.style.display = 'inline-block';
+        filterBar.classList.add('filter-active');
+    } else {
+        hint.textContent = '选择分类查看对应的项目和任务';
+        badge.style.display = 'none';
+        clearBtn.style.display = 'none';
+        filterBar.classList.remove('filter-active');
+    }
+}
+
+// 获取被筛选的项目
+function getFilteredProjects() {
+    let projects = data.projects;
+    if (selectedCategoryId) {
+        projects = projects.filter(p => p.categoryIds && p.categoryIds.includes(selectedCategoryId));
+    }
+    return projects;
+}
+
+// 获取被筛选的任务（全局视图）
+function getFilteredTasks() {
+    let tasks = data.tasks;
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks;
+}
+
+// 获取项目中被筛选的任务（用于项目展开）
+function getFilteredTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
+// ============================================================
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
 function saveConfig(e) {
@@ -510,27 +614,20 @@ function getCategories() { if (!data.categories) data.categories = []; return da
 function getCategory(id) { return getCategories().find(c => c.id === id); }
 function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
 
-// 获取项目任务关系
 function getProjectTaskRelation(projectId, taskId) {
     if (!data.projectTaskRelations) data.projectTaskRelations = {};
     if (!data.projectTaskRelations[projectId]) return null;
     return data.projectTaskRelations[projectId][taskId] || null;
 }
 
-// 设置项目任务关系
 function setProjectTaskRelation(projectId, taskId, parentId, prevId) {
     if (!data.projectTaskRelations) data.projectTaskRelations = {};
     if (!data.projectTaskRelations[projectId]) data.projectTaskRelations[projectId] = {};
     data.projectTaskRelations[projectId][taskId] = { parentId: parentId || null, prevId: prevId || null };
 }
 
-// 获取项目中的所有任务（含关系）
 function getTasksByProject(projectId) {
-    const allTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
-    return allTasks.map(t => {
-        const rel = getProjectTaskRelation(projectId, t.id);
-        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
-    });
+    return getFilteredTasksByProject(projectId);
 }
 
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
@@ -560,6 +657,7 @@ async function loadFromGitHub() {
         updateStats();
         renderCategories();
         populateAllSelects();
+        populateCategoryFilter();
         return;
     }
     try {
@@ -578,6 +676,7 @@ async function loadFromGitHub() {
             updateStats();
             renderCategories();
             populateAllSelects();
+            populateCategoryFilter();
             return;
         }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -599,6 +698,7 @@ async function loadFromGitHub() {
                 updateStats();
                 renderCategories();
                 populateAllSelects();
+                populateCategoryFilter();
                 return;
             }
         } catch (e) {}
@@ -610,6 +710,7 @@ async function loadFromGitHub() {
         updateStats();
         renderCategories();
         populateAllSelects();
+        populateCategoryFilter();
     } catch (err) {
         console.error('加载失败:', err);
         data = loadLocalCache() || defaultData();
@@ -619,6 +720,7 @@ async function loadFromGitHub() {
         updateStats();
         renderCategories();
         populateAllSelects();
+        populateCategoryFilter();
     }
 }
 
@@ -687,7 +789,7 @@ function addCategory() {
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
     if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
-    const colors = ['#8b7355', '#a68b78', '#7a6248', '#b8956a', '#5d4a35', '#c4b09a', '#6b5740', '#d4c0a8', '#4d3d2e', '#9d7a5a'];
+    const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
     const obj = { id: data.nextCategoryId || 1, name: name, color: color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
@@ -697,6 +799,7 @@ function addCategory() {
     input.value = '';
     renderCategories();
     populateAllSelects();
+    populateCategoryFilter();
     setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
 }
 
@@ -708,7 +811,13 @@ function deleteCategory(id) {
     saveLocalCache();
     renderCategories();
     populateAllSelects();
+    populateCategoryFilter();
+    if (selectedCategoryId === id) {
+        selectedCategoryId = null;
+        document.getElementById('categoryFilter').value = '';
+    }
     renderAll();
+    updateFilterUI();
     setStatus('💡 分类已删除 (请同步到GitHub)', 'saving');
 }
 
@@ -797,6 +906,7 @@ function initDragSort() {
                 saveLocalCache();
                 renderCategories();
                 populateAllSelects();
+                populateCategoryFilter();
                 setStatus('💡 分类顺序已更新 (请同步到GitHub)', 'saving');
             }
         }
@@ -832,6 +942,7 @@ function populateAllSelects() {
     populateProjectCategorySelect();
     populateTaskCategorySelect();
     populateTaskSelects();
+    populateCategoryFilter();
 }
 
 function populateProjectCategorySelect() {
@@ -878,7 +989,7 @@ function addCategoryFromTask() {
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
     if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
-    const colors = ['#8b7355', '#a68b78', '#7a6248', '#b8956a', '#5d4a35', '#c4b09a', '#6b5740', '#d4c0a8', '#4d3d2e', '#9d7a5a'];
+    const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
     const obj = { id: data.nextCategoryId || 1, name: name, color: color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
@@ -888,6 +999,7 @@ function addCategoryFromTask() {
     input.value = '';
     renderCategories();
     populateAllSelects();
+    populateCategoryFilter();
     const select = document.getElementById('tCategory');
     if (select) {
         Array.from(select.options).forEach(opt => {
@@ -941,6 +1053,7 @@ function saveProject(e) {
     projectPage = 1;
     renderAll();
     updateStats();
+    populateCategoryFilter();
     setStatus('💡 项目已保存 (请同步到GitHub)', 'saving');
 }
 
@@ -1037,6 +1150,7 @@ function saveTask(e) {
     taskPage = 1;
     renderAll();
     updateStats();
+    populateCategoryFilter();
     setStatus('💡 任务已保存 (请同步到GitHub)', 'saving');
 }
 
@@ -1104,7 +1218,6 @@ function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
     if (t.status === 'done') { alert('该任务已验收通过'); return; }
-    // 检查所有项目中是否有未完成的前置任务
     if (data.projectTaskRelations) {
         for (const projectId in data.projectTaskRelations) {
             const rel = data.projectTaskRelations[projectId]?.[taskId];
@@ -1149,7 +1262,6 @@ function openRelationModal(taskId, projectId) {
     document.getElementById('relationModalTitle').textContent = 
         '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
     
-    // 获取该项目下的所有其他任务
     const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
     
     const parentSelect = document.getElementById('rParent');
@@ -1170,7 +1282,6 @@ function openRelationModal(taskId, projectId) {
         if (rel.prevId) prevSelect.value = rel.prevId;
     }
     
-    // 显示当前关系状态
     const parentName = rel?.parentId ? (getTask(rel.parentId)?.name || '#' + rel.parentId) : '无';
     const prevName = rel?.prevId ? (getTask(rel.prevId)?.name || '#' + rel.prevId) : '无';
     const hint = document.querySelector('#relationModal .save-hint');
@@ -1197,6 +1308,15 @@ function saveRelation(e) {
     renderAll();
     updateStats();
     setStatus('💡 任务关系已保存 (请同步到GitHub)', 'saving');
+}
+
+// ============================================================
+//  打开项目详情页面（新页面）
+// ============================================================
+function openProjectPage(projectId) {
+    saveLocalCache();
+    const url = window.location.href.split('?')[0] + '?project=' + projectId;
+    window.open(url, '_blank');
 }
 
 // ============================================================
@@ -1299,22 +1419,21 @@ function renderPagination(containerId, currentPage, totalPages, onChange) {
 }
 
 // ============================================================
-//  构建项目内任务树（使用项目独立的关系）
+//  构建项目内任务树（使用项目独立的关系 + 分类筛选）
 // ============================================================
 function buildProjectTaskTree(projectId) {
-    const allTasks = getTasksByProject(projectId);
+    const allTasks = getFilteredTasksByProject(projectId);
     if (allTasks.length === 0) return [];
     
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
     
-    // 顶级任务：没有父级，或父级不在该项目中
     const topTasks = allTasks.filter(t => {
         if (!t._parentId) return true;
         return !taskMap[t._parentId];
     });
     
-    const sortKey = document.getElementById('taskSortOrder').value || 'urgency-desc';
+    const sortKey = document.getElementById('taskSortOrder')?.value || 'urgency-desc';
     const sortedTop = sortTasks([...topTasks], sortKey);
     
     function getChildrenWithSort(parentId) {
@@ -1339,6 +1458,7 @@ function buildProjectTaskTree(projectId) {
 function renderAll() { 
     renderProjects(); 
     renderTasks(); 
+    updateFilterUI();
 }
 
 function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1348,10 +1468,10 @@ function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').re
 // ============================================================
 function renderProjects() {
     const container = document.getElementById('projectList');
-    const projects = data.projects;
+    const projects = getFilteredProjects();
     
     if (projects.length === 0) { 
-        container.innerHTML = '<div class="empty-state">暂无项目，点击「新建项目」开始</div>';
+        container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无项目' : '暂无项目，点击「新建项目」开始') + '</div>';
         document.getElementById('projectPagination').innerHTML = '';
         return; 
     }
@@ -1424,19 +1544,20 @@ function renderProjects() {
         
         const tasksHtml = taskCount > 0 ? 
             renderTreeNodes(tree, 1) : 
-            '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>';
+            '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 该分类下暂无关联任务</div>';
         
         return `
             <div class="task-item project-expandable">
                 <div class="task-row" style="cursor:pointer;" onclick="toggleProjectExpand(${p.id})">
                     <span class="expand-icon ${isExpanded ? 'open' : ''}">▶</span>
-                    <span class="task-name">${escHtml(p.name)}</span>
+                    <span class="task-name project-link" onclick="event.stopPropagation();openProjectPage(${p.id})">${escHtml(p.name)}</span>
                     <span class="project-cats">${catTags}</span>
                     <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
                     <span class="status-tag status-${p.status}">${p.status}</span>
                     <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
                     <span class="task-meta">📍 ${escHtml(p.location)}</span>
                     <span class="task-meta" style="font-weight:600;color:var(--primary);">📌 ${taskCount}个任务</span>
+                    <span class="task-meta" style="font-size:.65rem;color:#fff;background:var(--primary-gradient);padding:0 12px;border-radius:10px;">🔗 点击打开</span>
                     <div class="task-actions" onclick="event.stopPropagation();">
                         <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
@@ -1455,14 +1576,14 @@ function renderProjects() {
 }
 
 // ============================================================
-//  全局任务渲染（纯平铺，无任何从属关系）
+//  全局任务渲染
 // ============================================================
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
     const sortKey = document.getElementById('taskSortOrder').value;
 
-    let tasks = data.tasks.filter(t => !t.archived);
+    let tasks = getFilteredTasks().filter(t => !t.archived);
     if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
     else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
     else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
@@ -1473,9 +1594,9 @@ function renderTasks() {
     else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
     else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
     else if (filter === 'archived') {
-        tasks = data.tasks.filter(t => t.archived);
+        tasks = getFilteredTasks().filter(t => t.archived);
         if (tasks.length === 0) { 
-            container.innerHTML = '<div class="empty-state">📦 暂无已归档任务</div>';
+            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无已归档任务' : '📦 暂无已归档任务') + '</div>';
             document.getElementById('taskPagination').innerHTML = '';
             return; 
         }
@@ -1490,7 +1611,7 @@ function renderTasks() {
     const sorted = sortTasks([...tasks], sortKey);
     
     if (sorted.length === 0) {
-        container.innerHTML = '<div class="empty-state">暂无符合条件的任务</div>';
+        container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无任务' : '暂无符合条件的任务') + '</div>';
         document.getElementById('taskPagination').innerHTML = '';
         return;
     }
@@ -1501,7 +1622,6 @@ function renderTasks() {
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-// 平铺任务渲染 - 完全不显示任何从属或先后关系
 function renderTaskFlat(task, isArchived) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
@@ -1555,12 +1675,15 @@ function renderTaskFlat(task, isArchived) {
 
 function updateStats() {
     if (!data) return;
-    const total = data.tasks.filter(t => !t.archived).length;
-    const done = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
-    const p0 = data.tasks.filter(t => t.priority === 'P0' && !t.archived).length;
-    const archived = data.tasks.filter(t => t.archived).length;
+    const allTasks = data.tasks.filter(t => !t.archived);
+    const filteredTasks = getFilteredTasks().filter(t => !t.archived);
+    const total = filteredTasks.length;
+    const done = filteredTasks.filter(t => t.status === 'done').length;
+    const p0 = filteredTasks.filter(t => t.priority === 'P0').length;
+    const archived = getFilteredTasks().filter(t => t.archived).length;
+    const projects = getFilteredProjects().length;
     document.getElementById('statsBar').innerHTML = `
-        <div class="stat"><div class="num">${data.projects.length}</div><div class="label">📁 项目</div></div>
+        <div class="stat"><div class="num">${projects}</div><div class="label">📁 项目</div></div>
         <div class="stat"><div class="num">${total}</div><div class="label">📌 进行中</div></div>
         <div class="stat"><div class="num">${done}</div><div class="label">✅ 已完成</div></div>
         <div class="stat"><div class="num">${p0}</div><div class="label">🔴 P0</div></div>
