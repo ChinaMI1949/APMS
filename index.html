@@ -180,12 +180,14 @@
 
         .task-flat .task-meta-relation{display:none !important}
 
-        /* 编辑项目内任务关系的弹窗 */
         .relation-modal .task-list{max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;margin:8px 0}
         .relation-modal .task-item-row{display:flex;align-items:center;gap:12px;padding:6px 8px;border-radius:4px;cursor:pointer;transition:background .15s}
         .relation-modal .task-item-row:hover{background:var(--surface-hover)}
         .relation-modal .task-item-row.selected{background:var(--primary-light);border-left:3px solid var(--primary)}
         .relation-modal .task-item-row .task-check{width:20px;text-align:center}
+
+        .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;pointer-events:auto;line-height:1.6}
+        .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
 
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
@@ -253,7 +255,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库 ===== -->
+    <!-- ===== 全局任务总库（纯平铺，无任何关系） ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -318,11 +320,11 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗 ===== -->
+    <!-- ===== 任务弹窗（不包含父级和前置任务） ===== -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:#a0524a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
+            <div class="save-hint">💡 所有带 <span style="color:#a0524a;">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -342,7 +344,6 @@
                             <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
                         </div>
                     </div>
-                    <!-- 注意：父级任务和前置任务已移除，改为在项目内编辑关系 -->
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
                     <div class="form-group"><label>紧急度 <span class="required">*</span></label>
                         <select id="tUrgency" required>
@@ -451,16 +452,19 @@ document.addEventListener('click', function(e) {
 
 // ============================================================
 //  ChinaMI1949 · 结构化个人事务管理系统
+//  
 //  数据结构：
-//  - tasks: 任务本身的数据（名称、分类、优先级、时间等）
-//  - taskRelations: { taskId: { projectId: { parentId, prevId } } }
+//  - tasks: 任务本身的数据（名称、分类、优先级、时间、状态等）
+//  - projectTaskRelations: { projectId: { taskId: { parentId, prevId } } }
 //    每个任务在每个项目中都有独立的关系
+//  - 全局任务总库不显示任何从属或先后关系
+//  - 每个项目内部独立维护任务层级树
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
 let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
-let data = { projects: [], tasks: [], categories: [], taskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
+let data = { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
 
 let projectPage = 1;
@@ -495,7 +499,7 @@ function setStatus(text, type) {
     if (type === 'loading') el.classList.add('loading');
 }
 
-function defaultData() { return { projects: [], tasks: [], categories: [], taskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
+function defaultData() { return { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
 
 function getProjects() { return data ? data.projects : []; }
 function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
@@ -504,31 +508,31 @@ function getCategories() { if (!data.categories) data.categories = []; return da
 function getCategory(id) { return getCategories().find(c => c.id === id); }
 function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
 
-// 获取任务在某个项目中的关系
-function getTaskRelation(taskId, projectId) {
-    if (!data.taskRelations) data.taskRelations = {};
-    if (!data.taskRelations[taskId]) return null;
-    return data.taskRelations[taskId][projectId] || null;
+// 获取项目任务关系
+function getProjectTaskRelation(projectId, taskId) {
+    if (!data.projectTaskRelations) data.projectTaskRelations = {};
+    if (!data.projectTaskRelations[projectId]) return null;
+    return data.projectTaskRelations[projectId][taskId] || null;
 }
 
-// 设置任务在某个项目中的关系
-function setTaskRelation(taskId, projectId, parentId, prevId) {
-    if (!data.taskRelations) data.taskRelations = {};
-    if (!data.taskRelations[taskId]) data.taskRelations[taskId] = {};
-    data.taskRelations[taskId][projectId] = { parentId: parentId || null, prevId: prevId || null };
+// 设置项目任务关系
+function setProjectTaskRelation(projectId, taskId, parentId, prevId) {
+    if (!data.projectTaskRelations) data.projectTaskRelations = {};
+    if (!data.projectTaskRelations[projectId]) data.projectTaskRelations[projectId] = {};
+    data.projectTaskRelations[projectId][taskId] = { parentId: parentId || null, prevId: prevId || null };
 }
 
 // 获取项目中的所有任务（含关系）
 function getTasksByProject(projectId) {
     const allTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
     return allTasks.map(t => {
-        const rel = getTaskRelation(t.id, projectId);
+        const rel = getProjectTaskRelation(projectId, t.id);
         return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
     });
 }
 
 // 获取任务在项目中的子任务
-function getChildrenInProject(taskId, projectId) {
+function getChildrenInProject(projectId, taskId) {
     const tasks = getTasksByProject(projectId);
     return tasks.filter(t => t._parentId === taskId);
 }
@@ -540,7 +544,7 @@ function loadLocalCache() {
         d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
         d.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
         if (!d.categories) d.categories = [];
-        if (!d.taskRelations) d.taskRelations = {};
+        if (!d.projectTaskRelations) d.projectTaskRelations = {};
         if (!d.nextCategoryId) d.nextCategoryId = 1; 
         return d; 
     } } catch (e) {}
@@ -590,7 +594,7 @@ async function loadFromGitHub() {
                 data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
                 data.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
                 if (!data.categories) data.categories = [];
-                if (!data.taskRelations) data.taskRelations = {};
+                if (!data.projectTaskRelations) data.projectTaskRelations = {};
                 if (!data.nextCategoryId) data.nextCategoryId = 1;
                 dataLoaded = true;
                 saveLocalCache();
@@ -975,13 +979,9 @@ function openProjectModal(projectId) {
 function deleteProject(id) {
     if (!confirm('确定删除此项目吗？')) return;
     data.projects = data.projects.filter(p => p.id !== id);
-    // 清理任务关系
-    if (data.taskRelations) {
-        Object.keys(data.taskRelations).forEach(taskId => {
-            if (data.taskRelations[taskId]) {
-                delete data.taskRelations[taskId][id];
-            }
-        });
+    // 清理项目任务关系
+    if (data.projectTaskRelations) {
+        delete data.projectTaskRelations[id];
     }
     saveLocalCache();
     renderAll();
@@ -999,7 +999,7 @@ function toggleProjectExpand(projectId) {
 }
 
 // ============================================================
-//  任务 CRUD
+//  任务 CRUD（不包含关系字段）
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
@@ -1029,7 +1029,6 @@ function saveTask(e) {
     if (id) { 
         const t = getTask(Number(id)); 
         if (t) {
-            // 保留原有关系，更新其他字段
             Object.assign(t, obj);
         }
     } else { 
@@ -1087,9 +1086,13 @@ function populateTaskSelects() {
 function deleteTask(id) {
     if (!confirm('确定删除此任务吗？')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
-    // 清理关系
-    if (data.taskRelations) {
-        delete data.taskRelations[id];
+    // 清理所有项目中的关系
+    if (data.projectTaskRelations) {
+        for (const projectId in data.projectTaskRelations) {
+            if (data.projectTaskRelations[projectId]) {
+                delete data.projectTaskRelations[projectId][id];
+            }
+        }
     }
     saveLocalCache();
     renderAll();
@@ -1107,11 +1110,10 @@ function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
     if (t.status === 'done') { alert('该任务已验收通过'); return; }
-    // 检查在关联项目中的前置任务是否完成
-    // 简化：只要有前置任务且未完成就阻止
-    if (data.taskRelations && data.taskRelations[taskId]) {
-        for (const projectId in data.taskRelations[taskId]) {
-            const rel = data.taskRelations[taskId][projectId];
+    // 检查所有项目中是否有未完成的前置任务
+    if (data.projectTaskRelations) {
+        for (const projectId in data.projectTaskRelations) {
+            const rel = data.projectTaskRelations[projectId]?.[taskId];
             if (rel && rel.prevId) {
                 const prev = getTask(rel.prevId);
                 if (prev && prev.status !== 'done') {
@@ -1147,30 +1149,26 @@ function openRelationModal(taskId, projectId) {
     const modal = document.getElementById('relationModal');
     document.getElementById('relationProjectId').value = projectId;
     document.getElementById('relationTaskId').value = taskId;
-    document.getElementById('relationModalTitle').textContent = '编辑任务关系 - ' + (getTask(taskId)?.name || '任务');
     
     const task = getTask(taskId);
-    if (!task) { alert('任务不存在'); return; }
+    document.getElementById('relationModalTitle').textContent = '编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (getProject(projectId)?.name || '项目');
     
     // 获取该项目下的所有其他任务
     const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
     
-    // 填充父级任务下拉
     const parentSelect = document.getElementById('rParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
     projectTasks.forEach(t => {
         parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
     });
     
-    // 填充前置任务下拉
     const prevSelect = document.getElementById('rPrev');
     prevSelect.innerHTML = '<option value="">无</option>';
     projectTasks.forEach(t => {
         prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
     });
     
-    // 加载当前关系
-    const rel = getTaskRelation(taskId, projectId);
+    const rel = getProjectTaskRelation(projectId, taskId);
     if (rel) {
         if (rel.parentId) parentSelect.value = rel.parentId;
         if (rel.prevId) prevSelect.value = rel.prevId;
@@ -1186,11 +1184,10 @@ function saveRelation(e) {
     const parentId = document.getElementById('rParent').value ? Number(document.getElementById('rParent').value) : null;
     const prevId = document.getElementById('rPrev').value ? Number(document.getElementById('rPrev').value) : null;
     
-    // 检查循环依赖
     if (parentId === taskId) { alert('不能将自己设为父级任务'); return; }
     if (prevId === taskId) { alert('不能将自己设为前置任务'); return; }
     
-    setTaskRelation(taskId, projectId, parentId, prevId);
+    setProjectTaskRelation(projectId, taskId, parentId, prevId);
     saveLocalCache();
     closeModal('relationModal');
     renderAll();
@@ -1304,10 +1301,10 @@ function buildProjectTaskTree(projectId) {
     const allTasks = getTasksByProject(projectId);
     if (allTasks.length === 0) return [];
     
-    // 找出顶级任务（_parentId 为空或指向不在该项目中的任务）
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
     
+    // 顶级任务：没有父级，或父级不在该项目中
     const topTasks = allTasks.filter(t => {
         if (!t._parentId) return true;
         return !taskMap[t._parentId];
@@ -1395,9 +1392,6 @@ function renderProjects() {
                 const childrenHtml = hasChildren ? 
                     `<div class="task-level-indent">${renderTreeNodes(children, level + 1)}</div>` : '';
                 
-                // 关系按钮
-                const relBtn = `<button class="btn btn-sm btn-ghost" style="padding:1px 8px;font-size:.6rem;" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})">🔗</button>`;
-                
                 return `
                     <div class="task-item ${levelClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
@@ -1410,7 +1404,7 @@ function renderProjects() {
                             <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
                             ${node._prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node._prevId}</span>` : ''}
                             <div class="task-actions">
-                                ${relBtn}
+                                <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑项目内任务关系">🔗</button>
                                 <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
                                 <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>
                                 ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
@@ -1503,7 +1497,7 @@ function renderTasks() {
         `function(page){ taskPage = page; renderTasks(); }`);
 }
 
-// 平铺任务渲染 - 不显示任何从属关系
+// 平铺任务渲染 - 完全不显示任何从属或先后关系
 function renderTaskFlat(task, isArchived) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
