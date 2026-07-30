@@ -189,6 +189,8 @@
         .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;pointer-events:auto;line-height:1.6}
         .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
 
+        .relation-badge{font-size:.55rem;color:var(--text-muted);background:var(--surface-hover);padding:0 6px;border-radius:8px;margin-left:4px}
+
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -255,7 +257,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库（纯平铺，无任何关系） ===== -->
+    <!-- ===== 全局任务总库 ===== -->
     <div class="card">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -320,7 +322,7 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗（不包含父级和前置任务） ===== -->
+    <!-- ===== 任务弹窗 ===== -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
@@ -458,7 +460,7 @@ document.addEventListener('click', function(e) {
 //  - projectTaskRelations: { projectId: { taskId: { parentId, prevId } } }
 //    每个任务在每个项目中都有独立的关系
 //  - 全局任务总库不显示任何从属或先后关系
-//  - 每个项目内部独立维护任务层级树
+//  - 每个项目内部独立维护任务层级树，可通过 🔗 按钮编辑关系
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
@@ -529,12 +531,6 @@ function getTasksByProject(projectId) {
         const rel = getProjectTaskRelation(projectId, t.id);
         return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
     });
-}
-
-// 获取任务在项目中的子任务
-function getChildrenInProject(projectId, taskId) {
-    const tasks = getTasksByProject(projectId);
-    return tasks.filter(t => t._parentId === taskId);
 }
 
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
@@ -979,7 +975,6 @@ function openProjectModal(projectId) {
 function deleteProject(id) {
     if (!confirm('确定删除此项目吗？')) return;
     data.projects = data.projects.filter(p => p.id !== id);
-    // 清理项目任务关系
     if (data.projectTaskRelations) {
         delete data.projectTaskRelations[id];
     }
@@ -999,7 +994,7 @@ function toggleProjectExpand(projectId) {
 }
 
 // ============================================================
-//  任务 CRUD（不包含关系字段）
+//  任务 CRUD
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
@@ -1086,7 +1081,6 @@ function populateTaskSelects() {
 function deleteTask(id) {
     if (!confirm('确定删除此任务吗？')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
-    // 清理所有项目中的关系
     if (data.projectTaskRelations) {
         for (const projectId in data.projectTaskRelations) {
             if (data.projectTaskRelations[projectId]) {
@@ -1117,7 +1111,7 @@ function markDone(taskId) {
             if (rel && rel.prevId) {
                 const prev = getTask(rel.prevId);
                 if (prev && prev.status !== 'done') {
-                    alert('前置任务尚未验收通过（项目 #' + projectId + '）');
+                    alert('前置任务尚未验收通过（项目：' + (getProject(Number(projectId))?.name || projectId) + '）');
                     return;
                 }
             }
@@ -1151,7 +1145,9 @@ function openRelationModal(taskId, projectId) {
     document.getElementById('relationTaskId').value = taskId;
     
     const task = getTask(taskId);
-    document.getElementById('relationModalTitle').textContent = '编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (getProject(projectId)?.name || '项目');
+    const project = getProject(projectId);
+    document.getElementById('relationModalTitle').textContent = 
+        '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
     
     // 获取该项目下的所有其他任务
     const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
@@ -1172,6 +1168,14 @@ function openRelationModal(taskId, projectId) {
     if (rel) {
         if (rel.parentId) parentSelect.value = rel.parentId;
         if (rel.prevId) prevSelect.value = rel.prevId;
+    }
+    
+    // 显示当前关系状态
+    const parentName = rel?.parentId ? (getTask(rel.parentId)?.name || '#' + rel.parentId) : '无';
+    const prevName = rel?.prevId ? (getTask(rel.prevId)?.name || '#' + rel.prevId) : '无';
+    const hint = document.querySelector('#relationModal .save-hint');
+    if (hint) {
+        hint.innerHTML = `💡 当前关系：父级任务 <strong>${parentName}</strong> ｜ 前置任务 <strong>${prevName}</strong><br>📌 修改后点击保存生效。`;
     }
     
     modal.classList.add('active');
