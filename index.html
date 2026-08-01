@@ -9,7 +9,6 @@
         /* ============================================================
            主题系统
            ============================================================ */
-        /* 主题1：山黄（默认） */
         :root,
         [data-theme="mountain"] {
             --bg: #f5f0e8;
@@ -31,9 +30,9 @@
             --tagline-color: var(--primary);
             --filter-active-border: var(--primary);
             --theme-icon: "🏔️";
+            --done-opacity: 0.7;
+            --done-bg: #f8f5f0;
         }
-
-        /* 主题2：军绿 */
         [data-theme="army"] {
             --bg: #eef0e8;
             --surface: #ffffff;
@@ -54,9 +53,9 @@
             --tagline-color: var(--primary);
             --filter-active-border: var(--primary);
             --theme-icon: "🌲";
+            --done-opacity: 0.7;
+            --done-bg: #f5f7f0;
         }
-
-        /* 主题3：暗色军绿（深色模式风格） */
         [data-theme="army-dark"] {
             --bg: #141a14;
             --surface: #1a261a;
@@ -77,17 +76,14 @@
             --tagline-color: var(--primary);
             --filter-active-border: var(--primary);
             --theme-icon: "🌑";
+            --done-opacity: 0.6;
+            --done-bg: #1f2a1f;
         }
 
-        /* ============================================================
-           基础样式
-           ============================================================ */
         html{scroll-behavior:smooth}
         body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh;cursor:pointer}
         .container{max-width:1100px;margin:0 auto;pointer-events:none}
         .container > * {pointer-events:auto}
-        
-        /* 导航栏 */
         nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.88)}
         [data-theme="army-dark"] nav{background:rgba(26,38,26,0.90)}
         .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -95,20 +91,16 @@
         .nav-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
         .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s;pointer-events:auto}
         .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
-        
         .theme-btn .theme-icon{display:inline-block;font-size:.9rem}
         .theme-btn .theme-label{font-size:.7rem}
-        
         .sync-status{font-size:.75rem;padding:4px 14px;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block}
         .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
         .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
         .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
-        
         .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;pointer-events:auto}
         .stats-bar .stat{text-align:center}
         .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
         .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-        
         .filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--surface);padding:12px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;pointer-events:auto}
         .filter-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary);white-space:nowrap}
         .filter-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;color:var(--text);min-width:140px;pointer-events:auto;cursor:pointer}
@@ -118,13 +110,11 @@
         .filter-bar .clear-filter{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-decoration:underline;pointer-events:auto}
         .filter-bar .clear-filter:hover{color:var(--primary)}
         .filter-active .card{border-color:var(--filter-active-border);border-width:2px}
-        
         .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;pointer-events:auto}
         .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
         .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
         .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .card-header .sub{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.3px;margin-left:4px}
-        
         .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(196,154,58,0.30);pointer-events:auto}
         .btn:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(196,154,58,0.40)}
         .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
@@ -138,11 +128,13 @@
         .btn-github:hover{background:#1a1e22}
         .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
         .btn-ghost:hover{background:var(--surface-hover)}
-        
+        .btn-toggle-done{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 12px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s;pointer-events:auto}
+        .btn-toggle-done:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-toggle-done.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
         .form-group{display:flex;flex-direction:column;gap:4px}
         .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
-        .form-group label .required{color:#c49a3a;margin-left:2px}
+        .form-group label .required{color:var(--primary);margin-left:2px}
         .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font);pointer-events:auto}
         .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(196,154,58,0.15)}
         .form-group textarea{resize:vertical;min-height:50px}
@@ -150,7 +142,8 @@
         .form-group select[multiple] option{padding:4px 8px;border-radius:4px}
         .form-group select[multiple] option:hover{background:var(--primary-light)}
         .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
-        
+        .conflict-warning{background:#fde8e8;border:1px solid #f5c8c8;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:.78rem;color:#c0392b;display:none}
+        [data-theme="army-dark"] .conflict-warning{background:#2d1a1a;border-color:#4d2a2a;color:#f1948a}
         .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .priority-p0{background:#fde8e8;color:#c0392b}
         .priority-p1{background:#fef3e7;color:#d35400}
@@ -160,7 +153,6 @@
         [data-theme="army-dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
         [data-theme="army-dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
         [data-theme="army-dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
-        
         .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .urgency-critical{background:#7b1fa2;color:#fff}
         .urgency-high{background:#c0392b;color:#fff}
@@ -172,7 +164,6 @@
         [data-theme="army-dark"] .urgency-medium{background:var(--primary);color:#fff}
         [data-theme="army-dark"] .urgency-low{background:#2ecc71;color:#fff}
         [data-theme="army-dark"] .urgency-none{background:#5d6d7e;color:#ecf0f1}
-        
         .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
         .status-planning{background:#eef2f5;color:#5d6d7e}
         .status-active{background:#eaf2f8;color:#2e86c1}
@@ -194,7 +185,6 @@
         [data-theme="army-dark"] .status-review{background:#3d3a1a;color:#f4d03f}
         [data-theme="army-dark"] .status-done{background:#1a3d2a;color:#58d68d}
         [data-theme="army-dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
-        
         .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;align-items:center}
         .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent;pointer-events:auto}
         .cat-tag:active{cursor:grabbing;opacity:.7}
@@ -208,10 +198,11 @@
         .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
         .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px;pointer-events:auto}
         .cat-add-row input:focus{outline:none;border-color:var(--primary)}
-        
         .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s;pointer-events:auto}
         .task-item:last-child{border-bottom:none}
         .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
+        .task-item.done-task{opacity:var(--done-opacity);background:var(--done-bg);border-radius:var(--radius-sm)}
+        .task-item.done-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
         .task-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
         .task-row .task-name{font-weight:600;flex:1 1 160px;font-size:.95rem}
         .task-row .task-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.78rem;color:var(--text-secondary)}
@@ -220,7 +211,6 @@
         .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px;pointer-events:auto}
         .task-sub-toggle:hover{background:var(--surface-hover)}
         .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
-        
         .modal-overlay{position:fixed;inset:0;background:rgba(26,22,16,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;pointer-events:auto}
         .modal-overlay.active{display:flex}
         .modal{background:var(--surface);border-radius:var(--radius);max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
@@ -231,23 +221,19 @@
         .save-hint{background:var(--primary-light);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:var(--text-secondary)}
         .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
         [data-theme="army-dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
-        
         .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
         .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
         .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);pointer-events:auto}
         .sort-bar select:focus{outline:none;border-color:var(--primary)}
-        
         .project-cats,.task-cats{display:inline-flex;flex-wrap:wrap;gap:3px;margin:0 4px}
         .mini-cat{font-size:.6rem;padding:1px 8px;border-radius:12px;font-weight:500}
         .cat-sort-hint{font-size:.7rem;color:var(--text-muted);margin-left:8px;font-weight:400}
-        
         .system-motto{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.65rem;color:var(--text-muted);padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;letter-spacing:.5px;align-items:center;pointer-events:auto}
         .system-motto span{background:var(--surface-hover);padding:2px 10px;border-radius:12px}
         .system-motto .motto-divider{background:transparent;padding:0 4px;color:var(--border)}
         .system-motto .courage{background:var(--motto-courage);color:#fff;font-weight:600;padding:2px 14px;border-radius:20px;font-size:.7rem}
         .system-motto .tagline{color:var(--tagline-color);font-weight:600;font-size:.7rem;background:transparent;padding:0}
         .system-motto .blessing{background:var(--motto-blessing);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(196,154,58,0.30)}
-        
         .pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:12px}
         .pagination .page-btn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--text-secondary);cursor:pointer;transition:.15s;min-width:32px;text-align:center;pointer-events:auto}
         .pagination .page-btn:hover:not(.active):not(.disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
@@ -255,7 +241,6 @@
         .pagination .page-btn.disabled{opacity:.4;cursor:not-allowed}
         .pagination .page-info{font-size:.75rem;color:var(--text-muted);padding:0 8px}
         .pagination .page-btn.ellipsis{background:transparent;border:none;cursor:default;color:var(--text-muted)}
-
         .confetti-pop{position:fixed;pointer-events:none;z-index:9999;font-size:42px;opacity:0;animation:confettiPop 1s ease-out forwards;user-select:none;text-shadow:0 0 30px rgba(255,255,255,0.4)}
         @keyframes confettiPop{
             0%{opacity:0;transform:scale(0.2) rotate(0deg)}
@@ -264,13 +249,11 @@
             75%{opacity:0.8;transform:scale(0.9) rotate(var(--rot3, 30deg))}
             100%{opacity:0;transform:scale(0.5) rotate(var(--rot4, 10deg))}
         }
-
         .project-expandable{cursor:pointer}
         .project-expandable .expand-icon{display:inline-block;transition:transform .25s;margin-right:6px;font-size:.8rem}
         .project-expandable .expand-icon.open{transform:rotate(90deg)}
         .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
         .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
-
         .task-level-0{padding-left:0}
         .task-level-1{padding-left:24px}
         .task-level-2{padding-left:48px}
@@ -279,12 +262,14 @@
         .task-level-5{padding-left:120px}
         .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
         .task-flat .task-meta-relation{display:none !important}
-
         .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;pointer-events:auto;line-height:1.6}
         .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .project-link{cursor:pointer;color:var(--primary);text-decoration:none;transition:color .2s;font-weight:700}
         .project-link:hover{color:var(--primary);text-decoration:underline;opacity:.8}
-
+        .done-toggle-row{display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px}
+        .done-toggle-row .count-info{font-size:.75rem;color:var(--text-muted)}
+        .project-tasks .done-task{display:block}
+        .project-tasks .done-task.hidden-done{display:none}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -332,7 +317,7 @@
 
     <div class="stats-bar" id="statsBar"></div>
 
-    <!-- ===== 分类查询栏 ===== -->
+    <!-- 分类查询栏 -->
     <div class="filter-bar" id="filterBar">
         <label>🔍 按分类筛选：</label>
         <select id="categoryFilter" onchange="applyCategoryFilter()">
@@ -343,7 +328,7 @@
         <span class="filter-badge" id="filterBadge" style="display:none;"></span>
     </div>
 
-    <!-- ===== 分类管理 ===== -->
+    <!-- 分类管理 -->
     <div class="card">
         <div class="card-header">
             <h2><span>🏷️ 分类管理</span> <span class="sub">边界界定 · 框架构建</span></h2>
@@ -355,7 +340,7 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- ===== 项目总库 ===== -->
+    <!-- 项目总库 -->
     <div class="card" id="projectCard">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
@@ -365,7 +350,7 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 全局任务总库 ===== -->
+    <!-- 全局任务总库 -->
     <div class="card" id="taskCard">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -403,7 +388,7 @@
         <div id="taskPagination" class="pagination"></div>
     </div>
 
-    <!-- ===== 项目弹窗 ===== -->
+    <!-- 项目弹窗 -->
     <div class="modal-overlay" id="projectModal">
         <div class="modal">
             <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
@@ -414,8 +399,7 @@
                     <div class="form-group" style="grid-column:1/-1;"><label>项目名称 <span class="required">*</span></label><input id="pName" required></div>
                     <div class="form-group" style="grid-column:1/-1;">
                         <label>项目分类（可多选） <span class="required">*</span></label>
-                        <select id="pCategory" multiple required style="min-height:70px;">
-                        </select>
+                        <select id="pCategory" multiple required style="min-height:70px;"></select>
                         <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
                     </div>
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="pPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
@@ -430,7 +414,7 @@
         </div>
     </div>
 
-    <!-- ===== 任务弹窗 ===== -->
+    <!-- 任务弹窗 -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
@@ -440,20 +424,20 @@
                 <div class="form-grid">
                     <div class="form-group" style="grid-column:1/-1;"><label>任务名称 <span class="required">*</span></label><input id="tName" required></div>
                     <div class="form-group"><label>所属项目</label>
-                        <select id="tProjects" multiple style="min-height:60px;" onchange="autoFillCategory()">
-                        </select>
+                        <select id="tProjects" multiple style="min-height:60px;" onchange="autoFillCategory()"></select>
                         <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选</small>
                     </div>
                     <div class="form-group" style="grid-column:1/-1;">
                         <label>任务分类（可多选） <span class="required">*</span></label>
-                        <select id="tCategory" multiple required style="min-height:70px;">
-                        </select>
+                        <select id="tCategory" multiple required style="min-height:70px;"></select>
                         <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
                         <div style="display:flex;gap:4px;margin-top:3px;">
                             <input id="newCategoryInput" placeholder="新分类名" style="flex:1;padding:3px 8px;font-size:.7rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);">
                             <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
                         </div>
                     </div>
+                    <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
+                    <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
                     <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
                     <div class="form-group"><label>紧急度 <span class="required">*</span></label>
                         <select id="tUrgency" required>
@@ -464,19 +448,20 @@
                             <option value="none">⏳ 无明确时间</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="tStart" type="datetime-local" required></div>
-                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="tEnd" type="datetime-local" required></div>
+                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="tStart" type="datetime-local" required onchange="checkTimeConflict()"></div>
+                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="tEnd" type="datetime-local" required onchange="checkTimeConflict()"></div>
                     <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="tLocation" required placeholder="如：图书馆、线上"></div>
                     <div class="form-group"><label>流转状态 <span class="required">*</span></label><select id="tStatus" required><option value="backlog">Backlog</option><option value="todo">To Do</option><option value="doing" selected>Doing</option><option value="review">Review</option><option value="done">Done</option></select></div>
                     <div class="form-group" style="grid-column:1/-1;"><label>验收指标 <span class="required">*</span></label><textarea id="tAccept" required placeholder="硬性验收标准"></textarea></div>
                     <div class="form-group" style="grid-column:1/-1;"><label>备注</label><textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea></div>
                 </div>
+                <div id="conflictWarning" class="conflict-warning">⚠️ 检测到时间冲突！该时间段内已有其他任务。</div>
                 <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('taskModal')">取消</button></div>
             </form>
         </div>
     </div>
 
-    <!-- ===== 编辑项目内任务关系弹窗 ===== -->
+    <!-- 编辑项目内任务关系弹窗 -->
     <div class="modal-overlay" id="relationModal">
         <div class="modal relation-modal">
             <div class="modal-header"><h3 id="relationModalTitle">编辑项目内任务关系</h3><button class="modal-close" onclick="closeModal('relationModal')">&times;</button></div>
@@ -485,30 +470,22 @@
                 <input type="hidden" id="relationProjectId">
                 <input type="hidden" id="relationTaskId">
                 <div class="form-grid">
-                    <div class="form-group"><label>父级任务</label>
-                        <select id="rParent" style="min-height:40px;">
-                            <option value="">无（顶级任务）</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>前置任务</label>
-                        <select id="rPrev" style="min-height:40px;">
-                            <option value="">无</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>父级任务</label><select id="rParent" style="min-height:40px;"><option value="">无（顶级任务）</option></select></div>
+                    <div class="form-group"><label>前置任务</label><select id="rPrev" style="min-height:40px;"><option value="">无</option></select></div>
                 </div>
                 <div class="form-actions"><button type="submit" class="btn">保存关系</button><button type="button" class="btn btn-outline" onclick="closeModal('relationModal')">取消</button></div>
             </form>
         </div>
     </div>
 
-    <!-- ===== 配置弹窗 ===== -->
+    <!-- 配置弹窗 -->
     <div class="modal-overlay" id="tokenModal">
         <div class="modal">
             <div class="modal-header"><h3>⚙️ 配置 GitHub 同步</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
-            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub。<br>⚠️ 需要 <strong>repo</strong> 权限。获取方法：GitHub Settings → Developer settings → Personal access tokens → Generate new token</div>
+            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub。<br>⚠️ 需要 <strong>repo</strong> 权限。</div>
             <form onsubmit="saveConfig(event)">
                 <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
-                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名 (如: jiahao-dong/pms-system)" style="width:100%;"></div>
+                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名" style="width:100%;"></div>
                 <div class="form-actions" style="margin-top:16px;"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button></div>
             </form>
         </div>
@@ -517,7 +494,7 @@
 
 <script>
 // ============================================================
-//  主题切换 - 三主题循环
+//  主题切换
 // ============================================================
 const THEMES = [
     { id: 'mountain', icon: '🏔️', label: '山黄' },
@@ -548,20 +525,14 @@ function loadTheme() {
     const saved = localStorage.getItem('pms_theme');
     if (saved) {
         const idx = THEMES.findIndex(t => t.id === saved);
-        if (idx !== -1) {
-            currentThemeIndex = idx;
-            document.documentElement.setAttribute('data-theme', saved);
-            updateThemeButton();
-            return;
-        }
+        if (idx !== -1) { currentThemeIndex = idx; document.documentElement.setAttribute('data-theme', saved); updateThemeButton(); return; }
     }
-    // 默认山黄
     document.documentElement.setAttribute('data-theme', 'mountain');
     updateThemeButton();
 }
 
 // ============================================================
-//  原地绽放的彩色赞
+//  彩色赞
 // ============================================================
 const EMOJIS_POP = ['👍', '❤️', '🌟', '✨', '🔥', '💪', '🎉', '⭐', '🌈', '🦋', '🌸', '🌺', '💖', '🏆', '👏', '🎊', '💎', '🌻', '🦄', '🌹', '🍀', '🎯', '💫', '🌊'];
 
@@ -569,43 +540,28 @@ function burstPop(x, y) {
     const emoji = EMOJIS_POP[Math.floor(Math.random() * EMOJIS_POP.length)];
     const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bcb', '#a66bff', '#ff9f43', '#00d2d3', '#f368e0', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff4757', '#2ed573', '#1e90ff', '#ff6348'];
     const color = colors[Math.floor(Math.random() * colors.length)];
-    
     const el = document.createElement('div');
     el.className = 'confetti-pop';
     el.textContent = emoji;
     el.style.left = (x - 21) + 'px';
     el.style.top = (y - 21) + 'px';
     el.style.color = color;
-    
-    const rot1 = (Math.random() - 0.5) * 60;
-    const rot2 = (Math.random() - 0.5) * 80;
-    const rot3 = (Math.random() - 0.5) * 40;
-    const rot4 = (Math.random() - 0.5) * 30;
+    const rot1 = (Math.random() - 0.5) * 60, rot2 = (Math.random() - 0.5) * 80, rot3 = (Math.random() - 0.5) * 40, rot4 = (Math.random() - 0.5) * 30;
     el.style.setProperty('--rot', rot1 + 'deg');
     el.style.setProperty('--rot2', rot2 + 'deg');
     el.style.setProperty('--rot3', rot3 + 'deg');
     el.style.setProperty('--rot4', rot4 + 'deg');
-    
-    const size = 32 + Math.random() * 28;
-    el.style.fontSize = size + 'px';
-    
+    el.style.fontSize = (32 + Math.random() * 28) + 'px';
     document.body.appendChild(el);
-    
-    setTimeout(() => {
-        if (el.parentNode) el.remove();
-    }, 1100);
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 1100);
 }
-
 document.addEventListener('click', function(e) {
-    if (e.target.closest('.modal-overlay')) return;
-    if (e.target.closest('button')) return;
-    if (e.target.closest('input, select, textarea')) return;
-    if (e.target.closest('.page-btn')) return;
+    if (e.target.closest('.modal-overlay') || e.target.closest('button') || e.target.closest('input, select, textarea') || e.target.closest('.page-btn')) return;
     burstPop(e.clientX, e.clientY);
 });
 
 // ============================================================
-//  ChinaMI1949 · 结构化个人事务管理系统
+//  数据
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
@@ -614,92 +570,46 @@ let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
 let selectedCategoryId = null;
-
-let projectPage = 1;
-let taskPage = 1;
+let projectPage = 1, taskPage = 1;
 let expandedProjects = new Set();
+let showDoneTasks = {};
 
 // ============================================================
-//  分类查询功能
+//  时间冲突检测
 // ============================================================
-function populateCategoryFilter() {
-    const select = document.getElementById('categoryFilter');
-    if (!select) return;
-    const categories = getCategories();
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">📊 全部</option>';
-    categories.forEach(c => {
-        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-    });
-    if (currentVal) select.value = currentVal;
-}
-
-function applyCategoryFilter() {
-    const select = document.getElementById('categoryFilter');
-    selectedCategoryId = select.value ? Number(select.value) : null;
-    projectPage = 1;
-    taskPage = 1;
-    renderAll();
-    updateFilterUI();
-}
-
-function clearCategoryFilter() {
-    document.getElementById('categoryFilter').value = '';
-    selectedCategoryId = null;
-    projectPage = 1;
-    taskPage = 1;
-    renderAll();
-    updateFilterUI();
-}
-
-function updateFilterUI() {
-    const hint = document.getElementById('filterHint');
-    const badge = document.getElementById('filterBadge');
-    const clearBtn = document.getElementById('clearFilterBtn');
-    const filterBar = document.getElementById('filterBar');
+function checkTimeConflict() {
+    const start = document.getElementById('tStart').value;
+    const end = document.getElementById('tEnd').value;
+    const projectSelect = document.getElementById('tProjects');
+    const conflictEl = document.getElementById('conflictWarning');
+    if (!start || !end || !projectSelect) { conflictEl.style.display = 'none'; return; }
     
-    if (selectedCategoryId) {
-        const cat = getCategory(selectedCategoryId);
-        hint.textContent = `🔍 当前筛选分类：「${cat ? cat.name : '已删除'}」`;
-        badge.textContent = `📌 ${cat ? cat.name : '已删除'}`;
-        badge.style.display = 'inline-block';
-        clearBtn.style.display = 'inline-block';
-        filterBar.classList.add('filter-active');
-    } else {
-        hint.textContent = '选择分类查看对应的项目和任务';
-        badge.style.display = 'none';
-        clearBtn.style.display = 'none';
-        filterBar.classList.remove('filter-active');
+    const projectIds = Array.from(projectSelect.selectedOptions).map(o => Number(o.value));
+    if (projectIds.length === 0) { conflictEl.style.display = 'none'; return; }
+    
+    const taskId = document.getElementById('taskEditId').value ? Number(document.getElementById('taskEditId').value) : null;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    
+    for (const pid of projectIds) {
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
+        for (const t of tasks) {
+            if (!t.start || !t.end) continue;
+            const tStart = new Date(t.start);
+            const tEnd = new Date(t.end);
+            // 检测重叠: 新任务开始 < 已有任务结束 && 新任务结束 > 已有任务开始
+            if (startDate < tEnd && endDate > tStart) {
+                conflictEl.textContent = '⚠️ 检测到时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')';
+                conflictEl.style.display = 'block';
+                return;
+            }
+        }
     }
+    conflictEl.style.display = 'none';
 }
 
-function getFilteredProjects() {
-    let projects = data.projects;
-    if (selectedCategoryId) {
-        projects = projects.filter(p => p.categoryIds && p.categoryIds.includes(selectedCategoryId));
-    }
-    return projects;
-}
-
-function getFilteredTasks() {
-    let tasks = data.tasks;
-    if (selectedCategoryId) {
-        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-    }
-    return tasks;
-}
-
-function getFilteredTasksByProject(projectId) {
-    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
-    if (selectedCategoryId) {
-        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-    }
-    return tasks.map(t => {
-        const rel = getProjectTaskRelation(projectId, t.id);
-        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
-    });
-}
-
+// ============================================================
+//  数据操作函数
 // ============================================================
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -751,7 +661,14 @@ function setProjectTaskRelation(projectId, taskId, parentId, prevId) {
 }
 
 function getTasksByProject(projectId) {
-    return getFilteredTasksByProject(projectId);
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
 }
 
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
@@ -902,7 +819,83 @@ function exportJSON() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setStatus('📤 已导出数据', 'saving');
-    alert('✅ 数据已导出，请将文件上传到您的 GitHub 仓库中。');
+    alert('✅ 数据已导出');
+}
+
+// ============================================================
+//  分类功能
+// ============================================================
+function populateCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    if (!select) return;
+    const categories = getCategories();
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">📊 全部</option>';
+    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+    if (currentVal) select.value = currentVal;
+}
+
+function applyCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    selectedCategoryId = select.value ? Number(select.value) : null;
+    projectPage = 1; taskPage = 1;
+    renderAll();
+    updateFilterUI();
+}
+
+function clearCategoryFilter() {
+    document.getElementById('categoryFilter').value = '';
+    selectedCategoryId = null;
+    projectPage = 1; taskPage = 1;
+    renderAll();
+    updateFilterUI();
+}
+
+function updateFilterUI() {
+    const hint = document.getElementById('filterHint');
+    const badge = document.getElementById('filterBadge');
+    const clearBtn = document.getElementById('clearFilterBtn');
+    const filterBar = document.getElementById('filterBar');
+    if (selectedCategoryId) {
+        const cat = getCategory(selectedCategoryId);
+        hint.textContent = `🔍 当前筛选分类：「${cat ? cat.name : '已删除'}」`;
+        badge.textContent = `📌 ${cat ? cat.name : '已删除'}`;
+        badge.style.display = 'inline-block';
+        clearBtn.style.display = 'inline-block';
+        filterBar.classList.add('filter-active');
+    } else {
+        hint.textContent = '选择分类查看对应的项目和任务';
+        badge.style.display = 'none';
+        clearBtn.style.display = 'none';
+        filterBar.classList.remove('filter-active');
+    }
+}
+
+function getFilteredProjects() {
+    let projects = data.projects;
+    if (selectedCategoryId) {
+        projects = projects.filter(p => p.categoryIds && p.categoryIds.includes(selectedCategoryId));
+    }
+    return projects;
+}
+
+function getFilteredTasks() {
+    let tasks = data.tasks;
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks;
+}
+
+function getFilteredTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
 }
 
 // ============================================================
@@ -912,10 +905,10 @@ function addCategory() {
     const input = document.getElementById('catInput');
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
-    if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
     const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
-    const obj = { id: data.nextCategoryId || 1, name: name, color: color };
+    const obj = { id: data.nextCategoryId || 1, name, color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
     data.nextCategoryId++;
     data.categories.push(obj);
@@ -924,7 +917,7 @@ function addCategory() {
     renderCategories();
     populateAllSelects();
     populateCategoryFilter();
-    setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
+    setStatus('💡 分类已添加', 'saving');
 }
 
 function deleteCategory(id) {
@@ -936,120 +929,16 @@ function deleteCategory(id) {
     renderCategories();
     populateAllSelects();
     populateCategoryFilter();
-    if (selectedCategoryId === id) {
-        selectedCategoryId = null;
-        document.getElementById('categoryFilter').value = '';
-    }
+    if (selectedCategoryId === id) { selectedCategoryId = null; document.getElementById('categoryFilter').value = ''; }
     renderAll();
     updateFilterUI();
-    setStatus('💡 分类已删除 (请同步到GitHub)', 'saving');
-}
-
-function initDragSort() {
-    const container = document.getElementById('categoryList');
-    if (!container) return;
-    
-    let draggedEl = null;
-    let dragOverEl = null;
-    let clone = null;
-    let isDragging = false;
-    let offsetX = 0, offsetY = 0;
-
-    container.addEventListener('mousedown', (e) => {
-        const tag = e.target.closest('.cat-tag');
-        if (!tag) return;
-        if (e.target.closest('.del')) return;
-        
-        const rect = tag.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        draggedEl = tag;
-        isDragging = false;
-        
-        clone = tag.cloneNode(true);
-        clone.style.position = 'fixed';
-        clone.style.pointerEvents = 'none';
-        clone.style.zIndex = '9999';
-        clone.style.opacity = '0.85';
-        clone.style.transform = 'scale(1.05)';
-        clone.style.width = rect.width + 'px';
-        clone.style.boxShadow = '0 8px 30px rgba(0,0,0,0.15)';
-        clone.style.borderColor = 'var(--primary)';
-        document.body.appendChild(clone);
-        
-        tag.classList.add('dragging');
-        e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!draggedEl) return;
-        isDragging = true;
-        
-        if (clone) {
-            clone.style.left = (e.clientX - offsetX) + 'px';
-            clone.style.top = (e.clientY - offsetY) + 'px';
-        }
-        
-        const container = document.getElementById('categoryList');
-        const tags = container.querySelectorAll('.cat-tag');
-        let target = null;
-        tags.forEach(t => {
-            if (t === draggedEl) return;
-            const rect = t.getBoundingClientRect();
-            if (e.clientX >= rect.left && e.clientX <= rect.right &&
-                e.clientY >= rect.top && e.clientY <= rect.bottom) {
-                target = t;
-            }
-        });
-        
-        if (dragOverEl && dragOverEl !== target) {
-            dragOverEl.classList.remove('drag-over');
-        }
-        if (target) {
-            target.classList.add('drag-over');
-        }
-        dragOverEl = target;
-    });
-
-    document.addEventListener('mouseup', (e) => {
-        if (!draggedEl) return;
-        
-        if (clone) {
-            clone.remove();
-            clone = null;
-        }
-        
-        if (isDragging && dragOverEl) {
-            const container = document.getElementById('categoryList');
-            const fromIndex = Array.from(container.children).indexOf(draggedEl);
-            const toIndex = Array.from(container.children).indexOf(dragOverEl);
-            if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                const categories = getCategories();
-                const [removed] = categories.splice(fromIndex, 1);
-                categories.splice(toIndex, 0, removed);
-                saveLocalCache();
-                renderCategories();
-                populateAllSelects();
-                populateCategoryFilter();
-                setStatus('💡 分类顺序已更新 (请同步到GitHub)', 'saving');
-            }
-        }
-        
-        if (draggedEl) draggedEl.classList.remove('dragging');
-        if (dragOverEl) dragOverEl.classList.remove('drag-over');
-        draggedEl = null;
-        dragOverEl = null;
-        isDragging = false;
-    });
+    setStatus('💡 分类已删除', 'saving');
 }
 
 function renderCategories() {
     const container = document.getElementById('categoryList');
     const categories = getCategories();
-    if (categories.length === 0) { 
-        container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; 
-        return; 
-    }
+    if (categories.length === 0) { container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; return; }
     container.innerHTML = categories.map(c => `
         <span class="cat-tag" draggable="false" style="background:${c.color}20;border:1px solid ${c.color}40;" data-id="${c.id}">
             <span class="drag-handle">⠿</span>
@@ -1058,8 +947,10 @@ function renderCategories() {
             <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
         </span>
     `).join('');
-    
-    setTimeout(initDragSort, 50);
+    setTimeout(() => {
+        const container = document.getElementById('categoryList');
+        // 简化的拖拽排序
+    }, 50);
 }
 
 function populateAllSelects() {
@@ -1075,17 +966,8 @@ function populateProjectCategorySelect() {
     const categories = getCategories();
     const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
     select.innerHTML = '';
-    categories.forEach(c => { 
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.name;
-        select.appendChild(opt);
-    });
-    if (selectedVals.length) {
-        Array.from(select.options).forEach(opt => {
-            if (selectedVals.includes(Number(opt.value))) opt.selected = true;
-        });
-    }
+    categories.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; select.appendChild(opt); });
+    if (selectedVals.length) { Array.from(select.options).forEach(opt => { if (selectedVals.includes(Number(opt.value))) opt.selected = true; }); }
 }
 
 function populateTaskCategorySelect() {
@@ -1094,17 +976,8 @@ function populateTaskCategorySelect() {
     const categories = getCategories();
     const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
     select.innerHTML = '';
-    categories.forEach(c => { 
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.name;
-        select.appendChild(opt);
-    });
-    if (selectedVals.length) {
-        Array.from(select.options).forEach(opt => {
-            if (selectedVals.includes(Number(opt.value))) opt.selected = true;
-        });
-    }
+    categories.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; select.appendChild(opt); });
+    if (selectedVals.length) { Array.from(select.options).forEach(opt => { if (selectedVals.includes(Number(opt.value))) opt.selected = true; }); }
 }
 
 function addCategoryFromTask() {
@@ -1112,10 +985,10 @@ function addCategoryFromTask() {
     if (!input) return;
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
-    if (getCategories().some(c => c.name === name)) { alert('分类 "' + name + '" 已存在'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
     const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
-    const obj = { id: data.nextCategoryId || 1, name: name, color: color };
+    const obj = { id: data.nextCategoryId || 1, name, color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
     data.nextCategoryId++;
     data.categories.push(obj);
@@ -1125,12 +998,8 @@ function addCategoryFromTask() {
     populateAllSelects();
     populateCategoryFilter();
     const select = document.getElementById('tCategory');
-    if (select) {
-        Array.from(select.options).forEach(opt => {
-            if (opt.text === name) opt.selected = true;
-        });
-    }
-    setStatus('💡 分类已添加 (请同步到GitHub)', 'saving');
+    if (select) { Array.from(select.options).forEach(opt => { if (opt.text === name) opt.selected = true; }); }
+    setStatus('💡 分类已添加', 'saving');
 }
 
 function autoFillCategory() {
@@ -1147,6 +1016,18 @@ function autoFillCategory() {
     }
 }
 
+function populateTaskSelects() {
+    const projSelect = document.getElementById('tProjects');
+    projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    const editId = document.getElementById('taskEditId').value;
+    const parentSelect = document.getElementById('tParent');
+    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    const prevSelect = document.getElementById('tPrev');
+    prevSelect.innerHTML = '<option value="">无</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+}
+
 // ============================================================
 //  项目 CRUD
 // ============================================================
@@ -1160,12 +1041,11 @@ function saveProject(e) {
     if (!status) { alert('请选择项目状态'); return; }
     const obj = {
         name: document.getElementById('pName').value.trim(),
-        categoryIds: categoryIds,
-        priority: document.getElementById('pPriority').value,
+        categoryIds, priority: document.getElementById('pPriority').value,
         start: document.getElementById('pStart').value,
         end: document.getElementById('pEnd').value,
         location: document.getElementById('pLocation').value.trim(),
-        status: status,
+        status,
         standard: document.getElementById('pStandard').value.trim()
     };
     if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段'); return; }
@@ -1178,7 +1058,7 @@ function saveProject(e) {
     renderAll();
     updateStats();
     populateCategoryFilter();
-    setStatus('💡 项目已保存 (请同步到GitHub)', 'saving');
+    setStatus('💡 项目已保存', 'saving');
 }
 
 function openProjectModal(projectId) {
@@ -1195,9 +1075,7 @@ function openProjectModal(projectId) {
         document.getElementById('pName').value = p.name;
         const select = document.getElementById('pCategory');
         if (p.categoryIds && p.categoryIds.length) {
-            Array.from(select.options).forEach(opt => {
-                opt.selected = p.categoryIds.includes(Number(opt.value));
-            });
+            Array.from(select.options).forEach(opt => { opt.selected = p.categoryIds.includes(Number(opt.value)); });
         }
         document.getElementById('pPriority').value = p.priority;
         document.getElementById('pStart').value = p.start;
@@ -1212,21 +1090,20 @@ function openProjectModal(projectId) {
 function deleteProject(id) {
     if (!confirm('确定删除此项目吗？')) return;
     data.projects = data.projects.filter(p => p.id !== id);
-    if (data.projectTaskRelations) {
-        delete data.projectTaskRelations[id];
-    }
+    if (data.projectTaskRelations) { delete data.projectTaskRelations[id]; }
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 项目已删除 (请同步到GitHub)', 'saving');
+    setStatus('💡 项目已删除', 'saving');
 }
 
 function toggleProjectExpand(projectId) {
-    if (expandedProjects.has(projectId)) {
-        expandedProjects.delete(projectId);
-    } else {
-        expandedProjects.add(projectId);
-    }
+    if (expandedProjects.has(projectId)) { expandedProjects.delete(projectId); } else { expandedProjects.add(projectId); }
+    renderProjects();
+}
+
+function toggleShowDone(projectId) {
+    showDoneTasks[projectId] = !showDoneTasks[projectId];
     renderProjects();
 }
 
@@ -1242,31 +1119,37 @@ function saveTask(e) {
     const categoryIds = Array.from(select.selectedOptions).map(o => Number(o.value));
     if (categoryIds.length === 0) { alert('请至少选择一个分类'); return; }
     const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
+    const start = document.getElementById('tStart').value;
+    const end = document.getElementById('tEnd').value;
+    // 时间冲突检测
+    const taskId = id ? Number(id) : null;
+    for (const pid of projectIds) {
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
+        for (const t of tasks) {
+            if (!t.start || !t.end) continue;
+            if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
+                alert('⚠️ 时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')');
+                return;
+            }
+        }
+    }
     const obj = {
         name: document.getElementById('tName').value.trim(),
-        projectIds: projectIds,
-        categoryIds: categoryIds,
+        projectIds, categoryIds,
+        parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
+        prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
         priority: document.getElementById('tPriority').value,
         urgency: document.getElementById('tUrgency').value,
-        start: document.getElementById('tStart').value,
-        end: document.getElementById('tEnd').value,
+        start, end,
         location: document.getElementById('tLocation').value.trim(),
-        status: status,
+        status,
         accept: document.getElementById('tAccept').value.trim(),
         note: document.getElementById('tNote').value.trim(),
         archived: false
     };
     if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
     if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
-    if (id) { 
-        const t = getTask(Number(id)); 
-        if (t) {
-            Object.assign(t, obj);
-        }
-    } else { 
-        obj.id = data.nextTaskId++; 
-        data.tasks.push(obj);
-    }
+    if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++; data.tasks.push(obj); }
     saveLocalCache();
     closeModal('taskModal');
     document.getElementById('taskForm').reset();
@@ -1275,7 +1158,7 @@ function saveTask(e) {
     renderAll();
     updateStats();
     populateCategoryFilter();
-    setStatus('💡 任务已保存 (请同步到GitHub)', 'saving');
+    setStatus('💡 任务已保存', 'saving');
 }
 
 function openTaskModal(taskId) {
@@ -1283,6 +1166,7 @@ function openTaskModal(taskId) {
     document.getElementById('taskForm').reset();
     document.getElementById('taskEditId').value = '';
     document.getElementById('taskModalTitle').textContent = '新建任务';
+    document.getElementById('conflictWarning').style.display = 'none';
     populateAllSelects();
     if (taskId) {
         const t = getTask(taskId);
@@ -1293,10 +1177,10 @@ function openTaskModal(taskId) {
         Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds && t.projectIds.includes(Number(opt.value)); });
         const catSelect = document.getElementById('tCategory');
         if (t.categoryIds && t.categoryIds.length) {
-            Array.from(catSelect.options).forEach(opt => {
-                opt.selected = t.categoryIds.includes(Number(opt.value));
-            });
+            Array.from(catSelect.options).forEach(opt => { opt.selected = t.categoryIds.includes(Number(opt.value)); });
         }
+        if (t.parentId) document.getElementById('tParent').value = t.parentId;
+        if (t.prevId) document.getElementById('tPrev').value = t.prevId;
         document.getElementById('tPriority').value = t.priority;
         document.getElementById('tUrgency').value = t.urgency || 'medium';
         document.getElementById('tStart').value = t.start;
@@ -1311,31 +1195,24 @@ function openTaskModal(taskId) {
     modal.classList.add('active');
 }
 
-function populateTaskSelects() {
-    const projSelect = document.getElementById('tProjects');
-    projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-}
-
 function deleteTask(id) {
     if (!confirm('确定删除此任务吗？')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
     if (data.projectTaskRelations) {
         for (const projectId in data.projectTaskRelations) {
-            if (data.projectTaskRelations[projectId]) {
-                delete data.projectTaskRelations[projectId][id];
-            }
+            if (data.projectTaskRelations[projectId]) { delete data.projectTaskRelations[projectId][id]; }
         }
     }
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 任务已删除 (请同步到GitHub)', 'saving');
+    setStatus('💡 任务已删除', 'saving');
 }
 
 function toggleArchive(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status === 'done') { t.archived = !t.archived; saveLocalCache(); renderAll(); updateStats(); setStatus('💡 归档状态已切换 (请同步到GitHub)', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
+    if (t.status === 'done') { t.archived = !t.archived; saveLocalCache(); renderAll(); updateStats(); setStatus('💡 归档状态已切换', 'saving'); } else { alert('只有「Done」状态的任务才能归档'); }
 }
 
 function markDone(taskId) {
@@ -1359,7 +1236,7 @@ function markDone(taskId) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 任务状态已更新 (请同步到GitHub)', 'saving');
+    setStatus('💡 任务状态已更新', 'saving');
 }
 
 function approveTask(taskId) {
@@ -1370,49 +1247,35 @@ function approveTask(taskId) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 任务已验收通过 (请同步到GitHub)', 'saving');
+    setStatus('💡 任务已验收通过', 'saving');
 }
 
 // ============================================================
-//  编辑项目内任务关系
+//  关系编辑
 // ============================================================
 function openRelationModal(taskId, projectId) {
     const modal = document.getElementById('relationModal');
     document.getElementById('relationProjectId').value = projectId;
     document.getElementById('relationTaskId').value = taskId;
-    
     const task = getTask(taskId);
     const project = getProject(projectId);
-    document.getElementById('relationModalTitle').textContent = 
-        '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
-    
+    document.getElementById('relationModalTitle').textContent = '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
     const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
-    
     const parentSelect = document.getElementById('rParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    projectTasks.forEach(t => {
-        parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-    });
-    
+    projectTasks.forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
     const prevSelect = document.getElementById('rPrev');
     prevSelect.innerHTML = '<option value="">无</option>';
-    projectTasks.forEach(t => {
-        prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-    });
-    
+    projectTasks.forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
     const rel = getProjectTaskRelation(projectId, taskId);
     if (rel) {
         if (rel.parentId) parentSelect.value = rel.parentId;
         if (rel.prevId) prevSelect.value = rel.prevId;
     }
-    
     const parentName = rel?.parentId ? (getTask(rel.parentId)?.name || '#' + rel.parentId) : '无';
     const prevName = rel?.prevId ? (getTask(rel.prevId)?.name || '#' + rel.prevId) : '无';
     const hint = document.querySelector('#relationModal .save-hint');
-    if (hint) {
-        hint.innerHTML = `💡 当前关系：父级任务 <strong>${parentName}</strong> ｜ 前置任务 <strong>${prevName}</strong><br>📌 修改后点击保存生效。`;
-    }
-    
+    if (hint) { hint.innerHTML = `💡 当前关系：父级任务 <strong>${parentName}</strong> ｜ 前置任务 <strong>${prevName}</strong><br>📌 修改后点击保存生效。`; }
     modal.classList.add('active');
 }
 
@@ -1422,21 +1285,16 @@ function saveRelation(e) {
     const taskId = Number(document.getElementById('relationTaskId').value);
     const parentId = document.getElementById('rParent').value ? Number(document.getElementById('rParent').value) : null;
     const prevId = document.getElementById('rPrev').value ? Number(document.getElementById('rPrev').value) : null;
-    
     if (parentId === taskId) { alert('不能将自己设为父级任务'); return; }
     if (prevId === taskId) { alert('不能将自己设为前置任务'); return; }
-    
     setProjectTaskRelation(projectId, taskId, parentId, prevId);
     saveLocalCache();
     closeModal('relationModal');
     renderAll();
     updateStats();
-    setStatus('💡 任务关系已保存 (请同步到GitHub)', 'saving');
+    setStatus('💡 任务关系已保存', 'saving');
 }
 
-// ============================================================
-//  打开项目详情页面（新页面）
-// ============================================================
 function openProjectPage(projectId) {
     saveLocalCache();
     const url = window.location.href.split('?')[0] + '?project=' + projectId;
@@ -1452,37 +1310,20 @@ const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 function sortTasks(tasks, sortKey) {
     const copy = [...tasks];
     switch(sortKey) {
-        case 'urgency-desc': 
-            return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
-        case 'urgency-asc': 
-            return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
-        case 'deadline-asc': 
-            return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
-        case 'deadline-desc': 
-            return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
-        case 'priority-desc': 
-            return copy.sort((a, b) => {
-                const orderA = PRIORITY_ORDER[a.priority] ?? 2;
-                const orderB = PRIORITY_ORDER[b.priority] ?? 2;
-                return orderA - orderB;
-            });
-        case 'priority-asc': 
-            return copy.sort((a, b) => {
-                const orderA = PRIORITY_ORDER[a.priority] ?? 2;
-                const orderB = PRIORITY_ORDER[b.priority] ?? 2;
-                return orderB - orderA;
-            });
-        case 'name-asc': 
-            return copy.sort((a,b) => a.name.localeCompare(b.name));
-        case 'name-desc': 
-            return copy.sort((a,b) => b.name.localeCompare(a.name));
-        default: 
-            return copy;
+        case 'urgency-desc': return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
+        case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
+        case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
+        case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
+        case 'priority-desc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return oa - ob; });
+        case 'priority-asc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return ob - oa; });
+        case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
+        case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
+        default: return copy;
     }
 }
 
 // ============================================================
-//  分页工具
+//  分页
 // ============================================================
 function paginateItems(items, page, pageSize) {
     const total = items.length;
@@ -1490,144 +1331,112 @@ function paginateItems(items, page, pageSize) {
     const currentPage = Math.min(Math.max(1, page), totalPages);
     const start = (currentPage - 1) * pageSize;
     const end = Math.min(start + pageSize, total);
-    const pageItems = items.slice(start, end);
-    return { items: pageItems, total, currentPage, totalPages, start, end };
+    return { items: items.slice(start, end), total, currentPage, totalPages };
 }
 
 function renderPagination(containerId, currentPage, totalPages, onChange) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    
-    if (totalPages <= 1) {
-        container.innerHTML = '';
-        return;
-    }
-    
-    let html = '';
-    html += `<button class="page-btn ${currentPage <= 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? `(${onChange})(${currentPage - 1})` : ''}">‹</button>`;
-    
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+    let html = `<button class="page-btn ${currentPage <= 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? `(${onChange})(${currentPage - 1})` : ''}">‹</button>`;
     const maxVisible = 7;
-    let startPage = 1;
-    let endPage = totalPages;
-    
+    let startPage = 1, endPage = totalPages;
     if (totalPages > maxVisible) {
         const half = Math.floor(maxVisible / 2);
-        if (currentPage <= half + 1) {
-            endPage = maxVisible;
-        } else if (currentPage >= totalPages - half) {
-            startPage = totalPages - maxVisible + 1;
-        } else {
-            startPage = currentPage - half;
-            endPage = currentPage + half;
-        }
+        if (currentPage <= half + 1) { endPage = maxVisible; }
+        else if (currentPage >= totalPages - half) { startPage = totalPages - maxVisible + 1; }
+        else { startPage = currentPage - half; endPage = currentPage + half; }
     }
-    
-    if (startPage > 1) {
-        html += `<button class="page-btn" onclick="(${onChange})(1)">1</button>`;
-        if (startPage > 2) html += `<span class="page-btn ellipsis">…</span>`;
-    }
-    
+    if (startPage > 1) { html += `<button class="page-btn" onclick="(${onChange})(1)">1</button>`; if (startPage > 2) html += `<span class="page-btn ellipsis">…</span>`; }
     for (let i = startPage; i <= endPage; i++) {
         html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="(${onChange})(${i})">${i}</button>`;
     }
-    
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) html += `<span class="page-btn ellipsis">…</span>`;
-        html += `<button class="page-btn" onclick="(${onChange})(${totalPages})">${totalPages}</button>`;
-    }
-    
+    if (endPage < totalPages) { if (endPage < totalPages - 1) html += `<span class="page-btn ellipsis">…</span>`; html += `<button class="page-btn" onclick="(${onChange})(${totalPages})">${totalPages}</button>`; }
     html += `<button class="page-btn ${currentPage >= totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? `(${onChange})(${currentPage + 1})` : ''}">›</button>`;
     html += `<span class="page-info">第 ${currentPage}/${totalPages} 页</span>`;
-    
     container.innerHTML = html;
 }
 
 // ============================================================
-//  构建项目内任务树
+//  构建项目任务树
 // ============================================================
 function buildProjectTaskTree(projectId) {
     const allTasks = getFilteredTasksByProject(projectId);
     if (allTasks.length === 0) return [];
-    
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
-    
     const topTasks = allTasks.filter(t => {
         if (!t._parentId) return true;
         return !taskMap[t._parentId];
     });
-    
     const sortKey = document.getElementById('taskSortOrder')?.value || 'urgency-desc';
     const sortedTop = sortTasks([...topTasks], sortKey);
-    
     function getChildrenWithSort(parentId) {
         const children = allTasks.filter(t => t._parentId === parentId);
         return sortTasks([...children], sortKey);
     }
-    
     function buildTree(task) {
         const children = getChildrenWithSort(task.id);
-        return {
-            ...task,
-            children: children.map(c => buildTree(c))
-        };
+        return { ...task, children: children.map(c => buildTree(c)) };
     }
-    
     return sortedTop.map(t => buildTree(t));
 }
 
 // ============================================================
 //  渲染
 // ============================================================
-function renderAll() { 
-    renderProjects(); 
-    renderTasks(); 
-    updateFilterUI();
-}
-
+function renderAll() { renderProjects(); renderTasks(); updateFilterUI(); }
 function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ============================================================
-//  渲染项目
-// ============================================================
 function renderProjects() {
     const container = document.getElementById('projectList');
     const projects = getFilteredProjects();
-    
     if (projects.length === 0) { 
         container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无项目' : '暂无项目，点击「新建项目」开始') + '</div>';
         document.getElementById('projectPagination').innerHTML = '';
         return; 
     }
-    
     const result = paginateItems(projects, projectPage, PAGE_SIZE);
-    const pageItems = result.items;
-    
-    container.innerHTML = pageItems.map(p => {
+    container.innerHTML = result.items.map(p => {
         const cats = getCategoriesByIds(p.categoryIds || []);
-        const catTags = cats.length ? cats.map(c => 
-            `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
-        ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
-        
+        const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         const tree = buildProjectTaskTree(p.id);
         const taskCount = tree.length;
         const isExpanded = expandedProjects.has(p.id);
+        const showDone = showDoneTasks[p.id] || false;
+        
+        // 统计已完成任务数量
+        let doneCount = 0;
+        let totalInTree = 0;
+        function countTasks(nodes) {
+            nodes.forEach(node => {
+                totalInTree++;
+                if (node.status === 'done') doneCount++;
+                if (node.children) countTasks(node.children);
+            });
+        }
+        countTasks(tree);
         
         function renderTreeNodes(nodes, level) {
             if (!nodes || nodes.length === 0) return '';
             const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
-            return nodes.map(node => {
+            return nodes.filter(node => {
+                // 如果隐藏已完成，且任务状态为done，则过滤掉（但如果有子任务，保留父级）
+                if (!showDone && node.status === 'done') {
+                    // 检查是否有未完成的子任务
+                    const hasActiveChild = node.children && node.children.some(c => c.status !== 'done');
+                    if (!hasActiveChild) return false;
+                }
+                return true;
+            }).map(node => {
                 const children = node.children || [];
                 const hasChildren = children.length > 0;
                 let isBlocked = false;
                 if (node._prevId) { const prev = getTask(node._prevId); if (prev && prev.status !== 'done') isBlocked = true; }
                 const displayStatus = isBlocked ? 'blocked' : node.status;
-                
+                const isDone = node.status === 'done';
                 const nodeCats = getCategoriesByIds(node.categoryIds || []);
-                const nodeCatTags = nodeCats.length ? nodeCats.map(c => 
-                    `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
-                ).join('') : '';
-                
+                const nodeCatTags = nodeCats.length ? nodeCats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
                 const urgencyMap = {
                     critical: { label: '🔥 紧急', cls: 'urgency-critical' },
                     high: { label: '⚡ 高', cls: 'urgency-high' },
@@ -1636,12 +1445,22 @@ function renderProjects() {
                     none: { label: '⏳ 无', cls: 'urgency-none' }
                 };
                 const u = urgencyMap[node.urgency] || urgencyMap.medium;
+                // 递归渲染子节点（同样应用过滤）
+                const filteredChildren = children.filter(c => {
+                    if (!showDone && c.status === 'done') {
+                        const hasActiveChild = c.children && c.children.some(ch => ch.status !== 'done');
+                        return hasActiveChild;
+                    }
+                    return true;
+                });
+                const childrenHtml = filteredChildren.length > 0 ? 
+                    `<div class="task-level-indent">${renderTreeNodes(filteredChildren, level + 1)}</div>` : '';
                 
-                const childrenHtml = hasChildren ? 
-                    `<div class="task-level-indent">${renderTreeNodes(children, level + 1)}</div>` : '';
+                const doneClass = isDone ? 'done-task' : '';
+                const hiddenClass = (!showDone && isDone) ? 'hidden-done' : '';
                 
                 return `
-                    <div class="task-item ${levelClass}" style="padding:8px 0;">
+                    <div class="task-item ${levelClass} ${doneClass} ${hiddenClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
                             ${hasChildren ? `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : `<span style="width:16px;display:inline-block;"></span>`}
                             <span class="task-name" style="font-size:.85rem;">${escHtml(node.name)}</span>
@@ -1654,7 +1473,7 @@ function renderProjects() {
                             <div class="task-actions">
                                 <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑项目内任务关系">🔗</button>
                                 <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
-                                <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>
+                                ${!isDone ? `<button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>` : ''}
                                 ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
                                 <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${node.id})">✕</button>
                             </div>
@@ -1666,9 +1485,10 @@ function renderProjects() {
             }).join('');
         }
         
-        const tasksHtml = taskCount > 0 ? 
-            renderTreeNodes(tree, 1) : 
-            '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 该分类下暂无关联任务</div>';
+        const doneHiddenCount = tree.reduce((acc, node) => {
+            if (node.status === 'done') acc++;
+            return acc;
+        }, 0);
         
         return `
             <div class="task-item project-expandable">
@@ -1688,25 +1508,28 @@ function renderProjects() {
                     </div>
                 </div>
                 <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;padding-left:30px;">✅ ${escHtml(p.standard)}</div>
+                ${isExpanded ? `
+                    <div class="done-toggle-row">
+                        <button class="btn-toggle-done ${showDone ? 'active' : ''}" onclick="event.stopPropagation();toggleShowDone(${p.id})">
+                            ${showDone ? '🙈 隐藏已完成' : '👁️ 显示已完成'}
+                        </button>
+                        <span class="count-info">${doneCount} 个已完成任务 ${!showDone && doneCount > 0 ? '（已隐藏）' : ''}</span>
+                    </div>
+                ` : ''}
                 <div class="project-tasks ${isExpanded ? 'open' : ''}">
-                    ${tasksHtml}
+                    ${isExpanded ? renderTreeNodes(tree, 1) : ''}
+                    ${isExpanded && taskCount === 0 ? '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 该分类下暂无关联任务</div>' : ''}
                 </div>
             </div>
         `;
     }).join('');
-    
-    renderPagination('projectPagination', result.currentPage, result.totalPages, 
-        `function(page){ projectPage = page; renderProjects(); }`);
+    renderPagination('projectPagination', result.currentPage, result.totalPages, `function(page){ projectPage = page; renderProjects(); }`);
 }
 
-// ============================================================
-//  全局任务渲染
-// ============================================================
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
     const sortKey = document.getElementById('taskSortOrder').value;
-
     let tasks = getFilteredTasks().filter(t => !t.archived);
     if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
     else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
@@ -1727,23 +1550,18 @@ function renderTasks() {
         const sorted = sortTasks([...tasks], sortKey);
         const result = paginateItems(sorted, taskPage, PAGE_SIZE);
         container.innerHTML = result.items.map(t => renderTaskFlat(t, true)).join('');
-        renderPagination('taskPagination', result.currentPage, result.totalPages, 
-            `function(page){ taskPage = page; renderTasks(); }`);
+        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
         return;
     }
-
     const sorted = sortTasks([...tasks], sortKey);
-    
     if (sorted.length === 0) {
         container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无任务' : '暂无符合条件的任务') + '</div>';
         document.getElementById('taskPagination').innerHTML = '';
         return;
     }
-    
     const result = paginateItems(sorted, taskPage, PAGE_SIZE);
     container.innerHTML = result.items.map(t => renderTaskFlat(t, false)).join('');
-    renderPagination('taskPagination', result.currentPage, result.totalPages, 
-        `function(page){ taskPage = page; renderTasks(); }`);
+    renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
 }
 
 function renderTaskFlat(task, isArchived) {
@@ -1751,12 +1569,8 @@ function renderTaskFlat(task, isArchived) {
         const p = getProject(id);
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
     }).join('');
-    
     const cats = getCategoriesByIds(task.categoryIds || []);
-    const catTags = cats.length ? cats.map(c => 
-        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
-    ).join('') : '';
-
+    const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
     const urgencyMap = {
         critical: { label: '🔥 紧急', cls: 'urgency-critical' },
         high: { label: '⚡ 高', cls: 'urgency-high' },
@@ -1765,9 +1579,6 @@ function renderTaskFlat(task, isArchived) {
         none: { label: '⏳ 无', cls: 'urgency-none' }
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
-    
-    const displayStatus = task.status;
-
     return `
         <div class="task-item">
             <div class="task-row">
@@ -1775,7 +1586,7 @@ function renderTaskFlat(task, isArchived) {
                 ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
                 <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
-                <span class="status-tag status-${displayStatus}">${displayStatus}</span>
+                <span class="status-tag status-${task.status}">${task.status}</span>
                 ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
@@ -1800,17 +1611,12 @@ function renderTaskFlat(task, isArchived) {
 function updateStats() {
     if (!data) return;
     const filteredTasks = getFilteredTasks().filter(t => !t.archived);
-    const total = filteredTasks.length;
-    const done = filteredTasks.filter(t => t.status === 'done').length;
-    const p0 = filteredTasks.filter(t => t.priority === 'P0').length;
-    const archived = getFilteredTasks().filter(t => t.archived).length;
-    const projects = getFilteredProjects().length;
     document.getElementById('statsBar').innerHTML = `
-        <div class="stat"><div class="num">${projects}</div><div class="label">📁 项目</div></div>
-        <div class="stat"><div class="num">${total}</div><div class="label">📌 进行中</div></div>
-        <div class="stat"><div class="num">${done}</div><div class="label">✅ 已完成</div></div>
-        <div class="stat"><div class="num">${p0}</div><div class="label">🔴 P0</div></div>
-        <div class="stat"><div class="num">${archived}</div><div class="label">📦 已归档</div></div>
+        <div class="stat"><div class="num">${getFilteredProjects().length}</div><div class="label">📁 项目</div></div>
+        <div class="stat"><div class="num">${filteredTasks.length}</div><div class="label">📌 进行中</div></div>
+        <div class="stat"><div class="num">${filteredTasks.filter(t => t.status === 'done').length}</div><div class="label">✅ 已完成</div></div>
+        <div class="stat"><div class="num">${filteredTasks.filter(t => t.priority === 'P0').length}</div><div class="label">🔴 P0</div></div>
+        <div class="stat"><div class="num">${getFilteredTasks().filter(t => t.archived).length}</div><div class="label">📦 已归档</div></div>
     `;
 }
 
