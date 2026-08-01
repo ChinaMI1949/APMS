@@ -128,7 +128,7 @@
         .btn-github:hover{background:#1a1e22}
         .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
         .btn-ghost:hover{background:var(--surface-hover)}
-        .btn-toggle-done{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 12px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s;pointer-events:auto}
+        .btn-toggle-done{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 14px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s;pointer-events:auto}
         .btn-toggle-done:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .btn-toggle-done.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
@@ -266,10 +266,10 @@
         .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .project-link{cursor:pointer;color:var(--primary);text-decoration:none;transition:color .2s;font-weight:700}
         .project-link:hover{color:var(--primary);text-decoration:underline;opacity:.8}
-        .done-toggle-row{display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px}
+        .done-toggle-row{display:flex;align-items:center;gap:10px;padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap}
         .done-toggle-row .count-info{font-size:.75rem;color:var(--text-muted)}
-        .project-tasks .done-task{display:block}
         .project-tasks .done-task.hidden-done{display:none}
+        .project-tasks .done-task{display:block}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -597,7 +597,6 @@ function checkTimeConflict() {
             if (!t.start || !t.end) continue;
             const tStart = new Date(t.start);
             const tEnd = new Date(t.end);
-            // 检测重叠: 新任务开始 < 已有任务结束 && 新任务结束 > 已有任务开始
             if (startDate < tEnd && endDate > tStart) {
                 conflictEl.textContent = '⚠️ 检测到时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')';
                 conflictEl.style.display = 'block';
@@ -948,8 +947,7 @@ function renderCategories() {
         </span>
     `).join('');
     setTimeout(() => {
-        const container = document.getElementById('categoryList');
-        // 简化的拖拽排序
+        // 简化的拖拽排序提示
     }, 50);
 }
 
@@ -1407,30 +1405,30 @@ function renderProjects() {
         
         // 统计已完成任务数量
         let doneCount = 0;
-        let totalInTree = 0;
-        function countTasks(nodes) {
+        function countDone(nodes) {
             nodes.forEach(node => {
-                totalInTree++;
                 if (node.status === 'done') doneCount++;
-                if (node.children) countTasks(node.children);
+                if (node.children) countDone(node.children);
             });
         }
-        countTasks(tree);
+        countDone(tree);
         
         function renderTreeNodes(nodes, level) {
             if (!nodes || nodes.length === 0) return '';
             const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
-            return nodes.filter(node => {
-                // 如果隐藏已完成，且任务状态为done，则过滤掉（但如果有子任务，保留父级）
-                if (!showDone && node.status === 'done') {
-                    // 检查是否有未完成的子任务
-                    const hasActiveChild = node.children && node.children.some(c => c.status !== 'done');
-                    if (!hasActiveChild) return false;
-                }
-                return true;
-            }).map(node => {
+            let filteredNodes = nodes;
+            if (!showDone) {
+                filteredNodes = nodes.filter(node => {
+                    if (node.status === 'done') {
+                        // 如果有未完成的子任务，保留父级
+                        const hasActiveChild = node.children && node.children.some(c => c.status !== 'done');
+                        return hasActiveChild;
+                    }
+                    return true;
+                });
+            }
+            return filteredNodes.map(node => {
                 const children = node.children || [];
-                const hasChildren = children.length > 0;
                 let isBlocked = false;
                 if (node._prevId) { const prev = getTask(node._prevId); if (prev && prev.status !== 'done') isBlocked = true; }
                 const displayStatus = isBlocked ? 'blocked' : node.status;
@@ -1445,14 +1443,17 @@ function renderProjects() {
                     none: { label: '⏳ 无', cls: 'urgency-none' }
                 };
                 const u = urgencyMap[node.urgency] || urgencyMap.medium;
-                // 递归渲染子节点（同样应用过滤）
-                const filteredChildren = children.filter(c => {
-                    if (!showDone && c.status === 'done') {
-                        const hasActiveChild = c.children && c.children.some(ch => ch.status !== 'done');
-                        return hasActiveChild;
-                    }
-                    return true;
-                });
+                // 子节点同样应用过滤
+                let filteredChildren = children;
+                if (!showDone) {
+                    filteredChildren = children.filter(c => {
+                        if (c.status === 'done') {
+                            const hasActiveChild = c.children && c.children.some(ch => ch.status !== 'done');
+                            return hasActiveChild;
+                        }
+                        return true;
+                    });
+                }
                 const childrenHtml = filteredChildren.length > 0 ? 
                     `<div class="task-level-indent">${renderTreeNodes(filteredChildren, level + 1)}</div>` : '';
                 
@@ -1462,7 +1463,9 @@ function renderProjects() {
                 return `
                     <div class="task-item ${levelClass} ${doneClass} ${hiddenClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
-                            ${hasChildren ? `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : `<span style="width:16px;display:inline-block;"></span>`}
+                            ${children.filter(c => !(!showDone && c.status === 'done' && !c.children?.some(ch => ch.status !== 'done'))).length > 0 ? 
+                                `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : 
+                                `<span style="width:16px;display:inline-block;"></span>`}
                             <span class="task-name" style="font-size:.85rem;">${escHtml(node.name)}</span>
                             ${nodeCatTags ? `<span class="task-cats">${nodeCatTags}</span>` : ''}
                             <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
@@ -1485,10 +1488,8 @@ function renderProjects() {
             }).join('');
         }
         
-        const doneHiddenCount = tree.reduce((acc, node) => {
-            if (node.status === 'done') acc++;
-            return acc;
-        }, 0);
+        // 检查是否有已完成但被隐藏的任务（用于显示提示）
+        const hasHiddenDone = tree.some(node => node.status === 'done');
         
         return `
             <div class="task-item project-expandable">
@@ -1513,12 +1514,16 @@ function renderProjects() {
                         <button class="btn-toggle-done ${showDone ? 'active' : ''}" onclick="event.stopPropagation();toggleShowDone(${p.id})">
                             ${showDone ? '🙈 隐藏已完成' : '👁️ 显示已完成'}
                         </button>
-                        <span class="count-info">${doneCount} 个已完成任务 ${!showDone && doneCount > 0 ? '（已隐藏）' : ''}</span>
+                        <span class="count-info">
+                            ${doneCount} 个已完成任务
+                            ${!showDone && doneCount > 0 ? '（已隐藏）' : ''}
+                            ${doneCount === 0 ? '（无已完成任务）' : ''}
+                        </span>
                     </div>
                 ` : ''}
                 <div class="project-tasks ${isExpanded ? 'open' : ''}">
                     ${isExpanded ? renderTreeNodes(tree, 1) : ''}
-                    ${isExpanded && taskCount === 0 ? '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 该分类下暂无关联任务</div>' : ''}
+                    ${isExpanded && taskCount === 0 ? '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>' : ''}
                 </div>
             </div>
         `;
