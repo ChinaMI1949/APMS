@@ -6,93 +6,18 @@
     <title>ChinaMI1949 · 结构化个人事务管理系统</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        :root,
-        [data-theme="mountain"] {
-            --bg: #f5f0e8;
-            --surface: #ffffff;
-            --surface-hover: #f0eadc;
-            --text: #1a1610;
-            --text-secondary: #5a4d38;
-            --text-muted: #9a8a70;
-            --border: #e0d4c0;
-            --primary: #c49a3a;
-            --primary-light: #f5eddc;
-            --primary-gradient: linear-gradient(135deg, #c49a3a, #a0782a);
-            --shadow: 0 6px 24px rgba(196,154,58,0.18);
-            --radius: 14px;
-            --radius-sm: 8px;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-            --motto-courage: var(--primary-gradient);
-            --motto-blessing: var(--primary-gradient);
-            --tagline-color: var(--primary);
-            --filter-active-border: var(--primary);
-            --theme-icon: "🏔️";
-            --done-opacity: 0.7;
-            --done-bg: #f8f5f0;
-            --archived-opacity: 0.5;
-            --archived-bg: #f0ece6;
-        }
-        [data-theme="army"] {
-            --bg: #eef0e8;
-            --surface: #ffffff;
-            --surface-hover: #e8ebe0;
-            --text: #1a1a14;
-            --text-secondary: #4d4d40;
-            --text-muted: #8a8a7a;
-            --border: #d0d4c0;
-            --primary: #4a7a4a;
-            --primary-light: #e8f0e8;
-            --primary-gradient: linear-gradient(135deg, #4a7a4a, #2d5a2d);
-            --shadow: 0 6px 24px rgba(74,122,74,0.15);
-            --radius: 14px;
-            --radius-sm: 8px;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-            --motto-courage: var(--primary-gradient);
-            --motto-blessing: var(--primary-gradient);
-            --tagline-color: var(--primary);
-            --filter-active-border: var(--primary);
-            --theme-icon: "🌲";
-            --done-opacity: 0.7;
-            --done-bg: #f5f7f0;
-            --archived-opacity: 0.5;
-            --archived-bg: #edefe6;
-        }
-        [data-theme="army-dark"] {
-            --bg: #141a14;
-            --surface: #1a261a;
-            --surface-hover: #2a3a2a;
-            --text: #e8ede0;
-            --text-secondary: #b4c0a8;
-            --text-muted: #7a8a72;
-            --border: #3d4a3a;
-            --primary: #6aaa6a;
-            --primary-light: #2a3a2a;
-            --primary-gradient: linear-gradient(135deg, #6aaa6a, #3d7a3d);
-            --shadow: 0 6px 24px rgba(0,0,0,0.5);
-            --radius: 14px;
-            --radius-sm: 8px;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-            --motto-courage: var(--primary-gradient);
-            --motto-blessing: var(--primary-gradient);
-            --tagline-color: var(--primary);
-            --filter-active-border: var(--primary);
-            --theme-icon: "🌑";
-            --done-opacity: 0.6;
-            --done-bg: #1f2a1f;
-            --archived-opacity: 0.4;
-            --archived-bg: #1a221a;
-        }
-
+        :root{--bg:#f0ebe0;--surface:#fff;--surface-hover:#e8e0d0;--text:#2d2818;--text-secondary:#5a5040;--text-muted:#9a8a78;--border:#d8ceb8;--primary:#b8a070;--primary-light:#f0ead8;--primary-gradient:linear-gradient(135deg,#b8a070,#9a8a60);--shadow:0 6px 24px rgba(184,160,112,0.18);--radius:14px;--radius-sm:8px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+        [data-theme="army"]{--bg:#eef0e8;--surface:#fff;--surface-hover:#e8ebe0;--text:#1a1a14;--text-secondary:#4d4d40;--text-muted:#8a8a7a;--border:#d0d4c0;--primary:#4a7a4a;--primary-light:#e8f0e8;--primary-gradient:linear-gradient(135deg,#4a7a4a,#2d5a2d);--shadow:0 6px 24px rgba(74,122,74,0.15)}
+        [data-theme="army-dark"]{--bg:#141a14;--surface:#1a261a;--surface-hover:#2a3a2a;--text:#e8ede0;--text-secondary:#b4c0a8;--text-muted:#7a8a72;--border:#3d4a3a;--primary:#6aaa6a;--primary-light:#2a3a2a;--primary-gradient:linear-gradient(135deg,#6aaa6a,#3d7a3d);--shadow:0 6px 24px rgba(0,0,0,0.5)}
         html{scroll-behavior:smooth}
         body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh;cursor:pointer}
         .container{max-width:1100px;margin:0 auto;pointer-events:none}
-        .container > * {pointer-events:auto}
+        .container>*{pointer-events:auto}
         nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.88)}
-        [data-theme="army-dark"] nav{background:rgba(26,38,26,0.90)}
         .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .nav-brand small{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.5px}
         .nav-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-        .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s;pointer-events:auto}
+        .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s}
         .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .theme-btn .theme-icon{display:inline-block;font-size:.9rem}
         .theme-btn .theme-label{font-size:.7rem}
@@ -100,26 +25,26 @@
         .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
         .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
         .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
-        .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;pointer-events:auto}
+        .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px}
         .stats-bar .stat{text-align:center}
         .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
         .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-        .filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--surface);padding:12px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;pointer-events:auto}
+        .filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--surface);padding:12px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
         .filter-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary);white-space:nowrap}
-        .filter-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;color:var(--text);min-width:140px;pointer-events:auto;cursor:pointer}
-        .filter-bar select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(196,154,58,0.15)}
+        .filter-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;color:var(--text);min-width:140px;cursor:pointer}
+        .filter-bar select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(184,160,112,0.15)}
         .filter-bar .filter-hint{font-size:.7rem;color:var(--text-muted);margin-left:4px}
         .filter-bar .filter-badge{display:inline-block;background:var(--primary-gradient);color:#fff;padding:0 12px;border-radius:12px;font-size:.65rem;font-weight:600;line-height:22px}
-        .filter-bar .clear-filter{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-decoration:underline;pointer-events:auto}
+        .filter-bar .clear-filter{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-decoration:underline}
         .filter-bar .clear-filter:hover{color:var(--primary)}
-        .filter-active .card{border-color:var(--filter-active-border);border-width:2px}
-        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;pointer-events:auto}
+        .filter-active .card{border-color:var(--primary);border-width:2px}
+        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px}
         .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
         .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
         .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .card-header .sub{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.3px;margin-left:4px}
-        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(196,154,58,0.30);pointer-events:auto}
-        .btn:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(196,154,58,0.40)}
+        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(184,160,112,0.30)}
+        .btn:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(184,160,112,0.40)}
         .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
         .btn-outline:hover{background:var(--primary-light)}
         .btn-sm{padding:4px 14px;font-size:.75rem}
@@ -129,47 +54,32 @@
         .btn-success:hover{background:#1e8449}
         .btn-github{background:#24292e;color:#fff;border:none}
         .btn-github:hover{background:#1a1e22}
-        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
-        .btn-ghost:hover{background:var(--surface-hover)}
-        .btn-toggle-done{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 14px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s;pointer-events:auto}
-        .btn-toggle-done:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
-        .btn-toggle-done.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
-        .btn-archive{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:2px 10px;border-radius:12px;font-size:.6rem;cursor:pointer;transition:.15s;pointer-events:auto}
+        .btn-archive{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:2px 10px;border-radius:12px;font-size:.6rem;cursor:pointer;transition:.15s}
         .btn-archive:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
-        .btn-archive.archived{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-archive.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
         .form-group{display:flex;flex-direction:column;gap:4px}
         .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
         .form-group label .required{color:var(--primary);margin-left:2px}
-        .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font);pointer-events:auto}
-        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(196,154,58,0.15)}
+        .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font)}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(184,160,112,0.15)}
         .form-group textarea{resize:vertical;min-height:50px}
         .form-group select[multiple]{min-height:70px;padding:4px}
         .form-group select[multiple] option{padding:4px 8px;border-radius:4px}
         .form-group select[multiple] option:hover{background:var(--primary-light)}
         .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
         .conflict-warning{background:#fde8e8;border:1px solid #f5c8c8;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:.78rem;color:#c0392b;display:none}
-        [data-theme="army-dark"] .conflict-warning{background:#2d1a1a;border-color:#4d2a2a;color:#f1948a}
         .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .priority-p0{background:#fde8e8;color:#c0392b}
         .priority-p1{background:#fef3e7;color:#d35400}
         .priority-p2{background:#fef9e7;color:#b7950b}
         .priority-p3{background:#eef2f5;color:#5d6d7e}
-        [data-theme="army-dark"] .priority-p0{background:#3d1a1a;color:#f1948a}
-        [data-theme="army-dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
-        [data-theme="army-dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
-        [data-theme="army-dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
         .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
         .urgency-critical{background:#7b1fa2;color:#fff}
         .urgency-high{background:#c0392b;color:#fff}
         .urgency-medium{background:var(--primary);color:#fff}
         .urgency-low{background:#27ae60;color:#fff}
         .urgency-none{background:#bdc3c7;color:#2c3e50}
-        [data-theme="army-dark"] .urgency-critical{background:#9b4dca;color:#fff}
-        [data-theme="army-dark"] .urgency-high{background:#c0392b;color:#fff}
-        [data-theme="army-dark"] .urgency-medium{background:var(--primary);color:#fff}
-        [data-theme="army-dark"] .urgency-low{background:#2ecc71;color:#fff}
-        [data-theme="army-dark"] .urgency-none{background:#5d6d7e;color:#ecf0f1}
         .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
         .status-planning{background:#eef2f5;color:#5d6d7e}
         .status-active{background:#eaf2f8;color:#2e86c1}
@@ -181,45 +91,37 @@
         .status-review{background:#fef9e7;color:#9a8a3a}
         .status-done{background:#e9f7ef;color:#1e8449}
         .status-blocked{background:#fde8e8;color:#c0392b}
-        [data-theme="army-dark"] .status-planning{background:#2a2b33;color:#99a3b0}
-        [data-theme="army-dark"] .status-active{background:#1a2a3d;color:#5dade2}
-        [data-theme="army-dark"] .status-paused{background:#3d3a1a;color:#f4d03f}
-        [data-theme="army-dark"] .status-completed{background:#1a3d2a;color:#58d68d}
-        [data-theme="army-dark"] .status-backlog{background:#2a2b33;color:#99a3b0}
-        [data-theme="army-dark"] .status-todo{background:#2a2b33;color:#99a3b0}
-        [data-theme="army-dark"] .status-doing{background:#1a2a3d;color:#5dade2}
-        [data-theme="army-dark"] .status-review{background:#3d3a1a;color:#f4d03f}
-        [data-theme="army-dark"] .status-done{background:#1a3d2a;color:#58d68d}
-        [data-theme="army-dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
+        .status-archived{background:#e8e0d0;color:#7a6a5a}
+        .status-unfinished{background:#e8e0d0;color:#7a6a5a}
         .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;align-items:center}
-        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent;pointer-events:auto}
+        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent}
         .cat-tag:active{cursor:grabbing;opacity:.7}
         .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0}
-        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%;line-height:1;pointer-events:auto}
+        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%;line-height:1}
         .cat-tag .del:hover{color:var(--primary);background:var(--primary-light)}
         .cat-tag .drag-handle{font-size:.7rem;color:var(--text-muted);cursor:grab;padding:0 2px;opacity:.5}
         .cat-tag .drag-handle:hover{opacity:1}
         .cat-tag.dragging{opacity:.3;border-color:var(--primary)}
         .cat-tag.drag-over{border-color:var(--primary);border-style:dashed;background:var(--primary-light)}
         .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-        .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px;pointer-events:auto}
+        .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px}
         .cat-add-row input:focus{outline:none;border-color:var(--primary)}
-        .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s;pointer-events:auto}
+        .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s}
         .task-item:last-child{border-bottom:none}
         .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
-        .task-item.done-task{opacity:var(--done-opacity);background:var(--done-bg);border-radius:var(--radius-sm)}
-        .task-item.done-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
-        .task-item.archived-task{opacity:var(--archived-opacity);background:var(--archived-bg);border-radius:var(--radius-sm)}
-        .task-item.archived-task .task-actions .btn-success,.task-item.archived-task .task-actions .btn-outline{opacity:0.4;pointer-events:none}
+        .task-item.archived-task{opacity:0.5;background:var(--surface-hover);border-radius:var(--radius-sm)}
+        .task-item.archived-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
+        .task-item.unfinished-task{opacity:0.5;background:var(--surface-hover);border-radius:var(--radius-sm)}
+        .task-item.unfinished-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
         .task-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
         .task-row .task-name{font-weight:600;flex:1 1 160px;font-size:.95rem}
         .task-row .task-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.78rem;color:var(--text-secondary)}
         .task-row .task-actions{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
         .task-children{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px}
-        .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px;pointer-events:auto}
+        .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px}
         .task-sub-toggle:hover{background:var(--surface-hover)}
         .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
-        .modal-overlay{position:fixed;inset:0;background:rgba(26,22,16,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;pointer-events:auto}
+        .modal-overlay{position:fixed;inset:0;background:rgba(26,22,16,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
         .modal-overlay.active{display:flex}
         .modal{background:var(--surface);border-radius:var(--radius);max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
         .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -228,39 +130,31 @@
         .modal-close:hover{color:var(--text)}
         .save-hint{background:var(--primary-light);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:var(--text-secondary)}
         .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
-        [data-theme="army-dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
         .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
         .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
-        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);pointer-events:auto}
+        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);cursor:pointer}
         .sort-bar select:focus{outline:none;border-color:var(--primary)}
         .project-cats,.task-cats{display:inline-flex;flex-wrap:wrap;gap:3px;margin:0 4px}
         .mini-cat{font-size:.6rem;padding:1px 8px;border-radius:12px;font-weight:500}
-        .cat-sort-hint{font-size:.7rem;color:var(--text-muted);margin-left:8px;font-weight:400}
-        .system-motto{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.65rem;color:var(--text-muted);padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;letter-spacing:.5px;align-items:center;pointer-events:auto}
+        .system-motto{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.65rem;color:var(--text-muted);padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;letter-spacing:.5px;align-items:center}
         .system-motto span{background:var(--surface-hover);padding:2px 10px;border-radius:12px}
         .system-motto .motto-divider{background:transparent;padding:0 4px;color:var(--border)}
-        .system-motto .courage{background:var(--motto-courage);color:#fff;font-weight:600;padding:2px 14px;border-radius:20px;font-size:.7rem}
-        .system-motto .tagline{color:var(--tagline-color);font-weight:600;font-size:.7rem;background:transparent;padding:0}
-        .system-motto .blessing{background:var(--motto-blessing);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(196,154,58,0.30)}
+        .system-motto .courage{background:var(--primary-gradient);color:#fff;font-weight:600;padding:2px 14px;border-radius:20px;font-size:.7rem}
+        .system-motto .tagline{color:var(--primary);font-weight:600;font-size:.7rem;background:transparent;padding:0}
+        .system-motto .blessing{background:var(--primary-gradient);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(184,160,112,0.30)}
         .pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:12px}
-        .pagination .page-btn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--text-secondary);cursor:pointer;transition:.15s;min-width:32px;text-align:center;pointer-events:auto}
+        .pagination .page-btn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--text-secondary);cursor:pointer;transition:.15s;min-width:32px;text-align:center}
         .pagination .page-btn:hover:not(.active):not(.disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .pagination .page-btn.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary);font-weight:600}
         .pagination .page-btn.disabled{opacity:.4;cursor:not-allowed}
         .pagination .page-info{font-size:.75rem;color:var(--text-muted);padding:0 8px}
         .pagination .page-btn.ellipsis{background:transparent;border:none;cursor:default;color:var(--text-muted)}
         .confetti-pop{position:fixed;pointer-events:none;z-index:9999;font-size:42px;opacity:0;animation:confettiPop 1s ease-out forwards;user-select:none;text-shadow:0 0 30px rgba(255,255,255,0.4)}
-        @keyframes confettiPop{
-            0%{opacity:0;transform:scale(0.2) rotate(0deg)}
-            25%{opacity:1;transform:scale(1.3) rotate(var(--rot, 20deg))}
-            50%{opacity:1;transform:scale(1) rotate(var(--rot2, 40deg))}
-            75%{opacity:0.8;transform:scale(0.9) rotate(var(--rot3, 30deg))}
-            100%{opacity:0;transform:scale(0.5) rotate(var(--rot4, 10deg))}
-        }
+        @keyframes confettiPop{0%{opacity:0;transform:scale(0.2) rotate(0deg)}25%{opacity:1;transform:scale(1.3) rotate(var(--rot,20deg))}50%{opacity:1;transform:scale(1) rotate(var(--rot2,40deg))}75%{opacity:0.8;transform:scale(0.9) rotate(var(--rot3,30deg))}100%{opacity:0;transform:scale(0.5) rotate(var(--rot4,10deg))}}
         .project-expandable{cursor:pointer}
         .project-expandable .expand-icon{display:inline-block;transition:transform .25s;margin-right:6px;font-size:.8rem}
         .project-expandable .expand-icon.open{transform:rotate(90deg)}
-        .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
+        .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease,margin .3s ease;opacity:0}
         .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
         .task-level-0{padding-left:0}
         .task-level-1{padding-left:24px}
@@ -270,53 +164,44 @@
         .task-level-5{padding-left:120px}
         .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
         .task-flat .task-meta-relation{display:none !important}
-        .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;pointer-events:auto;line-height:1.6}
+        .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;line-height:1.6}
         .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .project-link{cursor:pointer;color:var(--primary);text-decoration:none;transition:color .2s;font-weight:700}
         .project-link:hover{color:var(--primary);text-decoration:underline;opacity:.8}
-        .done-toggle-row{display:flex;align-items:center;gap:10px;padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap}
-        .done-toggle-row .count-info{font-size:.75rem;color:var(--text-muted)}
-        .project-tasks .done-task.hidden-done{display:none}
-        .project-tasks .done-task{display:block}
+        .toggle-row{display:flex;align-items:center;gap:10px;padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap}
+        .toggle-row .count-info{font-size:.75rem;color:var(--text-muted)}
+        .btn-toggle-archived{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 14px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s}
+        .btn-toggle-archived:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-toggle-archived.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
         .project-tasks .archived-task.hidden-archived{display:none}
-        .project-tasks .archived-task{display:block}
+        .project-tasks .unfinished-task.hidden-archived{display:none}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
         ::-webkit-scrollbar-track{background:var(--bg)}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
         ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
-        .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
+        .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease}
         .collapse-enter.active{max-height:3000px;opacity:1}
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <nav>
-        <div class="nav-brand">
-            🏛️ ChinaMI1949
-            <small>结构化个人事务管理系统</small>
-        </div>
+        <div class="nav-brand">🏛️ ChinaMI1949 <small>结构化个人事务管理系统</small></div>
         <div class="nav-actions">
             <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
-            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
-            <button onclick="exportJSON()" class="btn btn-sm btn-outline">📤 导出JSON</button>
-            <button onclick="cycleTheme()" class="theme-btn" id="themeBtn">
-                <span class="theme-icon">🏔️</span>
-                <span class="theme-label">主题</span>
-            </button>
+            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步</button>
+            <button onclick="exportJSON()" class="btn btn-sm btn-outline">📤 导出</button>
+            <button onclick="cycleTheme()" class="theme-btn"><span class="theme-icon">🌾</span><span class="theme-label">卡其</span></button>
             <button onclick="window.print()">🖨️ 打印</button>
-            <button onclick="openTokenModal()">⚙️ 配置</button>
+            <button onclick="openTokenModal()">⚙️</button>
         </div>
     </nav>
 
     <div class="system-motto">
-        <span>🧭 边界</span>
-        <span>📐 框架</span>
-        <span>⚖️ 规矩</span>
-        <span>✨ 讲究</span>
-        <span>💎 价值</span>
-        <span>📈 利益</span>
+        <span>🧭 边界</span><span>📐 框架</span><span>⚖️ 规矩</span>
+        <span>✨ 讲究</span><span>💎 价值</span><span>📈 利益</span>
         <span class="motto-divider">|</span>
         <span class="courage">⚔️ 勇气是人类的赞歌</span>
         <span class="motto-divider">|</span>
@@ -327,18 +212,14 @@
 
     <div class="stats-bar" id="statsBar"></div>
 
-    <!-- 分类查询栏 -->
     <div class="filter-bar" id="filterBar">
         <label>🔍 按分类筛选：</label>
-        <select id="categoryFilter" onchange="applyCategoryFilter()">
-            <option value="">📊 全部</option>
-        </select>
+        <select id="categoryFilter" onchange="applyCategoryFilter()"><option value="">📊 全部</option></select>
         <span class="filter-hint" id="filterHint">选择分类查看对应的项目和任务</span>
         <button class="clear-filter" id="clearFilterBtn" onclick="clearCategoryFilter()" style="display:none;">✕ 清除筛选</button>
         <span class="filter-badge" id="filterBadge" style="display:none;"></span>
     </div>
 
-    <!-- 分类管理 -->
     <div class="card">
         <div class="card-header">
             <h2><span>🏷️ 分类管理</span> <span class="sub">边界界定 · 框架构建</span></h2>
@@ -350,7 +231,6 @@
         <div id="categoryList" class="cat-list"></div>
     </div>
 
-    <!-- 项目总库 -->
     <div class="card" id="projectCard">
         <div class="card-header">
             <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
@@ -360,7 +240,6 @@
         <div id="projectPagination" class="pagination"></div>
     </div>
 
-    <!-- 全局任务总库 -->
     <div class="card" id="taskCard">
         <div class="card-header">
             <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
@@ -368,16 +247,13 @@
                 <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
                 <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
                     <option value="all">📊 全部</option>
-                    <option value="p0">🔴 P0</option>
-                    <option value="p1">🟠 P1</option>
-                    <option value="p2">🟡 P2</option>
-                    <option value="p3">🔵 P3</option>
-                    <option value="backlog">⏳ Backlog</option>
-                    <option value="todo">📋 To Do</option>
-                    <option value="doing">🔄 Doing</option>
-                    <option value="review">🔍 Review</option>
+                    <option value="p0">🔴 P0</option><option value="p1">🟠 P1</option>
+                    <option value="p2">🟡 P2</option><option value="p3">🔵 P3</option>
+                    <option value="backlog">⏳ Backlog</option><option value="todo">📋 To Do</option>
+                    <option value="doing">🔄 Doing</option><option value="review">🔍 Review</option>
                     <option value="done">✅ Done</option>
                     <option value="archived">📦 已归档</option>
+                    <option value="unfinished">⏰ 未完成</option>
                 </select>
             </div>
         </div>
@@ -428,7 +304,7 @@
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
+            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。<br>📌 未完成任务可直接归档到「未完成」。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -473,7 +349,7 @@
 
     <!-- 编辑项目内任务关系弹窗 -->
     <div class="modal-overlay" id="relationModal">
-        <div class="modal relation-modal">
+        <div class="modal">
             <div class="modal-header"><h3 id="relationModalTitle">编辑项目内任务关系</h3><button class="modal-close" onclick="closeModal('relationModal')">&times;</button></div>
             <div class="save-hint">💡 设置任务在项目中的父子关系和先后顺序。<br>📌 父级任务：当前任务挂在哪个任务下面。<br>📌 前置任务：当前任务需要等待哪个任务完成。</div>
             <form id="relationForm" onsubmit="saveRelation(event)">
@@ -507,7 +383,7 @@
 //  主题切换
 // ============================================================
 const THEMES = [
-    { id: 'mountain', icon: '🏔️', label: '山黄' },
+    { id: 'khaki', icon: '🌾', label: '卡其' },
     { id: 'army', icon: '🌲', label: '军绿' },
     { id: 'army-dark', icon: '🌑', label: '暗色军绿' }
 ];
@@ -518,27 +394,29 @@ function cycleTheme() {
     const theme = THEMES[currentThemeIndex];
     document.documentElement.setAttribute('data-theme', theme.id);
     localStorage.setItem('pms_theme', theme.id);
-    updateThemeButton();
-}
-
-function updateThemeButton() {
-    const btn = document.getElementById('themeBtn');
-    if (!btn) return;
-    const theme = THEMES[currentThemeIndex];
-    const iconSpan = btn.querySelector('.theme-icon');
-    const labelSpan = btn.querySelector('.theme-label');
-    if (iconSpan) iconSpan.textContent = theme.icon;
-    if (labelSpan) labelSpan.textContent = theme.label;
+    const btn = document.querySelector('.theme-btn');
+    if (btn) {
+        btn.querySelector('.theme-icon').textContent = theme.icon;
+        btn.querySelector('.theme-label').textContent = theme.label;
+    }
 }
 
 function loadTheme() {
     const saved = localStorage.getItem('pms_theme');
     if (saved) {
         const idx = THEMES.findIndex(t => t.id === saved);
-        if (idx !== -1) { currentThemeIndex = idx; document.documentElement.setAttribute('data-theme', saved); updateThemeButton(); return; }
+        if (idx !== -1) {
+            currentThemeIndex = idx;
+            document.documentElement.setAttribute('data-theme', saved);
+            const btn = document.querySelector('.theme-btn');
+            if (btn) {
+                btn.querySelector('.theme-icon').textContent = THEMES[idx].icon;
+                btn.querySelector('.theme-label').textContent = THEMES[idx].label;
+            }
+            return;
+        }
     }
-    document.documentElement.setAttribute('data-theme', 'mountain');
-    updateThemeButton();
+    document.documentElement.setAttribute('data-theme', 'khaki');
 }
 
 // ============================================================
@@ -582,43 +460,10 @@ let dataLoaded = false;
 let selectedCategoryId = null;
 let projectPage = 1, taskPage = 1;
 let expandedProjects = new Set();
-let showDoneTasks = {};
+let showArchivedTasks = {};
 
 // ============================================================
-//  时间冲突检测
-// ============================================================
-function checkTimeConflict() {
-    const start = document.getElementById('tStart').value;
-    const end = document.getElementById('tEnd').value;
-    const projectSelect = document.getElementById('tProjects');
-    const conflictEl = document.getElementById('conflictWarning');
-    if (!start || !end || !projectSelect) { conflictEl.style.display = 'none'; return; }
-    
-    const projectIds = Array.from(projectSelect.selectedOptions).map(o => Number(o.value));
-    if (projectIds.length === 0) { conflictEl.style.display = 'none'; return; }
-    
-    const taskId = document.getElementById('taskEditId').value ? Number(document.getElementById('taskEditId').value) : null;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    
-    for (const pid of projectIds) {
-        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
-        for (const t of tasks) {
-            if (!t.start || !t.end) continue;
-            const tStart = new Date(t.start);
-            const tEnd = new Date(t.end);
-            if (startDate < tEnd && endDate > tStart) {
-                conflictEl.textContent = '⚠️ 检测到时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')';
-                conflictEl.style.display = 'block';
-                return;
-            }
-        }
-    }
-    conflictEl.style.display = 'none';
-}
-
-// ============================================================
-//  数据操作函数
+//  数据操作
 // ============================================================
 function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
 
@@ -644,8 +489,8 @@ function setStatus(text, type) {
     el.textContent = text;
     el.className = 'sync-status';
     if (type === 'saving') el.classList.add('saving');
-    if (type === 'error') el.classList.add('error');
-    if (type === 'loading') el.classList.add('loading');
+    else if (type === 'error') el.classList.add('error');
+    else if (type === 'loading') el.classList.add('loading');
 }
 
 function defaultData() { return { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
@@ -669,39 +514,27 @@ function setProjectTaskRelation(projectId, taskId, parentId, prevId) {
     data.projectTaskRelations[projectId][taskId] = { parentId: parentId || null, prevId: prevId || null };
 }
 
-function getTasksByProject(projectId) {
-    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
-    if (selectedCategoryId) {
-        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-    }
-    return tasks.map(t => {
-        const rel = getProjectTaskRelation(projectId, t.id);
-        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
-    });
-}
-
-function getArchivedTasksByProject(projectId) {
-    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.archived === true);
-    if (selectedCategoryId) {
-        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-    }
-    return tasks.map(t => {
-        const rel = getProjectTaskRelation(projectId, t.id);
-        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
-    });
-}
-
 function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
 
 function loadLocalCache() {
-    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); 
-        d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
-        d.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
-        if (!d.categories) d.categories = [];
-        if (!d.projectTaskRelations) d.projectTaskRelations = {};
-        if (!d.nextCategoryId) d.nextCategoryId = 1; 
-        return d; 
-    } } catch (e) {}
+    try {
+        const raw = localStorage.getItem('pms_data_cache');
+        if (raw) {
+            const d = JSON.parse(raw);
+            d.tasks.forEach(t => {
+                if (t.archived === undefined) t.archived = false;
+                if (t.urgency === undefined) t.urgency = 'medium';
+                if (t.categoryIds === undefined) t.categoryIds = [];
+            });
+            d.projects.forEach(p => {
+                if (p.categoryIds === undefined) p.categoryIds = [];
+            });
+            if (!d.categories) d.categories = [];
+            if (!d.projectTaskRelations) d.projectTaskRelations = {};
+            if (!d.nextCategoryId) d.nextCategoryId = 1;
+            return d;
+        }
+    } catch (e) {}
     return null;
 }
 
@@ -747,8 +580,14 @@ async function loadFromGitHub() {
             const parsed = JSON.parse(body);
             if (parsed.projects !== undefined && parsed.tasks !== undefined) {
                 data = parsed;
-                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
-                data.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
+                data.tasks.forEach(t => {
+                    if (t.archived === undefined) t.archived = false;
+                    if (t.urgency === undefined) t.urgency = 'medium';
+                    if (t.categoryIds === undefined) t.categoryIds = [];
+                });
+                data.projects.forEach(p => {
+                    if (p.categoryIds === undefined) p.categoryIds = [];
+                });
                 if (!data.categories) data.categories = [];
                 if (!data.projectTaskRelations) data.projectTaskRelations = {};
                 if (!data.nextCategoryId) data.nextCategoryId = 1;
@@ -793,7 +632,7 @@ async function createIssue() {
         await fetch(url, {
             method: 'POST',
             headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: '📋 ChinaMI1949 系统数据存储 (请勿删除)', body: JSON.stringify(defaultData(), null, 2), labels: ['china-mi1949-data'] })
+            body: JSON.stringify({ title: '📋 ChinaMI1949 数据存储 (请勿删除)', body: JSON.stringify(defaultData(), null, 2), labels: ['china-mi1949-data'] })
         });
     } catch (e) { console.error('创建 Issue 失败:', e); }
 }
@@ -907,26 +746,12 @@ function getFilteredTasks() {
     return tasks;
 }
 
-function getFilteredTasksByProject(projectId) {
-    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
-    if (selectedCategoryId) {
-        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-    }
-    return tasks.map(t => {
-        const rel = getProjectTaskRelation(projectId, t.id);
-        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
-    });
-}
-
-// ============================================================
-//  分类 CRUD
-// ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
     if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
-    const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
+    const colors = ['#b8a070', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
     const obj = { id: data.nextCategoryId || 1, name, color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
@@ -967,7 +792,6 @@ function renderCategories() {
             <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
         </span>
     `).join('');
-    setTimeout(() => {}, 50);
 }
 
 function populateAllSelects() {
@@ -1003,7 +827,7 @@ function addCategoryFromTask() {
     const name = input.value.trim();
     if (!name) { alert('请输入分类名称'); return; }
     if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
-    const colors = ['#c49a3a', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
+    const colors = ['#b8a070', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
     const color = colors[getCategories().length % colors.length];
     const obj = { id: data.nextCategoryId || 1, name, color };
     if (!data.nextCategoryId) data.nextCategoryId = 1;
@@ -1039,10 +863,44 @@ function populateTaskSelects() {
     const editId = document.getElementById('taskEditId').value;
     const parentSelect = document.getElementById('tParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => {
+        parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
     const prevSelect = document.getElementById('tPrev');
     prevSelect.innerHTML = '<option value="">无</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => {
+        prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+}
+
+// ============================================================
+//  时间冲突检测
+// ============================================================
+function checkTimeConflict() {
+    const start = document.getElementById('tStart').value;
+    const end = document.getElementById('tEnd').value;
+    const projectSelect = document.getElementById('tProjects');
+    const conflictEl = document.getElementById('conflictWarning');
+    if (!start || !end || !projectSelect) { conflictEl.style.display = 'none'; return; }
+    const projectIds = Array.from(projectSelect.selectedOptions).map(o => Number(o.value));
+    if (projectIds.length === 0) { conflictEl.style.display = 'none'; return; }
+    const taskId = document.getElementById('taskEditId').value ? Number(document.getElementById('taskEditId').value) : null;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    for (const pid of projectIds) {
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+        for (const t of tasks) {
+            if (!t.start || !t.end) continue;
+            const tStart = new Date(t.start);
+            const tEnd = new Date(t.end);
+            if (startDate < tEnd && endDate > tStart) {
+                conflictEl.textContent = '⚠️ 时间冲突！与任务 "' + t.name + '" 重叠 (' + t.start + ' ~ ' + t.end + ')';
+                conflictEl.style.display = 'block';
+                return;
+            }
+        }
+    }
+    conflictEl.style.display = 'none';
 }
 
 // ============================================================
@@ -1058,7 +916,8 @@ function saveProject(e) {
     if (!status) { alert('请选择项目状态'); return; }
     const obj = {
         name: document.getElementById('pName').value.trim(),
-        categoryIds, priority: document.getElementById('pPriority').value,
+        categoryIds,
+        priority: document.getElementById('pPriority').value,
         start: document.getElementById('pStart').value,
         end: document.getElementById('pEnd').value,
         location: document.getElementById('pLocation').value.trim(),
@@ -1119,13 +978,13 @@ function toggleProjectExpand(projectId) {
     renderProjects();
 }
 
-function toggleShowDone(projectId) {
-    showDoneTasks[projectId] = !showDoneTasks[projectId];
+function toggleShowArchived(projectId) {
+    showArchivedTasks[projectId] = !showArchivedTasks[projectId];
     renderProjects();
 }
 
 // ============================================================
-//  任务 CRUD（归档功能改为标记而非删除）
+//  任务 CRUD
 // ============================================================
 function saveTask(e) {
     e.preventDefault();
@@ -1138,15 +997,16 @@ function saveTask(e) {
     const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
     const start = document.getElementById('tStart').value;
     const end = document.getElementById('tEnd').value;
-    // 时间冲突检测
     const taskId = id ? Number(id) : null;
-    for (const pid of projectIds) {
-        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
-        for (const t of tasks) {
-            if (!t.start || !t.end) continue;
-            if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
-                alert('⚠️ 时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')');
-                return;
+    if (status !== 'archived' && status !== 'unfinished') {
+        for (const pid of projectIds) {
+            const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+            for (const t of tasks) {
+                if (!t.start || !t.end) continue;
+                if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
+                    alert('⚠️ 时间冲突！与任务 "' + t.name + '" 重叠 (' + t.start + ' ~ ' + t.end + ')');
+                    return;
+                }
             }
         }
     }
@@ -1162,7 +1022,6 @@ function saveTask(e) {
         status,
         accept: document.getElementById('tAccept').value.trim(),
         note: document.getElementById('tNote').value.trim(),
-        archived: false
     };
     if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
     if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
@@ -1212,7 +1071,7 @@ function openTaskModal(taskId) {
     modal.classList.add('active');
 }
 
-// 删除任务（物理删除，慎用）
+// 物理删除任务
 function deleteTask(id) {
     if (!confirm('⚠️ 确定要永久删除此任务吗？此操作不可恢复！')) return;
     data.tasks = data.tasks.filter(t => t.id !== id);
@@ -1227,32 +1086,60 @@ function deleteTask(id) {
     setStatus('💡 任务已永久删除', 'saving');
 }
 
-// 归档/取消归档（标记状态，不删除）
+// 归档已完成任务 (done → archived)
 function toggleArchive(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    // 只有 Done 状态的任务才能归档
-    if (t.status !== 'done') { 
-        alert('只有「Done」状态的任务才能归档'); 
-        return; 
+    if (t.status === 'done') {
+        t.status = 'archived';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('📦 任务已归档（已完成）', 'saving');
+    } else if (t.status === 'archived') {
+        t.status = 'done';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('↩️ 任务已取消归档', 'saving');
+    } else {
+        alert('只有「Done」状态的任务才能归档到「已完成归档」');
     }
-    t.archived = !t.archived;
-    saveLocalCache();
-    renderAll();
-    updateStats();
-    setStatus('💡 任务' + (t.archived ? '已归档' : '已取消归档'), 'saving');
+}
+
+// 归档未完成任务 (任意未完成 → unfinished)
+function toggleUnfinished(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'unfinished') {
+        t.status = 'todo';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('↩️ 任务已取消「未完成」归档', 'saving');
+    } else if (t.status === 'archived' || t.status === 'done') {
+        alert('已完成或已归档的任务不能标记为「未完成」');
+    } else {
+        t.status = 'unfinished';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('⏰ 任务已归档到「未完成」', 'saving');
+    }
 }
 
 function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
     if (t.status === 'done') { alert('该任务已验收通过'); return; }
+    if (t.status === 'archived') { alert('已归档的任务不能操作'); return; }
+    if (t.status === 'unfinished') { alert('已标记为「未完成」的任务不能操作，请先取消归档'); return; }
     if (data.projectTaskRelations) {
         for (const projectId in data.projectTaskRelations) {
             const rel = data.projectTaskRelations[projectId]?.[taskId];
             if (rel && rel.prevId) {
                 const prev = getTask(rel.prevId);
-                if (prev && prev.status !== 'done') {
+                if (prev && prev.status !== 'done' && prev.status !== 'archived') {
                     alert('前置任务尚未验收通过（项目：' + (getProject(Number(projectId))?.name || projectId) + '）');
                     return;
                 }
@@ -1275,7 +1162,7 @@ function approveTask(taskId) {
     saveLocalCache();
     renderAll();
     updateStats();
-    setStatus('💡 任务已验收通过', 'saving');
+    setStatus('✅ 任务已验收通过', 'saving');
 }
 
 // ============================================================
@@ -1288,7 +1175,7 @@ function openRelationModal(taskId, projectId) {
     const task = getTask(taskId);
     const project = getProject(projectId);
     document.getElementById('relationModalTitle').textContent = '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
-    const projectTasks = getTasksByProject(projectId).filter(t => t.id !== taskId);
+    const projectTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
     const parentSelect = document.getElementById('rParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
     projectTasks.forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
@@ -1300,10 +1187,6 @@ function openRelationModal(taskId, projectId) {
         if (rel.parentId) parentSelect.value = rel.parentId;
         if (rel.prevId) prevSelect.value = rel.prevId;
     }
-    const parentName = rel?.parentId ? (getTask(rel.parentId)?.name || '#' + rel.parentId) : '无';
-    const prevName = rel?.prevId ? (getTask(rel.prevId)?.name || '#' + rel.prevId) : '无';
-    const hint = document.querySelector('#relationModal .save-hint');
-    if (hint) { hint.innerHTML = `💡 当前关系：父级任务 <strong>${parentName}</strong> ｜ 前置任务 <strong>${prevName}</strong><br>📌 修改后点击保存生效。`; }
     modal.classList.add('active');
 }
 
@@ -1342,8 +1225,8 @@ function sortTasks(tasks, sortKey) {
         case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
         case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
         case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
-        case 'priority-desc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return oa - ob; });
-        case 'priority-asc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return ob - oa; });
+        case 'priority-desc': return copy.sort((a,b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
+        case 'priority-asc': return copy.sort((a,b) => (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2));
         case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
         case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
         default: return copy;
@@ -1386,15 +1269,21 @@ function renderPagination(containerId, currentPage, totalPages, onChange) {
 }
 
 // ============================================================
-//  构建项目任务树（包含归档任务）
+//  获取项目任务（根据状态分类）
 // ============================================================
+function getTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId));
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
 function buildProjectTaskTree(projectId) {
-    // 获取未归档的任务
-    const activeTasks = getFilteredTasksByProject(projectId);
-    // 获取已归档的任务
-    const archivedTasks = getArchivedTasksByProject(projectId);
-    const allTasks = [...activeTasks, ...archivedTasks];
-    
+    const allTasks = getTasksByProject(projectId);
     if (allTasks.length === 0) return [];
     const taskMap = {};
     allTasks.forEach(t => { taskMap[t.id] = t; });
@@ -1424,54 +1313,47 @@ function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').re
 function renderProjects() {
     const container = document.getElementById('projectList');
     const projects = getFilteredProjects();
-    if (projects.length === 0) { 
+    if (projects.length === 0) {
         container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无项目' : '暂无项目，点击「新建项目」开始') + '</div>';
         document.getElementById('projectPagination').innerHTML = '';
-        return; 
+        return;
     }
     const result = paginateItems(projects, projectPage, PAGE_SIZE);
     container.innerHTML = result.items.map(p => {
         const cats = getCategoriesByIds(p.categoryIds || []);
-        const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+        const catTags = cats.length ? cats.map(c =>
+            `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+        ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         const tree = buildProjectTaskTree(p.id);
         const taskCount = tree.length;
-        const archivedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.archived === true).length;
+        const archivedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'archived').length;
+        const unfinishedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'unfinished').length;
+        const doneCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'done').length;
         const isExpanded = expandedProjects.has(p.id);
-        const showDone = showDoneTasks[p.id] || false;
-        
-        // 统计已完成任务数量（未归档的）
-        let doneCount = 0;
-        function countDone(nodes) {
-            nodes.forEach(node => {
-                if (node.status === 'done' && !node.archived) doneCount++;
-                if (node.children) countDone(node.children);
-            });
-        }
-        countDone(tree);
-        
+        const showArchived = showArchivedTasks[p.id] || false;
+
         function renderTreeNodes(nodes, level) {
             if (!nodes || nodes.length === 0) return '';
             const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
             let filteredNodes = nodes;
-            if (!showDone) {
-                filteredNodes = nodes.filter(node => {
-                    // 隐藏已完成任务（但保留有未完成子任务的父级）
-                    if (node.status === 'done' && !node.archived) {
-                        const hasActiveChild = node.children && node.children.some(c => c.status !== 'done' || c.archived);
-                        return hasActiveChild;
-                    }
-                    return true;
-                });
+            if (!showArchived) {
+                filteredNodes = filteredNodes.filter(node => node.status !== 'archived' && node.status !== 'unfinished');
             }
             return filteredNodes.map(node => {
                 const children = node.children || [];
                 let isBlocked = false;
-                if (node._prevId) { const prev = getTask(node._prevId); if (prev && prev.status !== 'done') isBlocked = true; }
+                if (node._prevId) {
+                    const prev = getTask(node._prevId);
+                    if (prev && prev.status !== 'done' && prev.status !== 'archived') isBlocked = true;
+                }
                 const displayStatus = isBlocked ? 'blocked' : node.status;
-                const isDone = node.status === 'done' && !node.archived;
-                const isArchived = node.archived === true;
+                const isArchived = node.status === 'archived';
+                const isUnfinished = node.status === 'unfinished';
+                const isDone = node.status === 'done';
                 const nodeCats = getCategoriesByIds(node.categoryIds || []);
-                const nodeCatTags = nodeCats.length ? nodeCats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
+                const nodeCatTags = nodeCats.length ? nodeCats.map(c =>
+                    `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+                ).join('') : '';
                 const urgencyMap = {
                     critical: { label: '🔥 紧急', cls: 'urgency-critical' },
                     high: { label: '⚡ 高', cls: 'urgency-high' },
@@ -1481,46 +1363,47 @@ function renderProjects() {
                 };
                 const u = urgencyMap[node.urgency] || urgencyMap.medium;
                 let filteredChildren = children;
-                if (!showDone) {
-                    filteredChildren = children.filter(c => {
-                        if (c.status === 'done' && !c.archived) {
-                            const hasActiveChild = c.children && c.children.some(ch => ch.status !== 'done' || ch.archived);
-                            return hasActiveChild;
-                        }
-                        return true;
-                    });
+                if (!showArchived) {
+                    filteredChildren = filteredChildren.filter(c => c.status !== 'archived' && c.status !== 'unfinished');
                 }
-                const childrenHtml = filteredChildren.length > 0 ? 
+                const childrenHtml = filteredChildren.length > 0 ?
                     `<div class="task-level-indent">${renderTreeNodes(filteredChildren, level + 1)}</div>` : '';
-                
-                const doneClass = isDone ? 'done-task' : '';
+
                 const archivedClass = isArchived ? 'archived-task' : '';
-                const hiddenClass = ((!showDone && isDone) || isArchived) ? 'hidden-done' : '';
-                const statusLabel = isArchived ? '📦 已归档' : displayStatus;
-                const statusClass = isArchived ? 'status-done' : `status-${displayStatus}`;
-                
+                const unfinishedClass = isUnfinished ? 'unfinished-task' : '';
+                const hiddenClass = (!showArchived && (isArchived || isUnfinished)) ? 'hidden-archived' : '';
+                let statusLabel = displayStatus;
+                if (isArchived) statusLabel = '📦 已归档';
+                else if (isUnfinished) statusLabel = '⏰ 未完成';
+                const statusClass = isArchived ? 'status-archived' : (isUnfinished ? 'status-unfinished' : `status-${displayStatus}`);
+
                 return `
-                    <div class="task-item ${levelClass} ${doneClass} ${archivedClass} ${hiddenClass}" style="padding:8px 0;">
+                    <div class="task-item ${levelClass} ${archivedClass} ${unfinishedClass} ${hiddenClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
-                            ${children.filter(c => !(!showDone && c.status === 'done' && !c.archived && !c.children?.some(ch => ch.status !== 'done' || ch.archived))).length > 0 ? 
-                                `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : 
+                            ${filteredChildren.length > 0 ?
+                                `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` :
                                 `<span style="width:16px;display:inline-block;"></span>`}
-                            <span class="task-name" style="font-size:.85rem;${isArchived ? 'text-decoration:line-through;' : ''}">${escHtml(node.name)}</span>
+                            <span class="task-name" style="font-size:.85rem;${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(node.name)}</span>
                             ${nodeCatTags ? `<span class="task-cats">${nodeCatTags}</span>` : ''}
                             ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
+                            ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
                             <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
                             <span class="priority-tag priority-${node.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${node.priority}</span>
                             <span class="status-tag ${statusClass}" style="font-size:.6rem;padding:1px 10px;">${statusLabel}</span>
                             <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
                             ${node._prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node._prevId}</span>` : ''}
                             <div class="task-actions">
-                                <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑项目内任务关系">🔗</button>
+                                <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑任务关系">🔗</button>
                                 <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
-                                ${!isDone && !isArchived ? `<button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>` : ''}
+                                ${!isArchived && !isUnfinished ? `<button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>` : ''}
                                 ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
-                                ${isArchived ? 
-                                    `<button class="btn-archive archived" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">↩️ 恢复</button>` :
+                                ${isArchived ?
+                                    `<button class="btn-archive active" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">↩️ 恢复</button>` :
                                     (isDone ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">📦 归档</button>` : '')
+                                }
+                                ${isUnfinished ?
+                                    `<button class="btn-archive active" style="padding:2px 8px;font-size:.55rem;background:var(--primary);color:#fff;border-color:var(--primary);" onclick="event.stopPropagation();toggleUnfinished(${node.id})">↩️ 恢复</button>` :
+                                    (!isDone && !isArchived ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleUnfinished(${node.id})">⏰ 未完成</button>` : '')
                                 }
                                 <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${node.id})">✕</button>
                             </div>
@@ -1531,7 +1414,7 @@ function renderProjects() {
                 `;
             }).join('');
         }
-        
+
         return `
             <div class="task-item project-expandable">
                 <div class="task-row" style="cursor:pointer;" onclick="toggleProjectExpand(${p.id})">
@@ -1543,7 +1426,8 @@ function renderProjects() {
                     <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
                     <span class="task-meta">📍 ${escHtml(p.location)}</span>
                     <span class="task-meta" style="font-weight:600;color:var(--primary);">📌 ${taskCount}个任务</span>
-                    ${archivedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">📦 ${archivedCount}个已归档</span>` : ''}
+                    ${archivedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">📦 ${archivedCount}个已完成归档</span>` : ''}
+                    ${unfinishedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">⏰ ${unfinishedCount}个未完成归档</span>` : ''}
                     <span class="task-meta" style="font-size:.65rem;color:#fff;background:var(--primary-gradient);padding:0 12px;border-radius:10px;">🔗 点击打开</span>
                     <div class="task-actions" onclick="event.stopPropagation();">
                         <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
@@ -1552,14 +1436,14 @@ function renderProjects() {
                 </div>
                 <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;padding-left:30px;">✅ ${escHtml(p.standard)}</div>
                 ${isExpanded ? `
-                    <div class="done-toggle-row">
-                        <button class="btn-toggle-done ${showDone ? 'active' : ''}" onclick="event.stopPropagation();toggleShowDone(${p.id})">
-                            ${showDone ? '🙈 隐藏已完成' : '👁️ 显示已完成'}
+                    <div class="toggle-row">
+                        <button class="btn-toggle-archived ${showArchived ? 'active' : ''}" onclick="event.stopPropagation();toggleShowArchived(${p.id})">
+                            ${showArchived ? '🙈 隐藏归档' : '👁️ 显示归档'}
                         </button>
                         <span class="count-info">
-                            ${doneCount} 个已完成任务 ${!showDone && doneCount > 0 ? '（已隐藏）' : ''}
-                            ${doneCount === 0 ? '（无已完成任务）' : ''}
-                            ${archivedCount > 0 ? `｜📦 ${archivedCount} 个已归档` : ''}
+                            ${doneCount} 个已完成
+                            ${archivedCount > 0 ? `｜📦 ${archivedCount} 个已归档 ${!showArchived && archivedCount > 0 ? '（已隐藏）' : ''}` : ''}
+                            ${unfinishedCount > 0 ? `｜⏰ ${unfinishedCount} 个未完成 ${!showArchived && unfinishedCount > 0 ? '（已隐藏）' : ''}` : ''}
                         </span>
                     </div>
                 ` : ''}
@@ -1570,34 +1454,49 @@ function renderProjects() {
             </div>
         `;
     }).join('');
-    renderPagination('projectPagination', result.currentPage, result.totalPages, `function(page){ projectPage = page; renderProjects(); }`);
+    renderPagination('projectPagination', result.currentPage, result.totalPages, `function(page){ projectPage=page; renderProjects(); }`);
 }
 
 function renderTasks() {
     const container = document.getElementById('taskList');
     const filter = document.getElementById('viewFilter').value;
     const sortKey = document.getElementById('taskSortOrder').value;
-    
-    // 如果筛选"已归档"，只显示归档任务
+
     if (filter === 'archived') {
-        let tasks = data.tasks.filter(t => t.archived === true);
+        let tasks = data.tasks.filter(t => t.status === 'archived');
         if (selectedCategoryId) {
             tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
         }
-        if (tasks.length === 0) { 
-            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无已归档任务' : '📦 暂无已归档任务') + '</div>';
+        if (tasks.length === 0) {
+            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无已完成归档任务' : '📦 暂无已完成归档任务') + '</div>';
             document.getElementById('taskPagination').innerHTML = '';
-            return; 
+            return;
         }
         const sorted = sortTasks([...tasks], sortKey);
         const result = paginateItems(sorted, taskPage, PAGE_SIZE);
-        container.innerHTML = result.items.map(t => renderTaskFlat(t, true)).join('');
-        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
+        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage=page; renderTasks(); }`);
         return;
     }
-    
-    // 普通视图：不显示归档任务
-    let tasks = data.tasks.filter(t => !t.archived);
+
+    if (filter === 'unfinished') {
+        let tasks = data.tasks.filter(t => t.status === 'unfinished');
+        if (selectedCategoryId) {
+            tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+        }
+        if (tasks.length === 0) {
+            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无未完成归档任务' : '⏰ 暂无未完成归档任务') + '</div>';
+            document.getElementById('taskPagination').innerHTML = '';
+            return;
+        }
+        const sorted = sortTasks([...tasks], sortKey);
+        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage=page; renderTasks(); }`);
+        return;
+    }
+
+    let tasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
     if (selectedCategoryId) {
         tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
@@ -1609,8 +1508,8 @@ function renderTasks() {
     else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
     else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
     else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
-    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done' && !t.archived);
-    
+    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done');
+
     const sorted = sortTasks([...tasks], sortKey);
     if (sorted.length === 0) {
         container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无任务' : '暂无符合条件的任务') + '</div>';
@@ -1618,17 +1517,19 @@ function renderTasks() {
         return;
     }
     const result = paginateItems(sorted, taskPage, PAGE_SIZE);
-    container.innerHTML = result.items.map(t => renderTaskFlat(t, false)).join('');
-    renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
+    container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+    renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage=page; renderTasks(); }`);
 }
 
-function renderTaskFlat(task, isArchivedView) {
+function renderTaskFlat(task) {
     const projectTags = (task.projectIds || []).map(id => {
         const p = getProject(id);
         return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
     }).join('');
     const cats = getCategoriesByIds(task.categoryIds || []);
-    const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
+    const catTags = cats.length ? cats.map(c =>
+        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+    ).join('') : '';
     const urgencyMap = {
         critical: { label: '🔥 紧急', cls: 'urgency-critical' },
         high: { label: '⚡ 高', cls: 'urgency-high' },
@@ -1637,13 +1538,16 @@ function renderTaskFlat(task, isArchivedView) {
         none: { label: '⏳ 无', cls: 'urgency-none' }
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
-    const isArchived = task.archived === true;
+    const isArchived = task.status === 'archived';
+    const isUnfinished = task.status === 'unfinished';
+
     return `
-        <div class="task-item ${isArchived ? 'archived-task' : ''}">
+        <div class="task-item ${isArchived ? 'archived-task' : ''} ${isUnfinished ? 'unfinished-task' : ''}">
             <div class="task-row">
-                <span class="task-name" style="${isArchived ? 'text-decoration:line-through;' : ''}">${escHtml(task.name)}</span>
+                <span class="task-name" style="${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(task.name)}</span>
                 ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
                 ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
+                ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
                 <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
                 <span class="status-tag status-${task.status}">${task.status}</span>
@@ -1651,16 +1555,17 @@ function renderTaskFlat(task, isArchivedView) {
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
                 <div class="task-actions">
-                    ${!isArchived ? `
+                    ${!isArchived && !isUnfinished ? `
                         <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
                         <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
-                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
+                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅</button>` : ''}
                         ${task.status === 'done' ? `<button class="btn-archive" onclick="toggleArchive(${task.id})">📦 归档</button>` : ''}
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
+                        ${task.status !== 'done' ? `<button class="btn-archive" onclick="toggleUnfinished(${task.id})">⏰ 未完成</button>` : ''}
                     ` : `
-                        <button class="btn btn-sm btn-outline" onclick="toggleArchive(${task.id})">↩️ 取消归档</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
+                        ${isArchived ? `<button class="btn-archive active" onclick="toggleArchive(${task.id})">↩️ 恢复</button>` : ''}
+                        ${isUnfinished ? `<button class="btn-archive active" style="background:var(--primary);color:#fff;border-color:var(--primary);" onclick="toggleUnfinished(${task.id})">↩️ 恢复</button>` : ''}
                     `}
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
                 </div>
             </div>
             <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
@@ -1671,22 +1576,28 @@ function renderTaskFlat(task, isArchivedView) {
 
 function updateStats() {
     if (!data) return;
-    const filteredTasks = data.tasks.filter(t => !t.archived);
+    let activeTasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
     if (selectedCategoryId) {
-        filteredTasks = filteredTasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+        activeTasks = activeTasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
-    const archivedCount = data.tasks.filter(t => t.archived === true).length;
+    const archivedCount = data.tasks.filter(t => t.status === 'archived').length;
+    const unfinishedCount = data.tasks.filter(t => t.status === 'unfinished').length;
+    const doneCount = data.tasks.filter(t => t.status === 'done').length;
+    const projects = getFilteredProjects().length;
     document.getElementById('statsBar').innerHTML = `
-        <div class="stat"><div class="num">${getFilteredProjects().length}</div><div class="label">📁 项目</div></div>
-        <div class="stat"><div class="num">${filteredTasks.length}</div><div class="label">📌 进行中</div></div>
-        <div class="stat"><div class="num">${filteredTasks.filter(t => t.status === 'done').length}</div><div class="label">✅ 已完成</div></div>
-        <div class="stat"><div class="num">${filteredTasks.filter(t => t.priority === 'P0').length}</div><div class="label">🔴 P0</div></div>
-        <div class="stat"><div class="num">${archivedCount}</div><div class="label">📦 已归档</div></div>
+        <div class="stat"><div class="num">${projects}</div><div class="label">📁 项目</div></div>
+        <div class="stat"><div class="num">${activeTasks.length}</div><div class="label">📌 进行中</div></div>
+        <div class="stat"><div class="num">${doneCount}</div><div class="label">✅ 已完成</div></div>
+        <div class="stat"><div class="num">${activeTasks.filter(t => t.priority === 'P0').length}</div><div class="label">🔴 P0</div></div>
+        <div class="stat"><div class="num">${archivedCount}</div><div class="label">📦 归档</div></div>
+        <div class="stat"><div class="num">${unfinishedCount}</div><div class="label">⏰ 未完成</div></div>
     `;
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+});
 
 // ============================================================
 //  启动
