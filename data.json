@@ -1,17 +1,1742 @@
-{
-  "projects": [
-    {
-      "name": "D",
-      "priority": "P0",
-      "start": "2020-12-12T12:12",
-      "end": "2021-12-12T13:12",
-      "location": "E",
-      "status": "规划中",
-      "standard": "E",
-      "id": 1
-    }
-  ],
-  "tasks": [],
-  "nextProjectId": 2,
-  "nextTaskId": 1
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChinaMI1949 · 结构化个人事务管理系统</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root,
+        [data-theme="khaki"] {
+            --bg: #f0ebe0;
+            --surface: #ffffff;
+            --surface-hover: #e8e0d0;
+            --text: #2d2818;
+            --text-secondary: #5a5040;
+            --text-muted: #9a8a78;
+            --border: #d8ceb8;
+            --primary: #b8a070;
+            --primary-light: #f0ead8;
+            --primary-gradient: linear-gradient(135deg, #b8a070, #9a8a60);
+            --shadow: 0 6px 24px rgba(184,160,112,0.18);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+            --motto-courage: var(--primary-gradient);
+            --motto-blessing: var(--primary-gradient);
+            --tagline-color: var(--primary);
+            --filter-active-border: var(--primary);
+            --theme-icon: "🌾";
+            --archived-opacity: 0.5;
+            --archived-bg: #ede8dc;
+        }
+        [data-theme="army"] {
+            --bg: #eef0e8;
+            --surface: #ffffff;
+            --surface-hover: #e8ebe0;
+            --text: #1a1a14;
+            --text-secondary: #4d4d40;
+            --text-muted: #8a8a7a;
+            --border: #d0d4c0;
+            --primary: #4a7a4a;
+            --primary-light: #e8f0e8;
+            --primary-gradient: linear-gradient(135deg, #4a7a4a, #2d5a2d);
+            --shadow: 0 6px 24px rgba(74,122,74,0.15);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+            --motto-courage: var(--primary-gradient);
+            --motto-blessing: var(--primary-gradient);
+            --tagline-color: var(--primary);
+            --filter-active-border: var(--primary);
+            --theme-icon: "🌲";
+            --archived-opacity: 0.5;
+            --archived-bg: #edefe6;
+        }
+        [data-theme="army-dark"] {
+            --bg: #141a14;
+            --surface: #1a261a;
+            --surface-hover: #2a3a2a;
+            --text: #e8ede0;
+            --text-secondary: #b4c0a8;
+            --text-muted: #7a8a72;
+            --border: #3d4a3a;
+            --primary: #6aaa6a;
+            --primary-light: #2a3a2a;
+            --primary-gradient: linear-gradient(135deg, #6aaa6a, #3d7a3d);
+            --shadow: 0 6px 24px rgba(0,0,0,0.5);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+            --motto-courage: var(--primary-gradient);
+            --motto-blessing: var(--primary-gradient);
+            --tagline-color: var(--primary);
+            --filter-active-border: var(--primary);
+            --theme-icon: "🌑";
+            --archived-opacity: 0.4;
+            --archived-bg: #1a221a;
+        }
+
+        html{scroll-behavior:smooth}
+        body{font-family:var(--font);background:var(--bg);color:var(--text);padding:16px 20px 40px;transition:background .2s,color .2s;min-height:100vh;cursor:pointer}
+        .container{max-width:1100px;margin:0 auto;pointer-events:none}
+        .container > * {pointer-events:auto}
+        nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;position:sticky;top:12px;z-index:100;backdrop-filter:blur(10px);background:rgba(255,255,255,0.88)}
+        [data-theme="army-dark"] nav{background:rgba(26,38,26,0.90)}
+        .nav-brand{font-weight:700;font-size:1.2rem;background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .nav-brand small{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.5px}
+        .nav-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .nav-actions button{background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:.15s;pointer-events:auto}
+        .nav-actions button:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .theme-btn .theme-icon{display:inline-block;font-size:.9rem}
+        .theme-btn .theme-label{font-size:.7rem}
+        .sync-status{font-size:.75rem;padding:4px 14px;border-radius:20px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block}
+        .sync-status.saving{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+        .sync-status.error{background:#ffebee;color:#c62828;border-color:#ef9a9a}
+        .sync-status.loading{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
+        .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;background:var(--surface);padding:16px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;pointer-events:auto}
+        .stats-bar .stat{text-align:center}
+        .stats-bar .stat .num{font-size:1.5rem;font-weight:700;color:var(--primary)}
+        .stats-bar .stat .label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+        .filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:var(--surface);padding:12px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;pointer-events:auto}
+        .filter-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary);white-space:nowrap}
+        .filter-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:6px 16px;font-size:.8rem;color:var(--text);min-width:140px;pointer-events:auto;cursor:pointer}
+        .filter-bar select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(184,160,112,0.15)}
+        .filter-bar .filter-hint{font-size:.7rem;color:var(--text-muted);margin-left:4px}
+        .filter-bar .filter-badge{display:inline-block;background:var(--primary-gradient);color:#fff;padding:0 12px;border-radius:12px;font-size:.65rem;font-weight:600;line-height:22px}
+        .filter-bar .clear-filter{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;text-decoration:underline;pointer-events:auto}
+        .filter-bar .clear-filter:hover{color:var(--primary)}
+        .filter-active .card{border-color:var(--filter-active-border);border-width:2px}
+        .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;pointer-events:auto}
+        .card-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+        .card-header h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px}
+        .card-header h2 span{background:var(--primary-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-header .sub{font-size:.6rem;font-weight:400;color:var(--text-muted);-webkit-text-fill-color:var(--text-muted);background:none;letter-spacing:.3px;margin-left:4px}
+        .btn{display:inline-flex;align-items:center;gap:6px;background:var(--primary-gradient);color:#fff;border:none;padding:7px 20px;border-radius:30px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(184,160,112,0.30);pointer-events:auto}
+        .btn:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(184,160,112,0.40)}
+        .btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
+        .btn-outline:hover{background:var(--primary-light)}
+        .btn-sm{padding:4px 14px;font-size:.75rem}
+        .btn-danger{background:#c0392b;box-shadow:0 4px 12px rgba(192,57,43,0.2)}
+        .btn-danger:hover{background:#a93226}
+        .btn-success{background:#27ae60;box-shadow:0 4px 12px rgba(39,174,96,0.2)}
+        .btn-success:hover{background:#1e8449}
+        .btn-github{background:#24292e;color:#fff;border:none}
+        .btn-github:hover{background:#1a1e22}
+        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
+        .btn-ghost:hover{background:var(--surface-hover)}
+        .btn-toggle-done{background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);padding:2px 14px;border-radius:20px;font-size:.7rem;cursor:pointer;transition:.15s;pointer-events:auto}
+        .btn-toggle-done:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-toggle-done.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
+        .btn-archive{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:2px 10px;border-radius:12px;font-size:.6rem;cursor:pointer;transition:.15s;pointer-events:auto}
+        .btn-archive:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-archive.archived{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px;margin-bottom:16px}
+        .form-group{display:flex;flex-direction:column;gap:4px}
+        .form-group label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
+        .form-group label .required{color:var(--primary);margin-left:2px}
+        .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:.88rem;color:var(--text);transition:.15s;font-family:var(--font);pointer-events:auto}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(184,160,112,0.15)}
+        .form-group textarea{resize:vertical;min-height:50px}
+        .form-group select[multiple]{min-height:70px;padding:4px}
+        .form-group select[multiple] option{padding:4px 8px;border-radius:4px}
+        .form-group select[multiple] option:hover{background:var(--primary-light)}
+        .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+        .conflict-warning{background:#fde8e8;border:1px solid #f5c8c8;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:.78rem;color:#c0392b;display:none}
+        [data-theme="army-dark"] .conflict-warning{background:#2d1a1a;border-color:#4d2a2a;color:#f1948a}
+        .priority-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
+        .priority-p0{background:#fde8e8;color:#c0392b}
+        .priority-p1{background:#fef3e7;color:#d35400}
+        .priority-p2{background:#fef9e7;color:#b7950b}
+        .priority-p3{background:#eef2f5;color:#5d6d7e}
+        [data-theme="army-dark"] .priority-p0{background:#3d1a1a;color:#f1948a}
+        [data-theme="army-dark"] .priority-p1{background:#3d2a1a;color:#f0b27a}
+        [data-theme="army-dark"] .priority-p2{background:#3d3a1a;color:#f4d03f}
+        [data-theme="army-dark"] .priority-p3{background:#2a2b33;color:#99a3b0}
+        .urgency-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:700;letter-spacing:.3px}
+        .urgency-critical{background:#7b1fa2;color:#fff}
+        .urgency-high{background:#c0392b;color:#fff}
+        .urgency-medium{background:var(--primary);color:#fff}
+        .urgency-low{background:#27ae60;color:#fff}
+        .urgency-none{background:#bdc3c7;color:#2c3e50}
+        [data-theme="army-dark"] .urgency-critical{background:#9b4dca;color:#fff}
+        [data-theme="army-dark"] .urgency-high{background:#c0392b;color:#fff}
+        [data-theme="army-dark"] .urgency-medium{background:var(--primary);color:#fff}
+        [data-theme="army-dark"] .urgency-low{background:#2ecc71;color:#fff}
+        [data-theme="army-dark"] .urgency-none{background:#5d6d7e;color:#ecf0f1}
+        .status-tag{display:inline-block;padding:2px 12px;border-radius:30px;font-size:.7rem;font-weight:600}
+        .status-planning{background:#eef2f5;color:#5d6d7e}
+        .status-active{background:#eaf2f8;color:#2e86c1}
+        .status-paused{background:#fef9e7;color:#9a8a3a}
+        .status-completed{background:#e9f7ef;color:#1e8449}
+        .status-backlog{background:#eef2f5;color:#5d6d7e}
+        .status-todo{background:#eef2f5;color:#5d6d7e}
+        .status-doing{background:#eaf2f8;color:#2e86c1}
+        .status-review{background:#fef9e7;color:#9a8a3a}
+        .status-done{background:#e9f7ef;color:#1e8449}
+        .status-blocked{background:#fde8e8;color:#c0392b}
+        .status-unfinished{background:#e8e0d0;color:#7a6a5a}
+        [data-theme="army-dark"] .status-planning{background:#2a2b33;color:#99a3b0}
+        [data-theme="army-dark"] .status-active{background:#1a2a3d;color:#5dade2}
+        [data-theme="army-dark"] .status-paused{background:#3d3a1a;color:#f4d03f}
+        [data-theme="army-dark"] .status-completed{background:#1a3d2a;color:#58d68d}
+        [data-theme="army-dark"] .status-backlog{background:#2a2b33;color:#99a3b0}
+        [data-theme="army-dark"] .status-todo{background:#2a2b33;color:#99a3b0}
+        [data-theme="army-dark"] .status-doing{background:#1a2a3d;color:#5dade2}
+        [data-theme="army-dark"] .status-review{background:#3d3a1a;color:#f4d03f}
+        [data-theme="army-dark"] .status-done{background:#1a3d2a;color:#58d68d}
+        [data-theme="army-dark"] .status-blocked{background:#3d1a1a;color:#f1948a}
+        [data-theme="army-dark"] .status-unfinished{background:#2a2a2a;color:#9a8a7a}
+        .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;align-items:center}
+        .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent;pointer-events:auto}
+        .cat-tag:active{cursor:grabbing;opacity:.7}
+        .cat-tag .dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0}
+        .cat-tag .del{background:none;border:none;color:#999;cursor:pointer;font-size:.65rem;padding:0 2px;border-radius:50%;line-height:1;pointer-events:auto}
+        .cat-tag .del:hover{color:var(--primary);background:var(--primary-light)}
+        .cat-tag .drag-handle{font-size:.7rem;color:var(--text-muted);cursor:grab;padding:0 2px;opacity:.5}
+        .cat-tag .drag-handle:hover{opacity:1}
+        .cat-tag.dragging{opacity:.3;border-color:var(--primary)}
+        .cat-tag.drag-over{border-color:var(--primary);border-style:dashed;background:var(--primary-light)}
+        .cat-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+        .cat-add-row input{padding:4px 12px;font-size:.75rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);width:130px;pointer-events:auto}
+        .cat-add-row input:focus{outline:none;border-color:var(--primary)}
+        .task-item{border-bottom:1px solid var(--border);padding:14px 0;transition:.1s;pointer-events:auto}
+        .task-item:last-child{border-bottom:none}
+        .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
+        .task-item.archived-task{opacity:var(--archived-opacity);background:var(--archived-bg);border-radius:var(--radius-sm)}
+        .task-item.archived-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
+        .task-item.archived-task .task-actions .btn-outline{opacity:0.4;pointer-events:none}
+        .task-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+        .task-row .task-name{font-weight:600;flex:1 1 160px;font-size:.95rem}
+        .task-row .task-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.78rem;color:var(--text-secondary)}
+        .task-row .task-actions{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+        .task-children{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px}
+        .task-sub-toggle{cursor:pointer;user-select:none;color:var(--text-muted);font-size:.75rem;background:none;border:none;padding:2px 8px;border-radius:20px;pointer-events:auto}
+        .task-sub-toggle:hover{background:var(--surface-hover)}
+        .empty-state{text-align:center;padding:30px 10px;color:var(--text-muted);font-size:.9rem}
+        .modal-overlay{position:fixed;inset:0;background:rgba(26,22,16,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999;padding:20px;pointer-events:auto}
+        .modal-overlay.active{display:flex}
+        .modal{background:var(--surface);border-radius:var(--radius);max-width:650px;width:100%;max-height:85vh;overflow-y:auto;padding:28px 32px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .modal-header h3{font-size:1.2rem}
+        .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)}
+        .modal-close:hover{color:var(--text)}
+        .save-hint{background:var(--primary-light);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;color:var(--text-secondary)}
+        .token-warning{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.85rem}
+        [data-theme="army-dark"] .token-warning{background:#2d1f0a;border-color:#8d6e3f}
+        .sort-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0}
+        .sort-bar label{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
+        .sort-bar select{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);pointer-events:auto}
+        .sort-bar select:focus{outline:none;border-color:var(--primary)}
+        .project-cats,.task-cats{display:inline-flex;flex-wrap:wrap;gap:3px;margin:0 4px}
+        .mini-cat{font-size:.6rem;padding:1px 8px;border-radius:12px;font-weight:500}
+        .cat-sort-hint{font-size:.7rem;color:var(--text-muted);margin-left:8px;font-weight:400}
+        .system-motto{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.65rem;color:var(--text-muted);padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;letter-spacing:.5px;align-items:center;pointer-events:auto}
+        .system-motto span{background:var(--surface-hover);padding:2px 10px;border-radius:12px}
+        .system-motto .motto-divider{background:transparent;padding:0 4px;color:var(--border)}
+        .system-motto .courage{background:var(--motto-courage);color:#fff;font-weight:600;padding:2px 14px;border-radius:20px;font-size:.7rem}
+        .system-motto .tagline{color:var(--tagline-color);font-weight:600;font-size:.7rem;background:transparent;padding:0}
+        .system-motto .blessing{background:var(--motto-blessing);color:#fff;font-weight:700;padding:2px 16px;border-radius:20px;font-size:.7rem;box-shadow:0 2px 8px rgba(184,160,112,0.30)}
+        .pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:12px}
+        .pagination .page-btn{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.75rem;color:var(--text-secondary);cursor:pointer;transition:.15s;min-width:32px;text-align:center;pointer-events:auto}
+        .pagination .page-btn:hover:not(.active):not(.disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .pagination .page-btn.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary);font-weight:600}
+        .pagination .page-btn.disabled{opacity:.4;cursor:not-allowed}
+        .pagination .page-info{font-size:.75rem;color:var(--text-muted);padding:0 8px}
+        .pagination .page-btn.ellipsis{background:transparent;border:none;cursor:default;color:var(--text-muted)}
+        .confetti-pop{position:fixed;pointer-events:none;z-index:9999;font-size:42px;opacity:0;animation:confettiPop 1s ease-out forwards;user-select:none;text-shadow:0 0 30px rgba(255,255,255,0.4)}
+        @keyframes confettiPop{
+            0%{opacity:0;transform:scale(0.2) rotate(0deg)}
+            25%{opacity:1;transform:scale(1.3) rotate(var(--rot, 20deg))}
+            50%{opacity:1;transform:scale(1) rotate(var(--rot2, 40deg))}
+            75%{opacity:0.8;transform:scale(0.9) rotate(var(--rot3, 30deg))}
+            100%{opacity:0;transform:scale(0.5) rotate(var(--rot4, 10deg))}
+        }
+        .project-expandable{cursor:pointer}
+        .project-expandable .expand-icon{display:inline-block;transition:transform .25s;margin-right:6px;font-size:.8rem}
+        .project-expandable .expand-icon.open{transform:rotate(90deg)}
+        .project-tasks{margin-left:28px;border-left:2px solid var(--border);padding-left:16px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease, margin .3s ease;opacity:0}
+        .project-tasks.open{max-height:3000px;opacity:1;margin-top:12px}
+        .task-level-0{padding-left:0}
+        .task-level-1{padding-left:24px}
+        .task-level-2{padding-left:48px}
+        .task-level-3{padding-left:72px}
+        .task-level-4{padding-left:96px}
+        .task-level-5{padding-left:120px}
+        .task-level-indent{border-left:2px solid var(--border);margin-left:12px;padding-left:12px}
+        .task-flat .task-meta-relation{display:none !important}
+        .btn-relation{background:transparent;border:1px solid var(--border);border-radius:12px;padding:0 6px;font-size:.55rem;color:var(--text-muted);cursor:pointer;transition:.15s;pointer-events:auto;line-height:1.6}
+        .btn-relation:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .project-link{cursor:pointer;color:var(--primary);text-decoration:none;transition:color .2s;font-weight:700}
+        .project-link:hover{color:var(--primary);text-decoration:underline;opacity:.8}
+        .toggle-row{display:flex;align-items:center;gap:10px;padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap}
+        .toggle-row .count-info{font-size:.75rem;color:var(--text-muted)}
+        .project-tasks .archived-task.hidden-archived{display:none}
+        .project-tasks .archived-task{display:block}
+        @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
+        @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
+        ::-webkit-scrollbar{width:6px;height:6px}
+        ::-webkit-scrollbar-track{background:var(--bg)}
+        ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+        ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+        .collapse-enter{max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease}
+        .collapse-enter.active{max-height:3000px;opacity:1}
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <nav>
+        <div class="nav-brand">
+            🏛️ ChinaMI1949
+            <small>结构化个人事务管理系统</small>
+        </div>
+        <div class="nav-actions">
+            <span id="syncStatus" class="sync-status loading">🔄 加载中...</span>
+            <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步到GitHub</button>
+            <button onclick="exportJSON()" class="btn btn-sm btn-outline">📤 导出JSON</button>
+            <button onclick="cycleTheme()" class="theme-btn" id="themeBtn">
+                <span class="theme-icon">🌾</span>
+                <span class="theme-label">卡其</span>
+            </button>
+            <button onclick="window.print()">🖨️ 打印</button>
+            <button onclick="openTokenModal()">⚙️ 配置</button>
+        </div>
+    </nav>
+
+    <div class="system-motto">
+        <span>🧭 边界</span>
+        <span>📐 框架</span>
+        <span>⚖️ 规矩</span>
+        <span>✨ 讲究</span>
+        <span>💎 价值</span>
+        <span>📈 利益</span>
+        <span class="motto-divider">|</span>
+        <span class="courage">⚔️ 勇气是人类的赞歌</span>
+        <span class="motto-divider">|</span>
+        <span class="blessing">🌹 祝董佳浩早日学会斗争，早日学会取得斗争胜利</span>
+        <span class="motto-divider">|</span>
+        <span class="tagline">—— 结构化 · 可量化 · 可追溯</span>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <!-- 分类查询栏 -->
+    <div class="filter-bar" id="filterBar">
+        <label>🔍 按分类筛选：</label>
+        <select id="categoryFilter" onchange="applyCategoryFilter()">
+            <option value="">📊 全部</option>
+        </select>
+        <span class="filter-hint" id="filterHint">选择分类查看对应的项目和任务</span>
+        <button class="clear-filter" id="clearFilterBtn" onclick="clearCategoryFilter()" style="display:none;">✕ 清除筛选</button>
+        <span class="filter-badge" id="filterBadge" style="display:none;"></span>
+    </div>
+
+    <!-- 分类管理 -->
+    <div class="card">
+        <div class="card-header">
+            <h2><span>🏷️ 分类管理</span> <span class="sub">边界界定 · 框架构建</span></h2>
+            <div class="cat-add-row">
+                <input id="catInput" placeholder="输入分类名" onkeydown="if(event.key==='Enter')addCategory()">
+                <button class="btn btn-sm" onclick="addCategory()">+ 添加</button>
+            </div>
+        </div>
+        <div id="categoryList" class="cat-list"></div>
+    </div>
+
+    <!-- 项目总库 -->
+    <div class="card" id="projectCard">
+        <div class="card-header">
+            <h2><span>📁 项目总库</span> <span class="sub">规矩立身 · 讲究行事</span></h2>
+            <button class="btn" onclick="openProjectModal()">+ 新建项目</button>
+        </div>
+        <div id="projectList"></div>
+        <div id="projectPagination" class="pagination"></div>
+    </div>
+
+    <!-- 全局任务总库 -->
+    <div class="card" id="taskCard">
+        <div class="card-header">
+            <h2><span>📌 全局任务总库</span> <span class="sub">价值驱动 · 利益导向</span></h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                <button class="btn btn-sm" onclick="openTaskModal()">+ 新建任务</button>
+                <select id="viewFilter" onchange="renderAll()" style="background:var(--bg);border:1px solid var(--border);border-radius:30px;padding:4px 14px;font-size:.78rem;color:var(--text);">
+                    <option value="all">📊 全部</option>
+                    <option value="p0">🔴 P0</option>
+                    <option value="p1">🟠 P1</option>
+                    <option value="p2">🟡 P2</option>
+                    <option value="p3">🔵 P3</option>
+                    <option value="backlog">⏳ Backlog</option>
+                    <option value="todo">📋 To Do</option>
+                    <option value="doing">🔄 Doing</option>
+                    <option value="review">🔍 Review</option>
+                    <option value="done">✅ Done</option>
+                    <option value="archived">📦 已归档</option>
+                    <option value="unfinished">⏰ 未完成</option>
+                </select>
+            </div>
+        </div>
+        <div class="sort-bar">
+            <label>🔽 排序方式：</label>
+            <select id="taskSortOrder" onchange="renderAll()">
+                <option value="urgency-desc">紧急度 (高→低)</option>
+                <option value="urgency-asc">紧急度 (低→高)</option>
+                <option value="deadline-asc">截止时间 (最近优先)</option>
+                <option value="deadline-desc">截止时间 (最远优先)</option>
+                <option value="priority-desc">优先级 (P0→P3)</option>
+                <option value="priority-asc">优先级 (P3→P0)</option>
+                <option value="name-asc">名称 (A→Z)</option>
+                <option value="name-desc">名称 (Z→A)</option>
+            </select>
+        </div>
+        <div id="taskList" class="task-flat"></div>
+        <div id="taskPagination" class="pagination"></div>
+    </div>
+
+    <!-- 项目弹窗 -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="projectModalTitle">新建项目</h3><button class="modal-close" onclick="closeModal('projectModal')">&times;</button></div>
+            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。</div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <input type="hidden" id="projectEditId">
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column:1/-1;"><label>项目名称 <span class="required">*</span></label><input id="pName" required></div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>项目分类（可多选） <span class="required">*</span></label>
+                        <select id="pCategory" multiple required style="min-height:70px;"></select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
+                    </div>
+                    <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="pPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
+                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="pStart" type="datetime-local" required></div>
+                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="pEnd" type="datetime-local" required></div>
+                    <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="pLocation" required placeholder="如：学校实验室"></div>
+                    <div class="form-group"><label>状态 <span class="required">*</span></label><select id="pStatus" required><option value="planning">Planning</option><option value="active" selected>Active</option><option value="paused">Paused</option><option value="completed">Completed</option></select></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>整体验收标准 <span class="required">*</span></label><textarea id="pStandard" required placeholder="如：论文查重率<15%+答辩通过"></textarea></div>
+                </div>
+                <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('projectModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 任务弹窗 -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
+            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
+            <form id="taskForm" onsubmit="saveTask(event)">
+                <input type="hidden" id="taskEditId">
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column:1/-1;"><label>任务名称 <span class="required">*</span></label><input id="tName" required></div>
+                    <div class="form-group"><label>所属项目</label>
+                        <select id="tProjects" multiple style="min-height:60px;" onchange="autoFillCategory()"></select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选</small>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>任务分类（可多选） <span class="required">*</span></label>
+                        <select id="tCategory" multiple required style="min-height:70px;"></select>
+                        <small style="color:var(--text-muted);font-size:.7rem;">按住 Ctrl/Cmd 多选，至少选一个</small>
+                        <div style="display:flex;gap:4px;margin-top:3px;">
+                            <input id="newCategoryInput" placeholder="新分类名" style="flex:1;padding:3px 8px;font-size:.7rem;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);">
+                            <button type="button" class="btn btn-sm" onclick="addCategoryFromTask()">添加</button>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>父级任务</label><select id="tParent"><option value="">无</option></select></div>
+                    <div class="form-group"><label>前置任务</label><select id="tPrev"><option value="">无</option></select></div>
+                    <div class="form-group"><label>优先级 <span class="required">*</span></label><select id="tPriority" required><option value="P0">P0 最高</option><option value="P1">P1 重要</option><option value="P2" selected>P2 常规</option><option value="P3">P3 次要</option></select></div>
+                    <div class="form-group"><label>紧急度 <span class="required">*</span></label>
+                        <select id="tUrgency" required>
+                            <option value="critical">🔥 紧急 (24h内)</option>
+                            <option value="high">⚡ 高 (3天内)</option>
+                            <option value="medium" selected>📌 中 (7天内)</option>
+                            <option value="low">📅 低 (7天以上)</option>
+                            <option value="none">⏳ 无明确时间</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>开始时间 <span class="required">*</span></label><input id="tStart" type="datetime-local" required onchange="checkTimeConflict()"></div>
+                    <div class="form-group"><label>截止时间 <span class="required">*</span></label><input id="tEnd" type="datetime-local" required onchange="checkTimeConflict()"></div>
+                    <div class="form-group"><label>执行场地 <span class="required">*</span></label><input id="tLocation" required placeholder="如：图书馆、线上"></div>
+                    <div class="form-group"><label>流转状态 <span class="required">*</span></label><select id="tStatus" required><option value="backlog">Backlog</option><option value="todo">To Do</option><option value="doing" selected>Doing</option><option value="review">Review</option><option value="done">Done</option></select></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>验收指标 <span class="required">*</span></label><textarea id="tAccept" required placeholder="硬性验收标准"></textarea></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>备注</label><textarea id="tNote" placeholder="额外说明、场地准入限制等"></textarea></div>
+                </div>
+                <div id="conflictWarning" class="conflict-warning">⚠️ 检测到时间冲突！该时间段内已有其他任务。</div>
+                <div class="form-actions"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('taskModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 编辑项目内任务关系弹窗 -->
+    <div class="modal-overlay" id="relationModal">
+        <div class="modal relation-modal">
+            <div class="modal-header"><h3 id="relationModalTitle">编辑项目内任务关系</h3><button class="modal-close" onclick="closeModal('relationModal')">&times;</button></div>
+            <div class="save-hint">💡 设置任务在项目中的父子关系和先后顺序。<br>📌 父级任务：当前任务挂在哪个任务下面。<br>📌 前置任务：当前任务需要等待哪个任务完成。</div>
+            <form id="relationForm" onsubmit="saveRelation(event)">
+                <input type="hidden" id="relationProjectId">
+                <input type="hidden" id="relationTaskId">
+                <div class="form-grid">
+                    <div class="form-group"><label>父级任务</label><select id="rParent" style="min-height:40px;"><option value="">无（顶级任务）</option></select></div>
+                    <div class="form-group"><label>前置任务</label><select id="rPrev" style="min-height:40px;"><option value="">无</option></select></div>
+                </div>
+                <div class="form-actions"><button type="submit" class="btn">保存关系</button><button type="button" class="btn btn-outline" onclick="closeModal('relationModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 配置弹窗 -->
+    <div class="modal-overlay" id="tokenModal">
+        <div class="modal">
+            <div class="modal-header"><h3>⚙️ 配置 GitHub 同步</h3><button class="modal-close" onclick="closeModal('tokenModal')">&times;</button></div>
+            <div class="token-warning">📌 <strong>数据存储在 GitHub Issues 中</strong>，完全依赖 GitHub。<br>⚠️ 需要 <strong>repo</strong> 权限。</div>
+            <form onsubmit="saveConfig(event)">
+                <div class="form-group"><label>GitHub Token</label><input id="tokenInput" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;"></div>
+                <div class="form-group" style="margin-top:12px;"><label>仓库地址</label><input id="repoInput" placeholder="用户名/仓库名" style="width:100%;"></div>
+                <div class="form-actions" style="margin-top:16px;"><button type="submit" class="btn">保存</button><button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')">取消</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+//  主题切换
+// ============================================================
+const THEMES = [
+    { id: 'khaki', icon: '🌾', label: '卡其' },
+    { id: 'army', icon: '🌲', label: '军绿' },
+    { id: 'army-dark', icon: '🌑', label: '暗色军绿' }
+];
+let currentThemeIndex = 0;
+
+function cycleTheme() {
+    currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+    const theme = THEMES[currentThemeIndex];
+    document.documentElement.setAttribute('data-theme', theme.id);
+    localStorage.setItem('pms_theme', theme.id);
+    updateThemeButton();
 }
+
+function updateThemeButton() {
+    const btn = document.getElementById('themeBtn');
+    if (!btn) return;
+    const theme = THEMES[currentThemeIndex];
+    const iconSpan = btn.querySelector('.theme-icon');
+    const labelSpan = btn.querySelector('.theme-label');
+    if (iconSpan) iconSpan.textContent = theme.icon;
+    if (labelSpan) labelSpan.textContent = theme.label;
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('pms_theme');
+    if (saved) {
+        const idx = THEMES.findIndex(t => t.id === saved);
+        if (idx !== -1) { currentThemeIndex = idx; document.documentElement.setAttribute('data-theme', saved); updateThemeButton(); return; }
+    }
+    document.documentElement.setAttribute('data-theme', 'khaki');
+    updateThemeButton();
+}
+
+// ============================================================
+//  彩色赞
+// ============================================================
+const EMOJIS_POP = ['👍', '❤️', '🌟', '✨', '🔥', '💪', '🎉', '⭐', '🌈', '🦋', '🌸', '🌺', '💖', '🏆', '👏', '🎊', '💎', '🌻', '🦄', '🌹', '🍀', '🎯', '💫', '🌊'];
+
+function burstPop(x, y) {
+    const emoji = EMOJIS_POP[Math.floor(Math.random() * EMOJIS_POP.length)];
+    const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bcb', '#a66bff', '#ff9f43', '#00d2d3', '#f368e0', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff4757', '#2ed573', '#1e90ff', '#ff6348'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const el = document.createElement('div');
+    el.className = 'confetti-pop';
+    el.textContent = emoji;
+    el.style.left = (x - 21) + 'px';
+    el.style.top = (y - 21) + 'px';
+    el.style.color = color;
+    const rot1 = (Math.random() - 0.5) * 60, rot2 = (Math.random() - 0.5) * 80, rot3 = (Math.random() - 0.5) * 40, rot4 = (Math.random() - 0.5) * 30;
+    el.style.setProperty('--rot', rot1 + 'deg');
+    el.style.setProperty('--rot2', rot2 + 'deg');
+    el.style.setProperty('--rot3', rot3 + 'deg');
+    el.style.setProperty('--rot4', rot4 + 'deg');
+    el.style.fontSize = (32 + Math.random() * 28) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 1100);
+}
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.modal-overlay') || e.target.closest('button') || e.target.closest('input, select, textarea') || e.target.closest('.page-btn')) return;
+    burstPop(e.clientX, e.clientY);
+});
+
+// ============================================================
+//  数据
+// ============================================================
+const STORAGE_ISSUE_NUMBER = 1;
+const PAGE_SIZE = 10;
+let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
+let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
+let data = { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
+let dataLoaded = false;
+let selectedCategoryId = null;
+let projectPage = 1, taskPage = 1;
+let expandedProjects = new Set();
+let showArchivedTasks = {};
+
+// ============================================================
+//  时间冲突检测
+// ============================================================
+function checkTimeConflict() {
+    const start = document.getElementById('tStart').value;
+    const end = document.getElementById('tEnd').value;
+    const projectSelect = document.getElementById('tProjects');
+    const conflictEl = document.getElementById('conflictWarning');
+    if (!start || !end || !projectSelect) { conflictEl.style.display = 'none'; return; }
+    
+    const projectIds = Array.from(projectSelect.selectedOptions).map(o => Number(o.value));
+    if (projectIds.length === 0) { conflictEl.style.display = 'none'; return; }
+    
+    const taskId = document.getElementById('taskEditId').value ? Number(document.getElementById('taskEditId').value) : null;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    
+    for (const pid of projectIds) {
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+        for (const t of tasks) {
+            if (!t.start || !t.end) continue;
+            const tStart = new Date(t.start);
+            const tEnd = new Date(t.end);
+            if (startDate < tEnd && endDate > tStart) {
+                conflictEl.textContent = '⚠️ 检测到时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')';
+                conflictEl.style.display = 'block';
+                return;
+            }
+        }
+    }
+    conflictEl.style.display = 'none';
+}
+
+// ============================================================
+//  数据操作函数
+// ============================================================
+function getConfig() { return { token: GITHUB_TOKEN, repo: GITHUB_REPO }; }
+
+function saveConfig(e) {
+    e.preventDefault();
+    GITHUB_TOKEN = document.getElementById('tokenInput').value.trim();
+    GITHUB_REPO = document.getElementById('repoInput').value.trim();
+    localStorage.setItem('pms_github_token', GITHUB_TOKEN);
+    localStorage.setItem('pms_github_repo', GITHUB_REPO);
+    closeModal('tokenModal');
+    setStatus('✅ 配置已保存', '');
+    loadFromGitHub();
+}
+
+function openTokenModal() {
+    document.getElementById('tokenInput').value = GITHUB_TOKEN;
+    document.getElementById('repoInput').value = GITHUB_REPO;
+    document.getElementById('tokenModal').classList.add('active');
+}
+
+function setStatus(text, type) {
+    const el = document.getElementById('syncStatus');
+    el.textContent = text;
+    el.className = 'sync-status';
+    if (type === 'saving') el.classList.add('saving');
+    if (type === 'error') el.classList.add('error');
+    if (type === 'loading') el.classList.add('loading');
+}
+
+function defaultData() { return { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 }; }
+
+function getProjects() { return data ? data.projects : []; }
+function getProject(id) { return data ? data.projects.find(p => p.id === id) : null; }
+function getTask(id) { return data ? data.tasks.find(t => t.id === id) : null; }
+function getCategories() { if (!data.categories) data.categories = []; return data.categories; }
+function getCategory(id) { return getCategories().find(c => c.id === id); }
+function getCategoriesByIds(ids) { if (!ids || !ids.length) return []; return ids.map(id => getCategory(id)).filter(c => c); }
+
+function getProjectTaskRelation(projectId, taskId) {
+    if (!data.projectTaskRelations) data.projectTaskRelations = {};
+    if (!data.projectTaskRelations[projectId]) return null;
+    return data.projectTaskRelations[projectId][taskId] || null;
+}
+
+function setProjectTaskRelation(projectId, taskId, parentId, prevId) {
+    if (!data.projectTaskRelations) data.projectTaskRelations = {};
+    if (!data.projectTaskRelations[projectId]) data.projectTaskRelations[projectId] = {};
+    data.projectTaskRelations[projectId][taskId] = { parentId: parentId || null, prevId: prevId || null };
+}
+
+// 获取活跃任务（不包括归档和未完成归档）
+function getActiveTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.status !== 'archived' && t.status !== 'unfinished');
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
+function getArchivedTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.status === 'archived');
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
+function getUnfinishedTasksByProject(projectId) {
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.status === 'unfinished');
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks.map(t => {
+        const rel = getProjectTaskRelation(projectId, t.id);
+        return { ...t, _parentId: rel ? rel.parentId : null, _prevId: rel ? rel.prevId : null };
+    });
+}
+
+function saveLocalCache() { if (data) localStorage.setItem('pms_data_cache', JSON.stringify(data)); }
+
+function loadLocalCache() {
+    try { const raw = localStorage.getItem('pms_data_cache'); if (raw) { const d = JSON.parse(raw); 
+        d.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
+        d.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
+        if (!d.categories) d.categories = [];
+        if (!d.projectTaskRelations) d.projectTaskRelations = {};
+        if (!d.nextCategoryId) d.nextCategoryId = 1; 
+        return d; 
+    } } catch (e) {}
+    return null;
+}
+
+// ============================================================
+//  GitHub 同步
+// ============================================================
+async function loadFromGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) {
+        setStatus('⚠️ 请点击「配置」设置仓库', 'error');
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+        populateCategoryFilter();
+        return;
+    }
+    try {
+        setStatus('📥 从 GitHub 加载...', 'loading');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        if (token) headers['Authorization'] = `token ${token}`;
+        let response = await fetch(url, { headers });
+        if (response.status === 404) {
+            await createIssue();
+            data = defaultData();
+            dataLoaded = true;
+            saveLocalCache();
+            setStatus('📄 新数据已初始化', '');
+            renderAll();
+            updateStats();
+            renderCategories();
+            populateAllSelects();
+            populateCategoryFilter();
+            return;
+        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const issue = await response.json();
+        const body = issue.body || '{}';
+        try {
+            const parsed = JSON.parse(body);
+            if (parsed.projects !== undefined && parsed.tasks !== undefined) {
+                data = parsed;
+                data.tasks.forEach(t => { if (t.archived === undefined) t.archived = false; if (t.urgency === undefined) t.urgency = 'medium'; if (t.categoryIds === undefined) { if (t.categoryId) { t.categoryIds = [t.categoryId]; } else { t.categoryIds = []; } } });
+                data.projects.forEach(p => { if (p.categoryIds === undefined) { if (p.categoryId) { p.categoryIds = [p.categoryId]; } else { p.categoryIds = []; } } });
+                if (!data.categories) data.categories = [];
+                if (!data.projectTaskRelations) data.projectTaskRelations = {};
+                if (!data.nextCategoryId) data.nextCategoryId = 1;
+                dataLoaded = true;
+                saveLocalCache();
+                setStatus(`✅ 已同步 (${data.projects.length}个项目, ${data.tasks.length}个任务)`, '');
+                renderAll();
+                updateStats();
+                renderCategories();
+                populateAllSelects();
+                populateCategoryFilter();
+                return;
+            }
+        } catch (e) {}
+        data = defaultData();
+        dataLoaded = true;
+        saveLocalCache();
+        setStatus('⚠️ 数据格式错误，已重置', 'error');
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+        populateCategoryFilter();
+    } catch (err) {
+        console.error('加载失败:', err);
+        data = loadLocalCache() || defaultData();
+        dataLoaded = true;
+        setStatus('⚠️ 离线模式 (使用本地缓存)', 'error');
+        renderAll();
+        updateStats();
+        renderCategories();
+        populateAllSelects();
+        populateCategoryFilter();
+    }
+}
+
+async function createIssue() {
+    const { token, repo } = getConfig();
+    if (!token || !repo) return;
+    try {
+        const url = `https://api.github.com/repos/${repo}/issues`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: '📋 ChinaMI1949 系统数据存储 (请勿删除)', body: JSON.stringify(defaultData(), null, 2), labels: ['china-mi1949-data'] })
+        });
+    } catch (e) { console.error('创建 Issue 失败:', e); }
+}
+
+async function syncToGitHub() {
+    const { token, repo } = getConfig();
+    if (!repo) { alert('请先点击「配置」设置仓库'); openTokenModal(); return; }
+    if (!token) { alert('请先配置 GitHub Token'); openTokenModal(); return; }
+    if (!data) { alert('暂无数据'); return; }
+    const jsonContent = JSON.stringify(data, null, 2);
+    try {
+        setStatus('⏳ 同步中...', 'saving');
+        const url = `https://api.github.com/repos/${repo}/issues/${STORAGE_ISSUE_NUMBER}`;
+        let getRes = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+        if (getRes.status === 404) { await createIssue(); getRes = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }); }
+        if (!getRes.ok) throw new Error(`获取 Issue 失败: ${getRes.status}`);
+        const putRes = await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ body: jsonContent })
+        });
+        if (!putRes.ok) throw new Error(`更新失败: ${putRes.status}`);
+        saveLocalCache();
+        setStatus(`✅ 已同步到 GitHub (${new Date().toLocaleTimeString()})`, '');
+        alert('✅ 数据已同步到 GitHub Issues！');
+    } catch (err) {
+        console.error('同步失败:', err);
+        setStatus('❌ 同步失败: ' + err.message, 'error');
+        alert('❌ 同步失败：' + err.message);
+    }
+}
+
+function exportJSON() {
+    if (!data) { alert('暂无数据'); return; }
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'china-mi1949-data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setStatus('📤 已导出数据', 'saving');
+    alert('✅ 数据已导出');
+}
+
+// ============================================================
+//  分类功能
+// ============================================================
+function populateCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    if (!select) return;
+    const categories = getCategories();
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">📊 全部</option>';
+    categories.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
+    if (currentVal) select.value = currentVal;
+}
+
+function applyCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    selectedCategoryId = select.value ? Number(select.value) : null;
+    projectPage = 1; taskPage = 1;
+    renderAll();
+    updateFilterUI();
+}
+
+function clearCategoryFilter() {
+    document.getElementById('categoryFilter').value = '';
+    selectedCategoryId = null;
+    projectPage = 1; taskPage = 1;
+    renderAll();
+    updateFilterUI();
+}
+
+function updateFilterUI() {
+    const hint = document.getElementById('filterHint');
+    const badge = document.getElementById('filterBadge');
+    const clearBtn = document.getElementById('clearFilterBtn');
+    const filterBar = document.getElementById('filterBar');
+    if (selectedCategoryId) {
+        const cat = getCategory(selectedCategoryId);
+        hint.textContent = `🔍 当前筛选分类：「${cat ? cat.name : '已删除'}」`;
+        badge.textContent = `📌 ${cat ? cat.name : '已删除'}`;
+        badge.style.display = 'inline-block';
+        clearBtn.style.display = 'inline-block';
+        filterBar.classList.add('filter-active');
+    } else {
+        hint.textContent = '选择分类查看对应的项目和任务';
+        badge.style.display = 'none';
+        clearBtn.style.display = 'none';
+        filterBar.classList.remove('filter-active');
+    }
+}
+
+function getFilteredProjects() {
+    let projects = data.projects;
+    if (selectedCategoryId) {
+        projects = projects.filter(p => p.categoryIds && p.categoryIds.includes(selectedCategoryId));
+    }
+    return projects;
+}
+
+function getFilteredTasks() {
+    let tasks = data.tasks;
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks;
+}
+
+// ============================================================
+//  分类 CRUD
+// ============================================================
+function addCategory() {
+    const input = document.getElementById('catInput');
+    const name = input.value.trim();
+    if (!name) { alert('请输入分类名称'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
+    const colors = ['#b8a070', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
+    const color = colors[getCategories().length % colors.length];
+    const obj = { id: data.nextCategoryId || 1, name, color };
+    if (!data.nextCategoryId) data.nextCategoryId = 1;
+    data.nextCategoryId++;
+    data.categories.push(obj);
+    saveLocalCache();
+    input.value = '';
+    renderCategories();
+    populateAllSelects();
+    populateCategoryFilter();
+    setStatus('💡 分类已添加', 'saving');
+}
+
+function deleteCategory(id) {
+    if (!confirm('确认删除此分类？')) return;
+    data.categories = data.categories.filter(c => c.id !== id);
+    data.projects.forEach(p => { if (p.categoryIds) p.categoryIds = p.categoryIds.filter(cid => cid !== id); });
+    data.tasks.forEach(t => { if (t.categoryIds) t.categoryIds = t.categoryIds.filter(cid => cid !== id); });
+    saveLocalCache();
+    renderCategories();
+    populateAllSelects();
+    populateCategoryFilter();
+    if (selectedCategoryId === id) { selectedCategoryId = null; document.getElementById('categoryFilter').value = ''; }
+    renderAll();
+    updateFilterUI();
+    setStatus('💡 分类已删除', 'saving');
+}
+
+function renderCategories() {
+    const container = document.getElementById('categoryList');
+    const categories = getCategories();
+    if (categories.length === 0) { container.innerHTML = '<span style="color:var(--text-muted);font-size:.75rem;">暂无分类，添加一个吧</span>'; return; }
+    container.innerHTML = categories.map(c => `
+        <span class="cat-tag" draggable="false" style="background:${c.color}20;border:1px solid ${c.color}40;" data-id="${c.id}">
+            <span class="drag-handle">⠿</span>
+            <span class="dot" style="background:${c.color};"></span>
+            ${c.name}
+            <button class="del" onclick="deleteCategory(${c.id})" title="删除分类">✕</button>
+        </span>
+    `).join('');
+    setTimeout(() => {}, 50);
+}
+
+function populateAllSelects() {
+    populateProjectCategorySelect();
+    populateTaskCategorySelect();
+    populateTaskSelects();
+    populateCategoryFilter();
+}
+
+function populateProjectCategorySelect() {
+    const select = document.getElementById('pCategory');
+    if (!select) return;
+    const categories = getCategories();
+    const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
+    select.innerHTML = '';
+    categories.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; select.appendChild(opt); });
+    if (selectedVals.length) { Array.from(select.options).forEach(opt => { if (selectedVals.includes(Number(opt.value))) opt.selected = true; }); }
+}
+
+function populateTaskCategorySelect() {
+    const select = document.getElementById('tCategory');
+    if (!select) return;
+    const categories = getCategories();
+    const selectedVals = Array.from(select.selectedOptions).map(o => Number(o.value));
+    select.innerHTML = '';
+    categories.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; select.appendChild(opt); });
+    if (selectedVals.length) { Array.from(select.options).forEach(opt => { if (selectedVals.includes(Number(opt.value))) opt.selected = true; }); }
+}
+
+function addCategoryFromTask() {
+    const input = document.getElementById('newCategoryInput');
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) { alert('请输入分类名称'); return; }
+    if (getCategories().some(c => c.name === name)) { alert('分类已存在'); return; }
+    const colors = ['#b8a070', '#d4685e', '#27ae60', '#e8a87c', '#8a7a6a', '#c4b09a', '#b8956a', '#d4c0a8', '#a68b78', '#9d7a5a'];
+    const color = colors[getCategories().length % colors.length];
+    const obj = { id: data.nextCategoryId || 1, name, color };
+    if (!data.nextCategoryId) data.nextCategoryId = 1;
+    data.nextCategoryId++;
+    data.categories.push(obj);
+    saveLocalCache();
+    input.value = '';
+    renderCategories();
+    populateAllSelects();
+    populateCategoryFilter();
+    const select = document.getElementById('tCategory');
+    if (select) { Array.from(select.options).forEach(opt => { if (opt.text === name) opt.selected = true; }); }
+    setStatus('💡 分类已添加', 'saving');
+}
+
+function autoFillCategory() {
+    const projSelect = document.getElementById('tProjects');
+    const catSelect = document.getElementById('tCategory');
+    if (!projSelect || !catSelect) return;
+    const selected = Array.from(projSelect.selectedOptions).map(o => Number(o.value));
+    if (selected.length === 0) return;
+    const project = getProject(selected[0]);
+    if (project && project.categoryIds && project.categoryIds.length > 0) {
+        Array.from(catSelect.options).forEach(opt => {
+            opt.selected = project.categoryIds.includes(Number(opt.value));
+        });
+    }
+}
+
+function populateTaskSelects() {
+    const projSelect = document.getElementById('tProjects');
+    projSelect.innerHTML = data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    const editId = document.getElementById('taskEditId').value;
+    const parentSelect = document.getElementById('tParent');
+    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    const prevSelect = document.getElementById('tPrev');
+    prevSelect.innerHTML = '<option value="">无</option>';
+    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+}
+
+// ============================================================
+//  项目 CRUD
+// ============================================================
+function saveProject(e) {
+    e.preventDefault();
+    const id = document.getElementById('projectEditId').value;
+    const select = document.getElementById('pCategory');
+    const categoryIds = Array.from(select.selectedOptions).map(o => Number(o.value));
+    if (categoryIds.length === 0) { alert('请至少选择一个分类'); return; }
+    const status = document.getElementById('pStatus').value;
+    if (!status) { alert('请选择项目状态'); return; }
+    const obj = {
+        name: document.getElementById('pName').value.trim(),
+        categoryIds, priority: document.getElementById('pPriority').value,
+        start: document.getElementById('pStart').value,
+        end: document.getElementById('pEnd').value,
+        location: document.getElementById('pLocation').value.trim(),
+        status,
+        standard: document.getElementById('pStandard').value.trim()
+    };
+    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.standard) { alert('请填写所有必填字段'); return; }
+    if (id) { const p = getProject(Number(id)); if (p) Object.assign(p, obj); } else { obj.id = data.nextProjectId++; data.projects.push(obj); }
+    saveLocalCache();
+    closeModal('projectModal');
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectEditId').value = '';
+    projectPage = 1;
+    renderAll();
+    updateStats();
+    populateCategoryFilter();
+    setStatus('💡 项目已保存', 'saving');
+}
+
+function openProjectModal(projectId) {
+    const modal = document.getElementById('projectModal');
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectEditId').value = '';
+    document.getElementById('projectModalTitle').textContent = '新建项目';
+    populateProjectCategorySelect();
+    if (projectId) {
+        const p = getProject(projectId);
+        if (!p) return;
+        document.getElementById('projectEditId').value = p.id;
+        document.getElementById('projectModalTitle').textContent = '编辑项目';
+        document.getElementById('pName').value = p.name;
+        const select = document.getElementById('pCategory');
+        if (p.categoryIds && p.categoryIds.length) {
+            Array.from(select.options).forEach(opt => { opt.selected = p.categoryIds.includes(Number(opt.value)); });
+        }
+        document.getElementById('pPriority').value = p.priority;
+        document.getElementById('pStart').value = p.start;
+        document.getElementById('pEnd').value = p.end;
+        document.getElementById('pLocation').value = p.location;
+        document.getElementById('pStatus').value = p.status;
+        document.getElementById('pStandard').value = p.standard;
+    }
+    modal.classList.add('active');
+}
+
+function deleteProject(id) {
+    if (!confirm('确定删除此项目吗？')) return;
+    data.projects = data.projects.filter(p => p.id !== id);
+    if (data.projectTaskRelations) { delete data.projectTaskRelations[id]; }
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 项目已删除', 'saving');
+}
+
+function toggleProjectExpand(projectId) {
+    if (expandedProjects.has(projectId)) { expandedProjects.delete(projectId); } else { expandedProjects.add(projectId); }
+    renderProjects();
+}
+
+function toggleShowArchived(projectId) {
+    showArchivedTasks[projectId] = !showArchivedTasks[projectId];
+    renderProjects();
+}
+
+// ============================================================
+//  任务 CRUD - 简化归档逻辑
+// ============================================================
+function saveTask(e) {
+    e.preventDefault();
+    const id = document.getElementById('taskEditId').value;
+    const status = document.getElementById('tStatus').value;
+    if (!status) { alert('请选择任务状态'); return; }
+    const select = document.getElementById('tCategory');
+    const categoryIds = Array.from(select.selectedOptions).map(o => Number(o.value));
+    if (categoryIds.length === 0) { alert('请至少选择一个分类'); return; }
+    const projectIds = Array.from(document.getElementById('tProjects').selectedOptions).map(o => Number(o.value));
+    const start = document.getElementById('tStart').value;
+    const end = document.getElementById('tEnd').value;
+    const taskId = id ? Number(id) : null;
+    // 只有活跃任务才检测时间冲突
+    if (status !== 'archived' && status !== 'unfinished') {
+        for (const pid of projectIds) {
+            const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+            for (const t of tasks) {
+                if (!t.start || !t.end) continue;
+                if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
+                    alert('⚠️ 时间冲突！与任务 "' + t.name + '" 时间重叠 (' + t.start + ' ~ ' + t.end + ')');
+                    return;
+                }
+            }
+        }
+    }
+    const obj = {
+        name: document.getElementById('tName').value.trim(),
+        projectIds, categoryIds,
+        parentId: document.getElementById('tParent').value ? Number(document.getElementById('tParent').value) : null,
+        prevId: document.getElementById('tPrev').value ? Number(document.getElementById('tPrev').value) : null,
+        priority: document.getElementById('tPriority').value,
+        urgency: document.getElementById('tUrgency').value,
+        start, end,
+        location: document.getElementById('tLocation').value.trim(),
+        status,
+        accept: document.getElementById('tAccept').value.trim(),
+        note: document.getElementById('tNote').value.trim(),
+    };
+    if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
+    if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
+    if (id) { const t = getTask(Number(id)); if (t) Object.assign(t, obj); } else { obj.id = data.nextTaskId++; data.tasks.push(obj); }
+    saveLocalCache();
+    closeModal('taskModal');
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskEditId').value = '';
+    taskPage = 1;
+    renderAll();
+    updateStats();
+    populateCategoryFilter();
+    setStatus('💡 任务已保存', 'saving');
+}
+
+function openTaskModal(taskId) {
+    const modal = document.getElementById('taskModal');
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskEditId').value = '';
+    document.getElementById('taskModalTitle').textContent = '新建任务';
+    document.getElementById('conflictWarning').style.display = 'none';
+    populateAllSelects();
+    if (taskId) {
+        const t = getTask(taskId);
+        if (!t) return;
+        document.getElementById('taskEditId').value = t.id;
+        document.getElementById('taskModalTitle').textContent = '编辑任务';
+        document.getElementById('tName').value = t.name;
+        Array.from(document.getElementById('tProjects').options).forEach(opt => { opt.selected = t.projectIds && t.projectIds.includes(Number(opt.value)); });
+        const catSelect = document.getElementById('tCategory');
+        if (t.categoryIds && t.categoryIds.length) {
+            Array.from(catSelect.options).forEach(opt => { opt.selected = t.categoryIds.includes(Number(opt.value)); });
+        }
+        if (t.parentId) document.getElementById('tParent').value = t.parentId;
+        if (t.prevId) document.getElementById('tPrev').value = t.prevId;
+        document.getElementById('tPriority').value = t.priority;
+        document.getElementById('tUrgency').value = t.urgency || 'medium';
+        document.getElementById('tStart').value = t.start;
+        document.getElementById('tEnd').value = t.end;
+        document.getElementById('tLocation').value = t.location;
+        document.getElementById('tStatus').value = t.status;
+        document.getElementById('tAccept').value = t.accept;
+        document.getElementById('tNote').value = t.note || '';
+    } else {
+        setTimeout(autoFillCategory, 100);
+    }
+    modal.classList.add('active');
+}
+
+// 物理删除任务
+function deleteTask(id) {
+    if (!confirm('⚠️ 确定要永久删除此任务吗？此操作不可恢复！')) return;
+    data.tasks = data.tasks.filter(t => t.id !== id);
+    if (data.projectTaskRelations) {
+        for (const projectId in data.projectTaskRelations) {
+            if (data.projectTaskRelations[projectId]) { delete data.projectTaskRelations[projectId][id]; }
+        }
+    }
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 任务已永久删除', 'saving');
+}
+
+// 归档/取消归档 - 已完成任务 → archived
+function toggleArchive(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'done') {
+        t.status = 'archived';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('💡 任务已归档（已完成）', 'saving');
+    } else if (t.status === 'archived') {
+        t.status = 'done';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('💡 任务已取消归档', 'saving');
+    } else {
+        alert('只有「Done」状态的任务才能归档到「已完成归档」');
+    }
+}
+
+// 未完成归档/取消归档 - 未完成任务 → unfinished
+function toggleUnfinished(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'unfinished') {
+        // 取消归档，恢复到todo
+        t.status = 'todo';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('💡 任务已取消「未完成」归档', 'saving');
+    } else if (t.status === 'archived' || t.status === 'done') {
+        alert('已完成或已归档的任务不能标记为「未完成」');
+    } else {
+        t.status = 'unfinished';
+        saveLocalCache();
+        renderAll();
+        updateStats();
+        setStatus('💡 任务已归档到「未完成」', 'saving');
+    }
+}
+
+function markDone(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status === 'done') { alert('该任务已验收通过'); return; }
+    if (t.status === 'archived') { alert('已归档的任务不能操作'); return; }
+    if (t.status === 'unfinished') { alert('已标记为「未完成」的任务不能操作，请先取消归档'); return; }
+    if (data.projectTaskRelations) {
+        for (const projectId in data.projectTaskRelations) {
+            const rel = data.projectTaskRelations[projectId]?.[taskId];
+            if (rel && rel.prevId) {
+                const prev = getTask(rel.prevId);
+                if (prev && prev.status !== 'done' && prev.status !== 'archived') {
+                    alert('前置任务尚未验收通过（项目：' + (getProject(Number(projectId))?.name || projectId) + '）');
+                    return;
+                }
+            }
+        }
+    }
+    if (!t.accept || t.accept.trim() === '') { alert('请填写验收指标后再标记完成'); return; }
+    t.status = 'review';
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 任务状态已更新', 'saving');
+}
+
+function approveTask(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    if (t.status !== 'review') { alert('只有「Review」状态的任务才能验收通过'); return; }
+    t.status = 'done';
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    setStatus('💡 任务已验收通过', 'saving');
+}
+
+// ============================================================
+//  关系编辑
+// ============================================================
+function openRelationModal(taskId, projectId) {
+    const modal = document.getElementById('relationModal');
+    document.getElementById('relationProjectId').value = projectId;
+    document.getElementById('relationTaskId').value = taskId;
+    const task = getTask(taskId);
+    const project = getProject(projectId);
+    document.getElementById('relationModalTitle').textContent = '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
+    const projectTasks = getActiveTasksByProject(projectId).filter(t => t.id !== taskId);
+    const parentSelect = document.getElementById('rParent');
+    parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
+    projectTasks.forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    const prevSelect = document.getElementById('rPrev');
+    prevSelect.innerHTML = '<option value="">无</option>';
+    projectTasks.forEach(t => { prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
+    const rel = getProjectTaskRelation(projectId, taskId);
+    if (rel) {
+        if (rel.parentId) parentSelect.value = rel.parentId;
+        if (rel.prevId) prevSelect.value = rel.prevId;
+    }
+    const parentName = rel?.parentId ? (getTask(rel.parentId)?.name || '#' + rel.parentId) : '无';
+    const prevName = rel?.prevId ? (getTask(rel.prevId)?.name || '#' + rel.prevId) : '无';
+    const hint = document.querySelector('#relationModal .save-hint');
+    if (hint) { hint.innerHTML = `💡 当前关系：父级任务 <strong>${parentName}</strong> ｜ 前置任务 <strong>${prevName}</strong><br>📌 修改后点击保存生效。`; }
+    modal.classList.add('active');
+}
+
+function saveRelation(e) {
+    e.preventDefault();
+    const projectId = Number(document.getElementById('relationProjectId').value);
+    const taskId = Number(document.getElementById('relationTaskId').value);
+    const parentId = document.getElementById('rParent').value ? Number(document.getElementById('rParent').value) : null;
+    const prevId = document.getElementById('rPrev').value ? Number(document.getElementById('rPrev').value) : null;
+    if (parentId === taskId) { alert('不能将自己设为父级任务'); return; }
+    if (prevId === taskId) { alert('不能将自己设为前置任务'); return; }
+    setProjectTaskRelation(projectId, taskId, parentId, prevId);
+    saveLocalCache();
+    closeModal('relationModal');
+    renderAll();
+    updateStats();
+    setStatus('💡 任务关系已保存', 'saving');
+}
+
+function openProjectPage(projectId) {
+    saveLocalCache();
+    const url = window.location.href.split('?')[0] + '?project=' + projectId;
+    window.open(url, '_blank');
+}
+
+// ============================================================
+//  排序工具
+// ============================================================
+const URGENCY_ORDER = { critical: 0, high: 1, medium: 2, low: 3, none: 4 };
+const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+function sortTasks(tasks, sortKey) {
+    const copy = [...tasks];
+    switch(sortKey) {
+        case 'urgency-desc': return copy.sort((a,b) => (URGENCY_ORDER[a.urgency||'medium'] || 2) - (URGENCY_ORDER[b.urgency||'medium'] || 2));
+        case 'urgency-asc': return copy.sort((a,b) => (URGENCY_ORDER[b.urgency||'medium'] || 2) - (URGENCY_ORDER[a.urgency||'medium'] || 2));
+        case 'deadline-asc': return copy.sort((a,b) => new Date(a.end) - new Date(b.end));
+        case 'deadline-desc': return copy.sort((a,b) => new Date(b.end) - new Date(a.end));
+        case 'priority-desc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return oa - ob; });
+        case 'priority-asc': return copy.sort((a, b) => { const oa = PRIORITY_ORDER[a.priority] ?? 2; const ob = PRIORITY_ORDER[b.priority] ?? 2; return ob - oa; });
+        case 'name-asc': return copy.sort((a,b) => a.name.localeCompare(b.name));
+        case 'name-desc': return copy.sort((a,b) => b.name.localeCompare(a.name));
+        default: return copy;
+    }
+}
+
+// ============================================================
+//  分页
+// ============================================================
+function paginateItems(items, page, pageSize) {
+    const total = items.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const currentPage = Math.min(Math.max(1, page), totalPages);
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    return { items: items.slice(start, end), total, currentPage, totalPages };
+}
+
+function renderPagination(containerId, currentPage, totalPages, onChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+    let html = `<button class="page-btn ${currentPage <= 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? `(${onChange})(${currentPage - 1})` : ''}">‹</button>`;
+    const maxVisible = 7;
+    let startPage = 1, endPage = totalPages;
+    if (totalPages > maxVisible) {
+        const half = Math.floor(maxVisible / 2);
+        if (currentPage <= half + 1) { endPage = maxVisible; }
+        else if (currentPage >= totalPages - half) { startPage = totalPages - maxVisible + 1; }
+        else { startPage = currentPage - half; endPage = currentPage + half; }
+    }
+    if (startPage > 1) { html += `<button class="page-btn" onclick="(${onChange})(1)">1</button>`; if (startPage > 2) html += `<span class="page-btn ellipsis">…</span>`; }
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="(${onChange})(${i})">${i}</button>`;
+    }
+    if (endPage < totalPages) { if (endPage < totalPages - 1) html += `<span class="page-btn ellipsis">…</span>`; html += `<button class="page-btn" onclick="(${onChange})(${totalPages})">${totalPages}</button>`; }
+    html += `<button class="page-btn ${currentPage >= totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? `(${onChange})(${currentPage + 1})` : ''}">›</button>`;
+    html += `<span class="page-info">第 ${currentPage}/${totalPages} 页</span>`;
+    container.innerHTML = html;
+}
+
+// ============================================================
+//  构建项目任务树
+// ============================================================
+function buildProjectTaskTree(projectId) {
+    const activeTasks = getActiveTasksByProject(projectId);
+    const archivedTasks = getArchivedTasksByProject(projectId);
+    const unfinishedTasks = getUnfinishedTasksByProject(projectId);
+    const allTasks = [...activeTasks, ...archivedTasks, ...unfinishedTasks];
+    
+    if (allTasks.length === 0) return [];
+    const taskMap = {};
+    allTasks.forEach(t => { taskMap[t.id] = t; });
+    const topTasks = allTasks.filter(t => {
+        if (!t._parentId) return true;
+        return !taskMap[t._parentId];
+    });
+    const sortKey = document.getElementById('taskSortOrder')?.value || 'urgency-desc';
+    const sortedTop = sortTasks([...topTasks], sortKey);
+    function getChildrenWithSort(parentId) {
+        const children = allTasks.filter(t => t._parentId === parentId);
+        return sortTasks([...children], sortKey);
+    }
+    function buildTree(task) {
+        const children = getChildrenWithSort(task.id);
+        return { ...task, children: children.map(c => buildTree(c)) };
+    }
+    return sortedTop.map(t => buildTree(t));
+}
+
+// ============================================================
+//  渲染
+// ============================================================
+function renderAll() { renderProjects(); renderTasks(); updateFilterUI(); }
+function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderProjects() {
+    const container = document.getElementById('projectList');
+    const projects = getFilteredProjects();
+    if (projects.length === 0) { 
+        container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无项目' : '暂无项目，点击「新建项目」开始') + '</div>';
+        document.getElementById('projectPagination').innerHTML = '';
+        return; 
+    }
+    const result = paginateItems(projects, projectPage, PAGE_SIZE);
+    container.innerHTML = result.items.map(p => {
+        const cats = getCategoriesByIds(p.categoryIds || []);
+        const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
+        const archivedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'archived').length;
+        const unfinishedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'unfinished').length;
+        const doneCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'done').length;
+        const isExpanded = expandedProjects.has(p.id);
+        const showArchived = showArchivedTasks[p.id] || false;
+        
+        const tree = buildProjectTaskTree(p.id);
+        const taskCount = tree.length;
+        
+        function renderTreeNodes(nodes, level) {
+            if (!nodes || nodes.length === 0) return '';
+            const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
+            let filteredNodes = nodes;
+            // 默认隐藏归档和未完成
+            if (!showArchived) {
+                filteredNodes = filteredNodes.filter(node => node.status !== 'archived' && node.status !== 'unfinished');
+            }
+            // 如果显示归档，但仍隐藏未完成（因为未完成需要单独筛选）
+            if (!showArchived) {
+                filteredNodes = filteredNodes.filter(node => node.status !== 'unfinished');
+            }
+            
+            return filteredNodes.map(node => {
+                const children = node.children || [];
+                let isBlocked = false;
+                if (node._prevId) { const prev = getTask(node._prevId); if (prev && prev.status !== 'done' && prev.status !== 'archived') isBlocked = true; }
+                const displayStatus = isBlocked ? 'blocked' : node.status;
+                const isArchived = node.status === 'archived';
+                const isUnfinished = node.status === 'unfinished';
+                const nodeCats = getCategoriesByIds(node.categoryIds || []);
+                const nodeCatTags = nodeCats.length ? nodeCats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
+                const urgencyMap = {
+                    critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+                    high: { label: '⚡ 高', cls: 'urgency-high' },
+                    medium: { label: '📌 中', cls: 'urgency-medium' },
+                    low: { label: '📅 低', cls: 'urgency-low' },
+                    none: { label: '⏳ 无', cls: 'urgency-none' }
+                };
+                const u = urgencyMap[node.urgency] || urgencyMap.medium;
+                let filteredChildren = children;
+                if (!showArchived) {
+                    filteredChildren = filteredChildren.filter(c => c.status !== 'archived' && c.status !== 'unfinished');
+                }
+                const childrenHtml = filteredChildren.length > 0 ? 
+                    `<div class="task-level-indent">${renderTreeNodes(filteredChildren, level + 1)}</div>` : '';
+                
+                const archivedClass = isArchived ? 'archived-task' : '';
+                const unfinishedClass = isUnfinished ? 'archived-task' : '';
+                const hiddenClass = (!showArchived && (isArchived || isUnfinished)) ? 'hidden-archived' : '';
+                let statusLabel = displayStatus;
+                if (isArchived) statusLabel = '📦 已归档';
+                else if (isUnfinished) statusLabel = '⏰ 未完成';
+                const statusClass = isArchived ? 'status-done' : (isUnfinished ? 'status-unfinished' : `status-${displayStatus}`);
+                const isDone = node.status === 'done';
+                
+                return `
+                    <div class="task-item ${levelClass} ${archivedClass} ${unfinishedClass} ${hiddenClass}" style="padding:8px 0;">
+                        <div class="task-row" style="gap:6px 12px;">
+                            ${filteredChildren.length > 0 ? 
+                                `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` : 
+                                `<span style="width:16px;display:inline-block;"></span>`}
+                            <span class="task-name" style="font-size:.85rem;${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(node.name)}</span>
+                            ${nodeCatTags ? `<span class="task-cats">${nodeCatTags}</span>` : ''}
+                            ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
+                            ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
+                            <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
+                            <span class="priority-tag priority-${node.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${node.priority}</span>
+                            <span class="status-tag ${statusClass}" style="font-size:.6rem;padding:1px 10px;">${statusLabel}</span>
+                            <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
+                            ${node._prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node._prevId}</span>` : ''}
+                            <div class="task-actions">
+                                <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑项目内任务关系">🔗</button>
+                                <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
+                                ${!isArchived && !isUnfinished ? `<button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>` : ''}
+                                ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
+                                ${isArchived ? 
+                                    `<button class="btn-archive archived" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">↩️ 恢复</button>` :
+                                    (isDone ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">📦 归档</button>` : '')
+                                }
+                                ${isUnfinished ? 
+                                    `<button class="btn-archive archived" style="padding:2px 8px;font-size:.55rem;background:#b8a070;color:#fff;border-color:#b8a070;" onclick="event.stopPropagation();toggleUnfinished(${node.id})">↩️ 恢复</button>` :
+                                    (!isDone && !isArchived ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleUnfinished(${node.id})">⏰ 未完成归档</button>` : '')
+                                }
+                                <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${node.id})">✕</button>
+                            </div>
+                        </div>
+                        ${node.note ? `<div style="font-size:.7rem;color:var(--text-muted);padding-left:12px;">📝 ${escHtml(node.note)}</div>` : ''}
+                        ${childrenHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        return `
+            <div class="task-item project-expandable">
+                <div class="task-row" style="cursor:pointer;" onclick="toggleProjectExpand(${p.id})">
+                    <span class="expand-icon ${isExpanded ? 'open' : ''}">▶</span>
+                    <span class="task-name project-link" onclick="event.stopPropagation();openProjectPage(${p.id})">${escHtml(p.name)}</span>
+                    <span class="project-cats">${catTags}</span>
+                    <span class="priority-tag priority-${p.priority.toLowerCase()}">${p.priority}</span>
+                    <span class="status-tag status-${p.status}">${p.status}</span>
+                    <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
+                    <span class="task-meta">📍 ${escHtml(p.location)}</span>
+                    <span class="task-meta" style="font-weight:600;color:var(--primary);">📌 ${taskCount}个任务</span>
+                    ${archivedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">📦 ${archivedCount}个已完成归档</span>` : ''}
+                    ${unfinishedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">⏰ ${unfinishedCount}个未完成归档</span>` : ''}
+                    <span class="task-meta" style="font-size:.65rem;color:#fff;background:var(--primary-gradient);padding:0 12px;border-radius:10px;">🔗 点击打开</span>
+                    <div class="task-actions" onclick="event.stopPropagation();">
+                        <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">✕</button>
+                    </div>
+                </div>
+                <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;padding-left:30px;">✅ ${escHtml(p.standard)}</div>
+                ${isExpanded ? `
+                    <div class="toggle-row">
+                        <button class="btn-toggle-done ${showArchived ? 'active' : ''}" onclick="event.stopPropagation();toggleShowArchived(${p.id})">
+                            ${showArchived ? '🙈 隐藏归档' : '👁️ 显示归档'}
+                        </button>
+                        <span class="count-info">
+                            ${doneCount} 个已完成
+                            ${archivedCount > 0 ? `｜📦 ${archivedCount} 个已归档 ${!showArchived && archivedCount > 0 ? '（已隐藏）' : ''}` : ''}
+                            ${unfinishedCount > 0 ? `｜⏰ ${unfinishedCount} 个未完成 ${!showArchived && unfinishedCount > 0 ? '（已隐藏）' : ''}` : ''}
+                        </span>
+                    </div>
+                ` : ''}
+                <div class="project-tasks ${isExpanded ? 'open' : ''}">
+                    ${isExpanded ? renderTreeNodes(tree, 1) : ''}
+                    ${isExpanded && taskCount === 0 ? '<div style="padding:8px 0;color:var(--text-muted);font-size:.8rem;font-style:italic;">📭 暂无关联任务</div>' : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+    renderPagination('projectPagination', result.currentPage, result.totalPages, `function(page){ projectPage = page; renderProjects(); }`);
+}
+
+function renderTasks() {
+    const container = document.getElementById('taskList');
+    const filter = document.getElementById('viewFilter').value;
+    const sortKey = document.getElementById('taskSortOrder').value;
+    
+    // 已完成归档筛选
+    if (filter === 'archived') {
+        let tasks = data.tasks.filter(t => t.status === 'archived');
+        if (selectedCategoryId) {
+            tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+        }
+        if (tasks.length === 0) { 
+            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无已完成归档任务' : '📦 暂无已完成归档任务') + '</div>';
+            document.getElementById('taskPagination').innerHTML = '';
+            return; 
+        }
+        const sorted = sortTasks([...tasks], sortKey);
+        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
+        return;
+    }
+    
+    // 未完成归档筛选
+    if (filter === 'unfinished') {
+        let tasks = data.tasks.filter(t => t.status === 'unfinished');
+        if (selectedCategoryId) {
+            tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+        }
+        if (tasks.length === 0) { 
+            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无未完成归档任务' : '⏰ 暂无未完成归档任务') + '</div>';
+            document.getElementById('taskPagination').innerHTML = '';
+            return; 
+        }
+        const sorted = sortTasks([...tasks], sortKey);
+        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
+        return;
+    }
+    
+    // 普通视图：不显示归档和未完成
+    let tasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    if (filter === 'p0') tasks = tasks.filter(t => t.priority === 'P0');
+    else if (filter === 'p1') tasks = tasks.filter(t => t.priority === 'P1');
+    else if (filter === 'p2') tasks = tasks.filter(t => t.priority === 'P2');
+    else if (filter === 'p3') tasks = tasks.filter(t => t.priority === 'P3');
+    else if (filter === 'backlog') tasks = tasks.filter(t => t.status === 'backlog');
+    else if (filter === 'todo') tasks = tasks.filter(t => t.status === 'todo');
+    else if (filter === 'doing') tasks = tasks.filter(t => t.status === 'doing');
+    else if (filter === 'review') tasks = tasks.filter(t => t.status === 'review');
+    else if (filter === 'done') tasks = tasks.filter(t => t.status === 'done');
+    
+    const sorted = sortTasks([...tasks], sortKey);
+    if (sorted.length === 0) {
+        container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无任务' : '暂无符合条件的任务') + '</div>';
+        document.getElementById('taskPagination').innerHTML = '';
+        return;
+    }
+    const result = paginateItems(sorted, taskPage, PAGE_SIZE);
+    container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
+    renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage = page; renderTasks(); }`);
+}
+
+function renderTaskFlat(task) {
+    const projectTags = (task.projectIds || []).map(id => {
+        const p = getProject(id);
+        return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
+    }).join('');
+    const cats = getCategoriesByIds(task.categoryIds || []);
+    const catTags = cats.length ? cats.map(c => `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`).join('') : '';
+    const urgencyMap = {
+        critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+        high: { label: '⚡ 高', cls: 'urgency-high' },
+        medium: { label: '📌 中', cls: 'urgency-medium' },
+        low: { label: '📅 低', cls: 'urgency-low' },
+        none: { label: '⏳ 无', cls: 'urgency-none' }
+    };
+    const u = urgencyMap[task.urgency] || urgencyMap.medium;
+    const isArchived = task.status === 'archived';
+    const isUnfinished = task.status === 'unfinished';
+    
+    return `
+        <div class="task-item ${isArchived ? 'archived-task' : ''} ${isUnfinished ? 'archived-task' : ''}">
+            <div class="task-row">
+                <span class="task-name" style="${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(task.name)}</span>
+                ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
+                ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
+                ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
+                <span class="urgency-tag ${u.cls}">${u.label}</span>
+                <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
+                <span class="status-tag status-${task.status}">${task.status}</span>
+                ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
+                <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
+                <span class="task-meta">📍 ${escHtml(task.location)}</span>
+                <div class="task-actions">
+                    ${!isArchived && !isUnfinished ? `
+                        <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
+                        <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
+                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅ 验收</button>` : ''}
+                        ${task.status === 'done' ? `<button class="btn-archive" onclick="toggleArchive(${task.id})">📦 归档</button>` : ''}
+                        ${task.status !== 'done' ? `<button class="btn-archive" onclick="toggleUnfinished(${task.id})">⏰ 未完成归档</button>` : ''}
+                    ` : `
+                        ${isArchived ? `<button class="btn-archive archived" onclick="toggleArchive(${task.id})">↩️ 恢复</button>` : ''}
+                        ${isUnfinished ? `<button class="btn-archive archived" style="background:#b8a070;color:#fff;border-color:#b8a070;" onclick="toggleUnfinished(${task.id})">↩️ 恢复</button>` : ''}
+                    `}
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
+                </div>
+            </div>
+            <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
+            ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
+        </div>
+    `;
+}
+
+function updateStats() {
+    if (!data) return;
+    let activeTasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
+    if (selectedCategoryId) {
+        activeTasks = activeTasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    const archivedCount = data.tasks.filter(t => t.status === 'archived').length;
+    const unfinishedCount = data.tasks.filter(t => t.status === 'unfinished').length;
+    const doneCount = data.tasks.filter(t => t.status === 'done').length;
+    document.getElementById('statsBar').innerHTML = `
+        <div class="stat"><div class="num">${getFilteredProjects().length}</div><div class="label">📁 项目</div></div>
+        <div class="stat"><div class="num">${activeTasks.length}</div><div class="label">📌 进行中</div></div>
+        <div class="stat"><div class="num">${doneCount}</div><div class="label">✅ 已完成</div></div>
+        <div class="stat"><div class="num">${activeTasks.filter(t => t.priority === 'P0').length}</div><div class="label">🔴 P0</div></div>
+        <div class="stat"><div class="num">${archivedCount}</div><div class="label">📦 归档</div></div>
+        <div class="stat"><div class="num">${unfinishedCount}</div><div class="label">⏰ 未完成</div></div>
+    `;
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
+
+// ============================================================
+//  启动
+// ============================================================
+loadTheme();
+loadFromGitHub();
+</script>
+</body>
+</html>
