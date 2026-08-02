@@ -94,7 +94,6 @@
         .status-done{background:#e9f7ef;color:#1e8449}
         .status-blocked{background:#fde8e8;color:#c0392b}
         .status-archived{background:#e8e0d0;color:#7a6a5a}
-        .status-unfinished{background:#e8e0d0;color:#7a6a5a}
         .cat-list{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;align-items:center}
         .cat-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border-radius:20px;font-size:.7rem;font-weight:500;margin:2px 4px 2px 0;transition:all .15s;cursor:grab;user-select:none;border:1px solid transparent}
         .cat-tag:active{cursor:grabbing;opacity:.7}
@@ -113,8 +112,6 @@
         .task-item:hover{background:var(--surface-hover);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:var(--radius-sm)}
         .task-item.archived-task{opacity:0.5;background:var(--surface-hover);border-radius:var(--radius-sm)}
         .task-item.archived-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
-        .task-item.unfinished-task{opacity:0.5;background:var(--surface-hover);border-radius:var(--radius-sm)}
-        .task-item.unfinished-task .task-actions .btn-success{opacity:0.4;pointer-events:none}
         .task-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
         .task-row .task-name{font-weight:600;flex:1 1 160px;font-size:.95rem}
         .task-row .task-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.78rem;color:var(--text-secondary)}
@@ -176,7 +173,10 @@
         .btn-toggle-archived:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
         .btn-toggle-archived.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
         .project-tasks .archived-task.hidden-archived{display:none}
-        .project-tasks .unfinished-task.hidden-archived{display:none}
+        .btn-view-archived{background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:4px 16px;border-radius:20px;font-size:.75rem;cursor:pointer;transition:.15s}
+        .btn-view-archived:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+        .btn-view-archived.active{background:var(--primary-gradient);color:#fff;border-color:var(--primary)}
+        .archived-count-badge{background:var(--primary);color:#fff;border-radius:50%;padding:0 8px;font-size:.6rem;line-height:18px;display:inline-block;margin-left:4px}
         @media(max-width:640px){body{padding:10px 12px 30px}.card{padding:14px 16px}.form-grid{grid-template-columns:1fr}nav{flex-direction:column;align-items:stretch;gap:8px}.nav-actions{justify-content:center}.task-row{flex-direction:column;align-items:stretch}.task-row .task-actions{margin-left:0}.task-children{margin-left:12px;padding-left:10px}.stats-bar{grid-template-columns:repeat(2,1fr)}.system-motto{justify-content:center;gap:6px;font-size:.6rem}.pagination .page-btn{padding:2px 8px;font-size:.7rem}.filter-bar{flex-wrap:wrap;gap:6px}}
         @media print{body{background:#fff;padding:.2in}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}nav,.btn,.task-actions,.modal-overlay,.pagination{display:none!important}.task-item:hover{background:none;margin:0;padding:14px 0}.stats-bar{border:1px solid #ccc;background:#f8f9fa}}
         ::-webkit-scrollbar{width:6px;height:6px}
@@ -196,6 +196,7 @@
             <button onclick="syncToGitHub()" class="btn btn-sm btn-github">☁️ 同步</button>
             <button onclick="exportJSON()" class="btn btn-sm btn-outline">📤 导出</button>
             <button onclick="cycleTheme()" class="theme-btn"><span class="theme-icon">🌾</span><span class="theme-label">卡其</span></button>
+            <button onclick="toggleArchivedView()" class="btn-view-archived" id="archivedViewBtn">📦 已归档 <span class="archived-count-badge" id="archivedCountBadge">0</span></button>
             <button onclick="window.print()">🖨️ 打印</button>
             <button onclick="openTokenModal()">⚙️</button>
         </div>
@@ -254,8 +255,6 @@
                     <option value="backlog">⏳ Backlog</option><option value="todo">📋 To Do</option>
                     <option value="doing">🔄 Doing</option><option value="review">🔍 Review</option>
                     <option value="done">✅ Done</option>
-                    <option value="archived">📦 已归档</option>
-                    <option value="unfinished">⏰ 未完成</option>
                 </select>
             </div>
         </div>
@@ -274,6 +273,22 @@
         </div>
         <div id="taskList" class="task-flat"></div>
         <div id="taskPagination" class="pagination"></div>
+    </div>
+
+    <!-- ===== 已归档任务查看弹窗 ===== -->
+    <div class="modal-overlay" id="archivedModal">
+        <div class="modal" style="max-width:800px;">
+            <div class="modal-header">
+                <h3>📦 已归档任务</h3>
+                <button class="modal-close" onclick="closeModal('archivedModal')">&times;</button>
+            </div>
+            <div class="save-hint">💡 已归档任务已从任务栏移除，但仍可查看和恢复。<br>📌 点击「恢复」可将任务移回任务栏。</div>
+            <div id="archivedTaskList"></div>
+            <div id="archivedPagination" class="pagination"></div>
+            <div class="form-actions" style="margin-top:12px;">
+                <button class="btn btn-outline" onclick="closeModal('archivedModal')">关闭</button>
+            </div>
+        </div>
     </div>
 
     <!-- 项目弹窗 -->
@@ -306,7 +321,7 @@
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <div class="modal-header"><h3 id="taskModalTitle">新建任务</h3><button class="modal-close" onclick="closeModal('taskModal')">&times;</button></div>
-            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。<br>📌 未完成任务可直接归档到「未完成」。</div>
+            <div class="save-hint">💡 所有带 <span style="color:var(--primary);">*</span> 的字段均为必填。<br>💡 按住 Ctrl/Cmd 可多选分类。<br>📌 任务的父子/先后关系请在项目内通过 🔗 按钮设置。</div>
             <form id="taskForm" onsubmit="saveTask(event)">
                 <input type="hidden" id="taskEditId">
                 <div class="form-grid">
@@ -455,14 +470,16 @@ document.addEventListener('click', function(e) {
 // ============================================================
 const STORAGE_ISSUE_NUMBER = 1;
 const PAGE_SIZE = 10;
+const ARCHIVED_PAGE_SIZE = 10;
 let GITHUB_TOKEN = localStorage.getItem('pms_github_token') || '';
 let GITHUB_REPO = localStorage.getItem('pms_github_repo') || '';
 let data = { projects: [], tasks: [], categories: [], projectTaskRelations: {}, nextProjectId: 1, nextTaskId: 1, nextCategoryId: 1 };
 let dataLoaded = false;
 let selectedCategoryId = null;
-let projectPage = 1, taskPage = 1;
+let projectPage = 1, taskPage = 1, archivedPage = 1;
 let expandedProjects = new Set();
 let showArchivedTasks = {};
+let archivedViewActive = false;
 
 // ============================================================
 //  数据操作
@@ -554,6 +571,7 @@ async function loadFromGitHub() {
         renderCategories();
         populateAllSelects();
         populateCategoryFilter();
+        updateArchivedCount();
         return;
     }
     try {
@@ -573,6 +591,7 @@ async function loadFromGitHub() {
             renderCategories();
             populateAllSelects();
             populateCategoryFilter();
+            updateArchivedCount();
             return;
         }
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -601,6 +620,7 @@ async function loadFromGitHub() {
                 renderCategories();
                 populateAllSelects();
                 populateCategoryFilter();
+                updateArchivedCount();
                 return;
             }
         } catch (e) {}
@@ -613,6 +633,7 @@ async function loadFromGitHub() {
         renderCategories();
         populateAllSelects();
         populateCategoryFilter();
+        updateArchivedCount();
     } catch (err) {
         console.error('加载失败:', err);
         data = loadLocalCache() || defaultData();
@@ -623,6 +644,7 @@ async function loadFromGitHub() {
         renderCategories();
         populateAllSelects();
         populateCategoryFilter();
+        updateArchivedCount();
     }
 }
 
@@ -741,13 +763,116 @@ function getFilteredProjects() {
 }
 
 function getFilteredTasks() {
-    let tasks = data.tasks;
+    let tasks = data.tasks.filter(t => !t.archived);
     if (selectedCategoryId) {
         tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
     return tasks;
 }
 
+function getArchivedTasks() {
+    let tasks = data.tasks.filter(t => t.archived === true);
+    if (selectedCategoryId) {
+        tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
+    }
+    return tasks;
+}
+
+function updateArchivedCount() {
+    const count = data.tasks.filter(t => t.archived === true).length;
+    const badge = document.getElementById('archivedCountBadge');
+    if (badge) badge.textContent = count;
+}
+
+// ============================================================
+//  已归档任务查看
+// ============================================================
+function toggleArchivedView() {
+    const modal = document.getElementById('archivedModal');
+    if (modal.classList.contains('active')) {
+        closeModal('archivedModal');
+        return;
+    }
+    archivedPage = 1;
+    renderArchivedTasks();
+    modal.classList.add('active');
+}
+
+function renderArchivedTasks() {
+    const container = document.getElementById('archivedTaskList');
+    const tasks = getArchivedTasks();
+    if (tasks.length === 0) {
+        container.innerHTML = '<div class="empty-state">📭 暂无已归档任务</div>';
+        document.getElementById('archivedPagination').innerHTML = '';
+        return;
+    }
+    const sortKey = document.getElementById('taskSortOrder')?.value || 'urgency-desc';
+    const sorted = sortTasks([...tasks], sortKey);
+    const result = paginateItems(sorted, archivedPage, ARCHIVED_PAGE_SIZE);
+    container.innerHTML = result.items.map(t => renderArchivedTaskItem(t)).join('');
+    renderPagination('archivedPagination', result.currentPage, result.totalPages, `function(page){ archivedPage=page; renderArchivedTasks(); }`);
+}
+
+function renderArchivedTaskItem(task) {
+    const projectTags = (task.projectIds || []).map(id => {
+        const p = getProject(id);
+        return p ? `<span style="background:var(--primary-light);padding:1px 10px;border-radius:20px;font-size:.7rem;color:var(--primary);">${escHtml(p.name)}</span>` : '';
+    }).join('');
+    const cats = getCategoriesByIds(task.categoryIds || []);
+    const catTags = cats.length ? cats.map(c =>
+        `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
+    ).join('') : '';
+    const urgencyMap = {
+        critical: { label: '🔥 紧急', cls: 'urgency-critical' },
+        high: { label: '⚡ 高', cls: 'urgency-high' },
+        medium: { label: '📌 中', cls: 'urgency-medium' },
+        low: { label: '📅 低', cls: 'urgency-low' },
+        none: { label: '⏳ 无', cls: 'urgency-none' }
+    };
+    const u = urgencyMap[task.urgency] || urgencyMap.medium;
+
+    return `
+        <div class="task-item archived-task">
+            <div class="task-row">
+                <span class="task-name" style="text-decoration:line-through;">${escHtml(task.name)}</span>
+                ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
+                <span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>
+                <span class="urgency-tag ${u.cls}">${u.label}</span>
+                <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
+                <span class="status-tag status-archived">已归档</span>
+                ${projectTags ? `<span class="task-meta">${projectTags}</span>` : ''}
+                <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
+                <span class="task-meta">📍 ${escHtml(task.location)}</span>
+                <div class="task-actions">
+                    <button class="btn btn-sm btn-success" onclick="restoreTask(${task.id})">↩️ 恢复</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
+                </div>
+            </div>
+            <div style="font-size:.8rem;color:var(--text-secondary);margin-top:2px;">✅ ${escHtml(task.accept)}</div>
+            ${task.note ? `<div style="font-size:.75rem;color:var(--text-muted);">📝 ${escHtml(task.note)}</div>` : ''}
+        </div>
+    `;
+}
+
+// 恢复已归档任务
+function restoreTask(taskId) {
+    const t = getTask(taskId);
+    if (!t) return;
+    t.archived = false;
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    updateArchivedCount();
+    // 如果归档弹窗打开，刷新它
+    if (document.getElementById('archivedModal').classList.contains('active')) {
+        renderArchivedTasks();
+    }
+    setStatus('↩️ 任务已恢复', 'saving');
+}
+
+// ============================================================
+//  分类 CRUD
+// ============================================================
 function addCategory() {
     const input = document.getElementById('catInput');
     const name = input.value.trim();
@@ -865,12 +990,12 @@ function populateTaskSelects() {
     const editId = document.getElementById('taskEditId').value;
     const parentSelect = document.getElementById('tParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => {
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
         parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
     });
     const prevSelect = document.getElementById('tPrev');
     prevSelect.innerHTML = '<option value="">无</option>';
-    data.tasks.filter(t => t.id !== Number(editId) && t.status !== 'archived' && t.status !== 'unfinished').forEach(t => {
+    data.tasks.filter(t => t.id !== Number(editId) && !t.archived).forEach(t => {
         prevSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
     });
 }
@@ -890,7 +1015,7 @@ function checkTimeConflict() {
     const startDate = new Date(start);
     const endDate = new Date(end);
     for (const pid of projectIds) {
-        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
         for (const t of tasks) {
             if (!t.start || !t.end) continue;
             const tStart = new Date(t.start);
@@ -1000,15 +1125,14 @@ function saveTask(e) {
     const start = document.getElementById('tStart').value;
     const end = document.getElementById('tEnd').value;
     const taskId = id ? Number(id) : null;
-    if (status !== 'archived' && status !== 'unfinished') {
-        for (const pid of projectIds) {
-            const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
-            for (const t of tasks) {
-                if (!t.start || !t.end) continue;
-                if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
-                    alert('⚠️ 时间冲突！与任务 "' + t.name + '" 重叠 (' + t.start + ' ~ ' + t.end + ')');
-                    return;
-                }
+    // 检测时间冲突（仅非归档任务）
+    for (const pid of projectIds) {
+        const tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(pid) && !t.archived && t.id !== taskId);
+        for (const t of tasks) {
+            if (!t.start || !t.end) continue;
+            if (new Date(start) < new Date(t.end) && new Date(end) > new Date(t.start)) {
+                alert('⚠️ 时间冲突！与任务 "' + t.name + '" 重叠 (' + t.start + ' ~ ' + t.end + ')');
+                return;
             }
         }
     }
@@ -1024,6 +1148,7 @@ function saveTask(e) {
         status,
         accept: document.getElementById('tAccept').value.trim(),
         note: document.getElementById('tNote').value.trim(),
+        archived: false
     };
     if (!obj.name || !obj.start || !obj.end || !obj.location || !obj.accept) { alert('请填写所有必填字段'); return; }
     if (obj.start > obj.end) { alert('开始时间不能晚于截止时间'); return; }
@@ -1036,6 +1161,7 @@ function saveTask(e) {
     renderAll();
     updateStats();
     populateCategoryFilter();
+    updateArchivedCount();
     setStatus('💡 任务已保存', 'saving');
 }
 
@@ -1085,63 +1211,37 @@ function deleteTask(id) {
     saveLocalCache();
     renderAll();
     updateStats();
+    updateArchivedCount();
+    if (document.getElementById('archivedModal').classList.contains('active')) {
+        renderArchivedTasks();
+    }
     setStatus('💡 任务已永久删除', 'saving');
 }
 
-// 归档已完成任务 (done → archived)
-function toggleArchive(taskId) {
+// 归档任务 - 从任务栏移除，存入归档
+function archiveTask(taskId) {
     const t = getTask(taskId);
     if (!t) return;
-    if (t.status === 'done') {
-        t.status = 'archived';
-        saveLocalCache();
-        renderAll();
-        updateStats();
-        setStatus('📦 任务已归档（已完成）', 'saving');
-    } else if (t.status === 'archived') {
-        t.status = 'done';
-        saveLocalCache();
-        renderAll();
-        updateStats();
-        setStatus('↩️ 任务已取消归档', 'saving');
-    } else {
-        alert('只有「Done」状态的任务才能归档到「已完成归档」');
-    }
-}
-
-// 归档未完成任务 (任意未完成 → unfinished)
-function toggleUnfinished(taskId) {
-    const t = getTask(taskId);
-    if (!t) return;
-    if (t.status === 'unfinished') {
-        t.status = 'todo';
-        saveLocalCache();
-        renderAll();
-        updateStats();
-        setStatus('↩️ 任务已取消「未完成」归档', 'saving');
-    } else if (t.status === 'archived' || t.status === 'done') {
-        alert('已完成或已归档的任务不能标记为「未完成」');
-    } else {
-        t.status = 'unfinished';
-        saveLocalCache();
-        renderAll();
-        updateStats();
-        setStatus('⏰ 任务已归档到「未完成」', 'saving');
-    }
+    if (t.archived) { alert('该任务已归档'); return; }
+    t.archived = true;
+    saveLocalCache();
+    renderAll();
+    updateStats();
+    updateArchivedCount();
+    setStatus('📦 任务已归档', 'saving');
 }
 
 function markDone(taskId) {
     const t = getTask(taskId);
     if (!t) return;
     if (t.status === 'done') { alert('该任务已验收通过'); return; }
-    if (t.status === 'archived') { alert('已归档的任务不能操作'); return; }
-    if (t.status === 'unfinished') { alert('已标记为「未完成」的任务不能操作，请先取消归档'); return; }
+    if (t.archived) { alert('已归档的任务不能操作'); return; }
     if (data.projectTaskRelations) {
         for (const projectId in data.projectTaskRelations) {
             const rel = data.projectTaskRelations[projectId]?.[taskId];
             if (rel && rel.prevId) {
                 const prev = getTask(rel.prevId);
-                if (prev && prev.status !== 'done' && prev.status !== 'archived') {
+                if (prev && prev.status !== 'done' && !prev.archived) {
                     alert('前置任务尚未验收通过（项目：' + (getProject(Number(projectId))?.name || projectId) + '）');
                     return;
                 }
@@ -1177,7 +1277,7 @@ function openRelationModal(taskId, projectId) {
     const task = getTask(taskId);
     const project = getProject(projectId);
     document.getElementById('relationModalTitle').textContent = '🔗 编辑任务关系 - ' + (task?.name || '任务') + ' @ ' + (project?.name || '项目');
-    const projectTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && t.status !== 'archived' && t.status !== 'unfinished' && t.id !== taskId);
+    const projectTasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived && t.id !== taskId);
     const parentSelect = document.getElementById('rParent');
     parentSelect.innerHTML = '<option value="">无（顶级任务）</option>';
     projectTasks.forEach(t => { parentSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`; });
@@ -1274,7 +1374,7 @@ function renderPagination(containerId, currentPage, totalPages, onChange) {
 //  获取项目任务
 // ============================================================
 function getTasksByProject(projectId) {
-    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId));
+    let tasks = data.tasks.filter(t => t.projectIds && t.projectIds.includes(projectId) && !t.archived);
     if (selectedCategoryId) {
         tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
@@ -1309,7 +1409,7 @@ function buildProjectTaskTree(projectId) {
 // ============================================================
 //  渲染
 // ============================================================
-function renderAll() { renderProjects(); renderTasks(); updateFilterUI(); }
+function renderAll() { renderProjects(); renderTasks(); updateFilterUI(); updateArchivedCount(); }
 function escHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function renderProjects() {
@@ -1328,30 +1428,20 @@ function renderProjects() {
         ).join('') : '<span style="font-size:.6rem;color:var(--text-muted);">未分类</span>';
         const tree = buildProjectTaskTree(p.id);
         const taskCount = tree.length;
-        const archivedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'archived').length;
-        const unfinishedCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'unfinished').length;
-        const doneCount = data.tasks.filter(t => t.projectIds && t.projectIds.includes(p.id) && t.status === 'done').length;
         const isExpanded = expandedProjects.has(p.id);
         const showArchived = showArchivedTasks[p.id] || false;
 
         function renderTreeNodes(nodes, level) {
             if (!nodes || nodes.length === 0) return '';
             const levelClass = level > 5 ? 'task-level-5' : `task-level-${level}`;
-            let filteredNodes = nodes;
-            if (!showArchived) {
-                filteredNodes = filteredNodes.filter(node => node.status !== 'archived' && node.status !== 'unfinished');
-            }
-            return filteredNodes.map(node => {
+            return nodes.map(node => {
                 const children = node.children || [];
                 let isBlocked = false;
                 if (node._prevId) {
                     const prev = getTask(node._prevId);
-                    if (prev && prev.status !== 'done' && prev.status !== 'archived') isBlocked = true;
+                    if (prev && prev.status !== 'done' && !prev.archived) isBlocked = true;
                 }
                 const displayStatus = isBlocked ? 'blocked' : node.status;
-                const isArchived = node.status === 'archived';
-                const isUnfinished = node.status === 'unfinished';
-                const isDone = node.status === 'done';
                 const nodeCats = getCategoriesByIds(node.categoryIds || []);
                 const nodeCatTags = nodeCats.length ? nodeCats.map(c =>
                     `<span class="mini-cat" style="background:${c.color}20;border:1px solid ${c.color}40;color:${c.color};">${c.name}</span>`
@@ -1364,45 +1454,28 @@ function renderProjects() {
                     none: { label: '⏳ 无', cls: 'urgency-none' }
                 };
                 const u = urgencyMap[node.urgency] || urgencyMap.medium;
-                let filteredChildren = children;
-                if (!showArchived) {
-                    filteredChildren = filteredChildren.filter(c => c.status !== 'archived' && c.status !== 'unfinished');
-                }
-                const childrenHtml = filteredChildren.length > 0 ?
-                    `<div class="task-level-indent">${renderTreeNodes(filteredChildren, level + 1)}</div>` : '';
-
-                const archivedClass = isArchived ? 'archived-task' : '';
-                const unfinishedClass = isUnfinished ? 'unfinished-task' : '';
-                const hiddenClass = (!showArchived && (isArchived || isUnfinished)) ? 'hidden-archived' : '';
-                let statusLabel = displayStatus;
-                if (isArchived) statusLabel = '📦 已归档';
-                else if (isUnfinished) statusLabel = '⏰ 未完成';
-                const statusClass = isArchived ? 'status-archived' : (isUnfinished ? 'status-unfinished' : `status-${displayStatus}`);
+                const childrenHtml = children.length > 0 ?
+                    `<div class="task-level-indent">${renderTreeNodes(children, level + 1)}</div>` : '';
 
                 return `
-                    <div class="task-item ${levelClass} ${archivedClass} ${unfinishedClass} ${hiddenClass}" style="padding:8px 0;">
+                    <div class="task-item ${levelClass}" style="padding:8px 0;">
                         <div class="task-row" style="gap:6px 12px;">
-                            ${filteredChildren.length > 0 ?
+                            ${children.length > 0 ?
                                 `<span style="font-size:.6rem;color:var(--text-muted);margin-right:2px;">⊞</span>` :
                                 `<span style="width:16px;display:inline-block;"></span>`}
-                            <span class="task-name" style="font-size:.85rem;${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(node.name)}</span>
+                            <span class="task-name" style="font-size:.85rem;">${escHtml(node.name)}</span>
                             ${nodeCatTags ? `<span class="task-cats">${nodeCatTags}</span>` : ''}
-                            ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
-                            ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
                             <span class="urgency-tag ${u.cls}" style="font-size:.6rem;padding:1px 10px;">${u.label}</span>
                             <span class="priority-tag priority-${node.priority.toLowerCase()}" style="font-size:.6rem;padding:1px 10px;">${node.priority}</span>
-                            <span class="status-tag ${statusClass}" style="font-size:.6rem;padding:1px 10px;">${statusLabel}</span>
+                            <span class="status-tag status-${displayStatus}" style="font-size:.6rem;padding:1px 10px;">${displayStatus}</span>
                             <span class="task-meta" style="font-size:.7rem;">📅 ${node.start}</span>
                             ${node._prevId ? `<span class="task-meta" style="font-size:.7rem;">⬅️ 依赖 #${node._prevId}</span>` : ''}
                             <div class="task-actions">
                                 <button class="btn-relation" onclick="event.stopPropagation();openRelationModal(${node.id}, ${p.id})" title="编辑任务关系">🔗</button>
                                 <button class="btn btn-sm btn-outline" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();openTaskModal(${node.id})">✎</button>
-                                ${!isArchived && !isUnfinished ? `<button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>` : ''}
+                                <button class="btn btn-sm btn-success" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();markDone(${node.id})">✔</button>
                                 ${node.status === 'review' ? `<button class="btn btn-sm" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();approveTask(${node.id})">✅</button>` : ''}
-                                ${isDone ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">📦 归档</button>` : ''}
-                                ${!isDone && !isArchived && !isUnfinished ? `<button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleUnfinished(${node.id})">⏰ 未完成</button>` : ''}
-                                ${isArchived ? `<button class="btn-archive active" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();toggleArchive(${node.id})">↩️ 恢复</button>` : ''}
-                                ${isUnfinished ? `<button class="btn-archive active" style="padding:2px 8px;font-size:.55rem;background:var(--primary);color:#fff;border-color:var(--primary);" onclick="event.stopPropagation();toggleUnfinished(${node.id})">↩️ 恢复</button>` : ''}
+                                <button class="btn-archive" style="padding:2px 8px;font-size:.55rem;" onclick="event.stopPropagation();archiveTask(${node.id})">📦 归档</button>
                                 <button class="btn btn-sm btn-danger" style="padding:2px 10px;font-size:.65rem;" onclick="event.stopPropagation();deleteTask(${node.id})">✕</button>
                             </div>
                         </div>
@@ -1424,8 +1497,6 @@ function renderProjects() {
                     <span class="task-meta">📅 ${p.start} ~ ${p.end}</span>
                     <span class="task-meta">📍 ${escHtml(p.location)}</span>
                     <span class="task-meta" style="font-weight:600;color:var(--primary);">📌 ${taskCount}个任务</span>
-                    ${archivedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">📦 ${archivedCount}个已完成归档</span>` : ''}
-                    ${unfinishedCount > 0 ? `<span class="task-meta" style="font-size:.65rem;color:var(--text-muted);">⏰ ${unfinishedCount}个未完成归档</span>` : ''}
                     <span class="task-meta" style="font-size:.65rem;color:#fff;background:var(--primary-gradient);padding:0 12px;border-radius:10px;">🔗 点击打开</span>
                     <div class="task-actions" onclick="event.stopPropagation();">
                         <button class="btn btn-sm btn-outline" onclick="openProjectModal(${p.id})">✎</button>
@@ -1435,14 +1506,7 @@ function renderProjects() {
                 <div style="font-size:.8rem;color:var(--text-secondary);margin-top:4px;padding-left:30px;">✅ ${escHtml(p.standard)}</div>
                 ${isExpanded ? `
                     <div class="toggle-row">
-                        <button class="btn-toggle-archived ${showArchived ? 'active' : ''}" onclick="event.stopPropagation();toggleShowArchived(${p.id})">
-                            ${showArchived ? '🙈 隐藏归档' : '👁️ 显示归档'}
-                        </button>
-                        <span class="count-info">
-                            ${doneCount} 个已完成
-                            ${archivedCount > 0 ? `｜📦 ${archivedCount} 个已归档 ${!showArchived && archivedCount > 0 ? '（已隐藏）' : ''}` : ''}
-                            ${unfinishedCount > 0 ? `｜⏰ ${unfinishedCount} 个未完成 ${!showArchived && unfinishedCount > 0 ? '（已隐藏）' : ''}` : ''}
-                        </span>
+                        <span class="count-info">${taskCount} 个任务</span>
                     </div>
                 ` : ''}
                 <div class="project-tasks ${isExpanded ? 'open' : ''}">
@@ -1460,41 +1524,7 @@ function renderTasks() {
     const filter = document.getElementById('viewFilter').value;
     const sortKey = document.getElementById('taskSortOrder').value;
 
-    if (filter === 'archived') {
-        let tasks = data.tasks.filter(t => t.status === 'archived');
-        if (selectedCategoryId) {
-            tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-        }
-        if (tasks.length === 0) {
-            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无已完成归档任务' : '📦 暂无已完成归档任务') + '</div>';
-            document.getElementById('taskPagination').innerHTML = '';
-            return;
-        }
-        const sorted = sortTasks([...tasks], sortKey);
-        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
-        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
-        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage=page; renderTasks(); }`);
-        return;
-    }
-
-    if (filter === 'unfinished') {
-        let tasks = data.tasks.filter(t => t.status === 'unfinished');
-        if (selectedCategoryId) {
-            tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
-        }
-        if (tasks.length === 0) {
-            container.innerHTML = '<div class="empty-state">' + (selectedCategoryId ? '📭 该分类下暂无未完成归档任务' : '⏰ 暂无未完成归档任务') + '</div>';
-            document.getElementById('taskPagination').innerHTML = '';
-            return;
-        }
-        const sorted = sortTasks([...tasks], sortKey);
-        const result = paginateItems(sorted, taskPage, PAGE_SIZE);
-        container.innerHTML = result.items.map(t => renderTaskFlat(t)).join('');
-        renderPagination('taskPagination', result.currentPage, result.totalPages, `function(page){ taskPage=page; renderTasks(); }`);
-        return;
-    }
-
-    let tasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
+    let tasks = data.tasks.filter(t => !t.archived);
     if (selectedCategoryId) {
         tasks = tasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
@@ -1536,16 +1566,12 @@ function renderTaskFlat(task) {
         none: { label: '⏳ 无', cls: 'urgency-none' }
     };
     const u = urgencyMap[task.urgency] || urgencyMap.medium;
-    const isArchived = task.status === 'archived';
-    const isUnfinished = task.status === 'unfinished';
 
     return `
-        <div class="task-item ${isArchived ? 'archived-task' : ''} ${isUnfinished ? 'unfinished-task' : ''}">
+        <div class="task-item">
             <div class="task-row">
-                <span class="task-name" style="${isArchived || isUnfinished ? 'text-decoration:line-through;' : ''}">${escHtml(task.name)}</span>
+                <span class="task-name">${escHtml(task.name)}</span>
                 ${catTags ? `<span class="task-cats">${catTags}</span>` : ''}
-                ${isArchived ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">📦</span>` : ''}
-                ${isUnfinished ? `<span style="font-size:.6rem;color:var(--text-muted);background:var(--surface-hover);padding:0 8px;border-radius:8px;">⏰</span>` : ''}
                 <span class="urgency-tag ${u.cls}">${u.label}</span>
                 <span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority}</span>
                 <span class="status-tag status-${task.status}">${task.status}</span>
@@ -1553,16 +1579,10 @@ function renderTaskFlat(task) {
                 <span class="task-meta">📅 ${task.start} ~ ${task.end}</span>
                 <span class="task-meta">📍 ${escHtml(task.location)}</span>
                 <div class="task-actions">
-                    ${!isArchived && !isUnfinished ? `
-                        <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
-                        <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
-                        ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅</button>` : ''}
-                        ${task.status === 'done' ? `<button class="btn-archive" onclick="toggleArchive(${task.id})">📦 归档</button>` : ''}
-                        ${task.status !== 'done' ? `<button class="btn-archive" onclick="toggleUnfinished(${task.id})">⏰ 未完成</button>` : ''}
-                    ` : `
-                        ${isArchived ? `<button class="btn-archive active" onclick="toggleArchive(${task.id})">↩️ 恢复</button>` : ''}
-                        ${isUnfinished ? `<button class="btn-archive active" style="background:var(--primary);color:#fff;border-color:var(--primary);" onclick="toggleUnfinished(${task.id})">↩️ 恢复</button>` : ''}
-                    `}
+                    <button class="btn btn-sm btn-outline" onclick="openTaskModal(${task.id})">✎</button>
+                    <button class="btn btn-sm btn-success" onclick="markDone(${task.id})">✔</button>
+                    ${task.status === 'review' ? `<button class="btn btn-sm" onclick="approveTask(${task.id})">✅</button>` : ''}
+                    <button class="btn-archive" onclick="archiveTask(${task.id})">📦 归档</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✕</button>
                 </div>
             </div>
@@ -1574,21 +1594,19 @@ function renderTaskFlat(task) {
 
 function updateStats() {
     if (!data) return;
-    let activeTasks = data.tasks.filter(t => t.status !== 'archived' && t.status !== 'unfinished');
+    let activeTasks = data.tasks.filter(t => !t.archived);
     if (selectedCategoryId) {
         activeTasks = activeTasks.filter(t => t.categoryIds && t.categoryIds.includes(selectedCategoryId));
     }
-    const archivedCount = data.tasks.filter(t => t.status === 'archived').length;
-    const unfinishedCount = data.tasks.filter(t => t.status === 'unfinished').length;
-    const doneCount = data.tasks.filter(t => t.status === 'done').length;
+    const archivedCount = data.tasks.filter(t => t.archived === true).length;
+    const doneCount = data.tasks.filter(t => t.status === 'done' && !t.archived).length;
     const projects = getFilteredProjects().length;
     document.getElementById('statsBar').innerHTML = `
         <div class="stat"><div class="num">${projects}</div><div class="label">📁 项目</div></div>
         <div class="stat"><div class="num">${activeTasks.length}</div><div class="label">📌 进行中</div></div>
         <div class="stat"><div class="num">${doneCount}</div><div class="label">✅ 已完成</div></div>
         <div class="stat"><div class="num">${activeTasks.filter(t => t.priority === 'P0').length}</div><div class="label">🔴 P0</div></div>
-        <div class="stat"><div class="num">${archivedCount}</div><div class="label">📦 归档</div></div>
-        <div class="stat"><div class="num">${unfinishedCount}</div><div class="label">⏰ 未完成</div></div>
+        <div class="stat"><div class="num">${archivedCount}</div><div class="label">📦 已归档</div></div>
     `;
 }
 
